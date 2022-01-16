@@ -1,5 +1,5 @@
-const CACHE_NAME = 'sw-cache-example';
-const toCache = [
+const staticCacheName = 'site-static';
+const assets = [
   './',
   '/css/styles.css',
   '/js/index.js',
@@ -17,13 +17,12 @@ const toCache = [
   '/views/test2.hbs'
 ];
 
-self.addEventListener('install', function(event) {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(function(cache) {
-        return cache.addAll(toCache)
-      })
-      .then(self.skipWaiting())
+self.addEventListener('install', evt => {
+  evt.waitUntil(
+    caches.open(staticCacheName).then(cache => {
+      console.log('caching shell assets')
+      cache.addAll(assets)
+    })
   )
 })
 
