@@ -1,16 +1,16 @@
 const CACHE_NAME = 'sw-cache-example';
 const toCache = [
   './',
+  '/css/styles.css',
+  '/js/index.js',
+  '/js/pwa.js',
+  '/js/pwa.webmanifest',
   '/images/app_logo.png',
   '/views/index.hbs',
   '/views/admin.hbs',
   '/views/layouts/main.hbs',
   '/views/signin.hbs',
   '/views/signup.hbs',
-  '/css/styles.css',
-  '/js/index.js',
-  '/js/pwa.js',
-  '/js/pwa.webmanifest',
   '/views/partials/footer.hbs',
   '/views/partials/header.hbs'
 ];
@@ -27,7 +27,6 @@ self.addEventListener('install', function(event) {
 
   
 self.addEventListener('fetch', function(event) {
-  alert(event.request)
   event.respondWith(
     fetch(event.request)
       .catch(() => {
