@@ -12,7 +12,9 @@ const toCache = [
   '/views/signin.hbs',
   '/views/signup.hbs',
   '/views/partials/footer.hbs',
-  '/views/partials/header.hbs'
+  '/views/partials/header.hbs',
+  '/views/test.hbs',
+  '/views/test2.hbs'
 ];
 
 self.addEventListener('install', function(event) {
@@ -32,8 +34,8 @@ self.addEventListener('fetch', function(event) {
       .catch(() => {
         return caches.open(CACHE_NAME)
           .then((cache) => {
-            /* return cache.match('/views/signup.hbs') */
-            return cache.match(event.request, {ignoreSearch:true})
+            return cache.match('/views/test.hbs')
+            /* return cache.match(event.request, {ignoreSearch:true}) */
           })
       })
   )

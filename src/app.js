@@ -78,6 +78,12 @@ app.use('/signin', signinRoutes)
 app.use('/signup', signupRoutes)
 app.use('/admin', adminRoutes)
 app.use('/logout', logoutRoutes)
+app.get('/test1', (req, res) => {
+    res.render('test')
+})
+app.get('/test2', (req, res) => {
+    res.render('test2')
+})
 
 //Listen
 app.listen(3000, () => {
