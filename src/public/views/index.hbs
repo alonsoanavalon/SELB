@@ -1,0 +1,38 @@
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{{#if alert}}
+
+<script>
+
+    Swal.fire({
+        title: '{{alertTitle}}',
+        text:'{{alertMessage}}',
+        icon:'{{alertIcon}}',
+        showConfirmButton:{{{showConfirmButton}}},
+        timer:{{{timer}}}
+    }).then(() => {
+        window.location = '{{ruta}}'
+    })
+
+</script>
+
+{{/if}}
+
+<section class="signin">
+    <form class="signin-form" action="/signin" method="POST">
+
+    <img src="images/app_logo.png">
+
+    <h2 class="signin-title">Login</h2>
+
+
+    <input type="text" name="user" id="user-signin" placeholder="Usuario" autocomplete="new-password">
+
+    <input type="password" name="password" id="user-password" placeholder="Contraseña" autocomplete="new-password">
+    <input id="signin-button" type="submit" value="Ingresar">
+    </form>
+</section>
+
+
+
+

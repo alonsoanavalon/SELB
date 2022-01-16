@@ -9,3 +9,8 @@ CREATE TABLE IF NOT EXISTS `selb`.`usuario` (
   `email` VARCHAR(100) NULL,
   `clave` VARCHAR(100) NULL,
   PRIMARY KEY (`id`));
+
+  CREATE TABLE IF NOT EXISTS `selb`.`test` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `test` VARCHAR(100) NULL,
+  PRIMARY KEY (`id`));

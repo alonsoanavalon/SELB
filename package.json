@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "run": "node src/app.js",
-    "dev": "nodemon src/app.js"
+    "dev": "nodemon src/app.js",
+    "server-debug": "nodemon --inspect src/app.js"
   },
   "keywords": [],
   "author": "",
@@ -19,10 +20,14 @@
     "express": "^4.17.2",
     "express-handlebars": "^6.0.2",
     "express-session": "^1.17.2",
+    "fs": "^0.0.1-security",
     "handlebars": "^4.7.7",
+    "https": "^1.0.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
+    "openssl": "^2.0.0",
+    "openssl-nodejs": "^1.0.5",
     "path": "^0.12.7",
     "swiper": "^7.4.1"
   },
