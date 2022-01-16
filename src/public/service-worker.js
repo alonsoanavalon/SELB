@@ -12,11 +12,7 @@ const toCache = [
   '/js/pwa.js',
   '/js/pwa.webmanifest',
   '/views/partials/footer.hbs',
-  '/views/partials/header.hbs',
-  '/signin',
-  '/signup',
-  '/admin',
-  '/logout'
+  '/views/partials/header.hbs'
 ];
 
 self.addEventListener('install', function(event) {
