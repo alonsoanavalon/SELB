@@ -6,6 +6,7 @@ const toCache = [
   '/views/admin.hbs',
   '/views/layouts/main.hbs',
   '/views/signin.hbs',
+  '/views/signup.hbs',
   '/css/styles.css',
   '/js/index.js',
   '/js/pwa.js',
