@@ -26,18 +26,26 @@ self.addEventListener('install', evt => {
   )
 })
 
-  
-self.addEventListener('fetch', evt=> {
+   
+self.addEventListener('fetch', event => {
 
-  evt.respondWith(
-    caches.match(evt.request).then(cacheRes => {
-      return cacheRes || fetch(evt.request)
-    })
+  event.respondWith(
+    fetch(event.request)
+      .catch(() => {
+        return caches.open(staticCacheName)
+          .then((cache) => {
+            return cache.match(event.request, {ignoreSearch:true})
+          })
+      })
   )
-
 });
 
 
+/*   evt.respondWith(
+    caches.match(evt.request).then(cacheRes => {
+      return cacheRes || fetch(evt.request)
+    })
+  ) */
 
 /*   event.respondWith(caches.match(event.request)
   .then(cachedResponse => {
@@ -46,16 +54,7 @@ self.addEventListener('fetch', evt=> {
   ); */
 
   
-/*   event.respondWith(
-    fetch(event.request)
-      .catch(() => {
-        return caches.open(CACHE_NAME)
-          .then((cache) => {
-            return cache.match('/views/test')
-            return cache.match(event.request, {ignoreSearch:true})
-          })
-      })
-  ) */
+
 
   
   self.addEventListener('activate', function(event) {
