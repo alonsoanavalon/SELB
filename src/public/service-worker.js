@@ -27,13 +27,14 @@ self.addEventListener('install', function(event) {
 
   
 self.addEventListener('fetch', function(event) {
+  alert(event.request)
   event.respondWith(
     fetch(event.request)
       .catch(() => {
         return caches.open(CACHE_NAME)
           .then((cache) => {
-            return cache.match('/views/signup.hbs')
-            /* return cache.match(event.request, {ignoreSearch:true}) */
+            /* return cache.match('/views/signup.hbs') */
+            return cache.match(event.request, {ignoreSearch:true})
           })
       })
   )
