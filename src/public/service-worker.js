@@ -2,17 +2,17 @@ const CACHE_NAME = 'sw-cache-example';
 const toCache = [
   './',
   '/images/app_logo.png',
-/*   '/views/index.hbs',
+  '/views/index.hbs',
   '/views/admin.hbs',
   '/views/layouts/main.hbs',
   '/views/signin.hbs',
-  '/views/signup.hbs', */
+  '/views/signup.hbs',
   '/css/styles.css',
   '/js/index.js',
   '/js/pwa.js',
   '/js/pwa.webmanifest',
-/*   '/views/partials/footer.hbs',
-  '/views/partials/header.hbs' */
+  '/views/partials/footer.hbs',
+  '/views/partials/header.hbs',
   '/signin',
   '/signup',
   '/admin',
