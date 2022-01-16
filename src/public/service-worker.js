@@ -1,6 +1,6 @@
 const CACHE_NAME = 'sw-cache-example';
 const toCache = [
-  '/',
+  './',
   '/images/app_logo.png',
   '/views/index.hbs',
   '/views/admin.hbs',
