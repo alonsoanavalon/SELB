@@ -9,7 +9,7 @@ const toCache = [
   '/css/styles.css',
   '/js/index.js',
   '/js/pwa.js',
-  '/pwa.webmanifest',
+  '/js/pwa.webmanifest',
   '/views/partials/footer.hbs',
   '/views/partials/header.hbs'
 
