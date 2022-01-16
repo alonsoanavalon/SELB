@@ -4,7 +4,8 @@ const toCache = [
   '/views/index.hbs',
   '/views/admin.hbs',
   '/views/layouts/main.hbs',
-  '/views/signin.hbs'
+  '/views/signin.hbs',
+  ''
   
 ];
 
@@ -25,7 +26,8 @@ self.addEventListener('fetch', function(event) {
       .catch(() => {
         return caches.open(CACHE_NAME)
           .then((cache) => {
-            return cache.match(event.request)
+            return cache.match('/views/index.hbs')
+            /* return cache.match(event.request, {ignoreSearch:true}) */
           })
       })
   )
