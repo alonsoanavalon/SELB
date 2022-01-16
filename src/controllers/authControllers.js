@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
                             alertIcon:'error',
                             showConfirmButton:true,
                             timer:false,
-                            ruta:"signin"
+                            ruta:"/"
                         })
                     } else {
 

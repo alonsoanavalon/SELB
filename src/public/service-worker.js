@@ -1,11 +1,20 @@
 const CACHE_NAME = 'sw-cache-example';
 const toCache = [
+  '/',
   '/images/app_logo.png',
   '/views/index.hbs',
   '/views/admin.hbs',
   '/views/layouts/main.hbs',
   '/views/signin.hbs',
-  ''
+  '/css/styles.css',
+  '/js/index.js',
+  '/js/pwa.js',
+  '/pwa.webmanifest',
+  '/views/partials/footer.hbs',
+  '/views/partials/header.hbs'
+  
+  
+
   
 ];
 
