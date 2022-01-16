@@ -32,7 +32,7 @@ self.addEventListener('fetch', function(event) {
       .catch(() => {
         return caches.open(CACHE_NAME)
           .then((cache) => {
-            return cache.match('/views/index.hbs')
+            return cache.match('/views/signin.hbs')
             /* return cache.match(event.request, {ignoreSearch:true}) */
           })
       })
