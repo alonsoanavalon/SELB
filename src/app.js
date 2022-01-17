@@ -82,6 +82,6 @@ app.use('/logout', logoutRoutes)
 app.use('/test', testRoutes)
 
 //Listen
-app.listen(3001, () => {
+app.listen(3000, () => {
     console.log(`Conectado enn ${app.get("port")}`)
 })
