@@ -14,7 +14,14 @@ const assets = [
   '/views/partials/footer.hbs',
   '/views/partials/header.hbs',
   '/views/test.hbs',
-  '/views/test2.hbs'
+  '/views/test2.hbs',
+  './signin',
+  './admin',
+  './signup',
+  './logout',
+  './test1',
+  './test2'
+
 ];
 
 self.addEventListener('install', evt => {
