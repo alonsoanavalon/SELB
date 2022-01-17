@@ -4,7 +4,9 @@ const mysqlConnection = require('../database/database')
 router.get('/', (req, res) => {
     mysqlConnection.query("SELECT * FROM usuario", (err, results) => {
         console.log(results)
-        res.send(results)
+        res.send({
+            results
+        })
     })
     
 })
