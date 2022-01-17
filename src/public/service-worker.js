@@ -20,13 +20,7 @@ const assets = [
   './signup',
   './logout',
   './test1',
-  './test2',
-  '/signin',
-  '/admin',
-  '/signup',
-  '/logout',
-  '/test1',
-  '/test2',
+  './test2'
 
 
 ];

@@ -8,6 +8,7 @@ const signinRoutes = require('./routes/signin')
 const signupRoutes = require('./routes/signup')
 const adminRoutes = require('./routes/admin')
 const logoutRoutes = require('./routes/logout')
+const testRoutes = require('./routes/test')
 const fs = require('fs')
 const https = require('https')
 
@@ -78,14 +79,9 @@ app.use('/signin', signinRoutes)
 app.use('/signup', signupRoutes)
 app.use('/admin', adminRoutes)
 app.use('/logout', logoutRoutes)
-app.get('/test1', (req, res) => {
-    res.render('test')
-})
-app.get('/test2', (req, res) => {
-    res.render('test2')
-})
+app.use('/test', testRoutes)
 
 //Listen
-app.listen(3000, () => {
+app.listen(3001, () => {
     console.log(`Conectado enn ${app.get("port")}`)
 })
