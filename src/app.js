@@ -31,7 +31,7 @@ const sslServer = https.createServer(
 )
 
 
-app.set('port', process.env.PORT || 3000)
+app.set('port', process.env.PORT || 3500)
 const hbs = exphbs.create({
     handlebars: allowInsecurePrototypeAccess(Handlebars), 
     layoutsDir: path.join(__dirname, 'public', 'views', 'layouts'),
@@ -90,6 +90,6 @@ app.use('/logout', logoutRoutes)
 app.use('/test', testRoutes)
 
 //Listen
-app.listen(3000, () => {
+app.listen(app.get('port'), () => {
     console.log(`Conectado enn ${app.get("port")}`)
 })

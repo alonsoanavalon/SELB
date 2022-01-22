@@ -15,12 +15,7 @@ const assets = [
   '/views/partials/header.hbs',
   '/views/test.hbs',
   '/views/test2.hbs',
-  './signin',
-  './admin',
-  './signup',
-  './logout',
-  './test1',
-  './test2'
+
 
 
 ];
