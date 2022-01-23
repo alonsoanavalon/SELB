@@ -12,10 +12,13 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res, next) => {
-    console.log(req.body)
-    res.send({
-        status:'ok'
+    mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
+        console.log(res)
+        res.send({
+            status:'ok'
+        })
     })
+
    
 })
 
