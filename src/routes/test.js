@@ -13,18 +13,27 @@ router.get('/', (req, res) => {
 router.post('/', (req, res, next) => {
 
     let data = req.body
+    console.log(data, "   DATA")
+    console.log(data.length,  "  LENgth")
 
-    console.log(data.length)
+    if (data.length !== undefined) {
 
-    data.forEach(e => {
-        console.log(e)
-    })
-    
-/*     data.forEach(element => {
-        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${element['id']}, '${element['email']}')`, (err, res) => {
+        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${data['id']}, '${data['email']}')`, (err, res) => {
             if (err) throw err; 
         })
-    }) */
+        
+    } else if (data.length >= 2) {
+        data.forEach(element => {
+            mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${element['id']}, '${element['email']}')`, (err, res) => {
+                if (err) throw err; 
+            })
+        })
+    }
+
+
+
+    
+
 
 
     res.send({
