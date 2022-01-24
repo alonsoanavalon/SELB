@@ -15,12 +15,17 @@ router.post('/', (req, res, next) => {
 
     let data = req.body
 
+    console.log(data, " data")
+    console.log(data[0], "data[0]")
+    console.log(data[0].length, "data 0 length")
+
+
     
-    mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
+/*     mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
         console.log(res)
         if (err) throw err; 
  
-    })
+    }) */
 
 /*     if (data.length !== undefined) {
 
