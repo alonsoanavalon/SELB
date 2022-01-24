@@ -17,7 +17,7 @@ router.post('/', (req, res, next) => {
 
     console.log(data, " data")
     console.log(data[0], "data[0]")
-    console.log(data[0].length, "data 0 length")
+
 
 
     
