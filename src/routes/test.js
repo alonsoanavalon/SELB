@@ -19,28 +19,21 @@ router.post('/', (req, res, next) => {
     console.log(data[0], "data[0]")
 
 
-
-    
-/*     mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
-        console.log(res)
-        if (err) throw err; 
- 
-    }) */
-
-/*     if (data.length !== undefined) {
-
-
-        
-    } else if (data.length >= 2) {
+    if (data[0] == undefined) {
+        console.log("AGREGANDO 1 ELEMENTO")
+        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${data['id']}, '${data['email']}')`, (err, res) => {
+            console.log(res)
+            if (err) throw err; 
+        })
+    } else {
+        console.log("AGREGANDO VARIOS ELEMENTOSSSSS")
         data.forEach(element => {
+            
             mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${element['id']}, '${element['email']}')`, (err, res) => {
                 if (err) throw err; 
             })
         })
-    } */
-
-
-
+    }
 
     res.send({
         status:'ok'
