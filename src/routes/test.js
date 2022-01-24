@@ -19,11 +19,14 @@ router.post('/', (req, res, next) => {
             if (err) throw err; 
         })
     })
+
+    
     res.send({
         status:'ok'
     })
 
-   
+
+})
 
 
 module.exports = router
