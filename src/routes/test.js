@@ -15,15 +15,16 @@ router.post('/', (req, res, next) => {
 
     let data = req.body
 
-    console.log(data, " DATAAAAAAAAA")
+    
+    mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
+        console.log(res)
+        if (err) throw err; 
+ 
+    })
 
-    if (data.length !== undefined) {
+/*     if (data.length !== undefined) {
 
-        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
-            console.log(res)
-            if (err) throw err; 
-     
-        })
+
         
     } else if (data.length >= 2) {
         data.forEach(element => {
@@ -31,7 +32,7 @@ router.post('/', (req, res, next) => {
                 if (err) throw err; 
             })
         })
-    }
+    } */
 
 
 
