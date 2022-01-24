@@ -3,6 +3,7 @@ const mysqlConnection = require('../database/database')
 
 router.get('/', (req, res) => {
     mysqlConnection.query("SELECT * FROM usuario", (err, results) => {
+        console.log(results)
         res.send({
             results
         })
@@ -13,13 +14,15 @@ router.get('/', (req, res) => {
 router.post('/', (req, res, next) => {
 
     let data = req.body
-    console.log(data, "   DATA")
-    console.log(data.length,  "  LENgth")
+
+    console.log(data, " DATAAAAAAAAA")
 
     if (data.length !== undefined) {
 
-        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${data['id']}, '${data['email']}')`, (err, res) => {
+        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
+            console.log(res)
             if (err) throw err; 
+     
         })
         
     } else if (data.length >= 2) {
@@ -32,16 +35,12 @@ router.post('/', (req, res, next) => {
 
 
 
-    
-
-
 
     res.send({
         status:'ok'
     })
 
-
+   
 })
-
 
 module.exports = router
