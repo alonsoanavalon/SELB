@@ -14,21 +14,16 @@ router.post('/', (req, res, next) => {
 
     let data = req.body
     
-    data.forEach(n => {
-        console.log(n)
+    data.forEach(element => {
+        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${element['id']}, '${element['email']}')`, (err, res) => {
+            if (err) throw err; 
+        })
     })
-
-/*     mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
-        console.log(res)
-        if (err) throw err; 
- 
-    }) */
-
     res.send({
         status:'ok'
     })
 
    
-})
+
 
 module.exports = router
