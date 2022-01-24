@@ -14,6 +14,8 @@ router.post('/', (req, res, next) => {
 
     let data = req.body
 
+    console.log(data)
+
     data.forEach(e => {
         console.log(e)
     })
