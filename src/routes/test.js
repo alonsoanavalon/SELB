@@ -3,7 +3,6 @@ const mysqlConnection = require('../database/database')
 
 router.get('/', (req, res) => {
     mysqlConnection.query("SELECT * FROM usuario", (err, results) => {
-        console.log(results)
         res.send({
             results
         })
@@ -13,7 +12,11 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res, next) => {
 
-    console.log(req.body)
+    let data = req.body
+    
+    data.forEach(n => {
+        console.log(n)
+    })
 
 /*     mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${req.body['id']}, '${req.body['email']}')`, (err, res) => {
         console.log(res)
