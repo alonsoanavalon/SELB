@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const mysqlConnection = require('../database/database')
 const {promisify} = require('util')
+const md5 = require('md5')
 //const config = require('../config/cfg')
 
 
@@ -12,7 +13,7 @@ exports.register = async (req, res) => {
     try {
         const user = req.body.user
         const pass = req.body.password
-        let passHash = await bcrypt.hash(pass, 8)   
+        let passHash = await md5(pass)   
     
 
         

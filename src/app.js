@@ -9,6 +9,8 @@ const signupRoutes = require('./routes/signup')
 const adminRoutes = require('./routes/admin')
 const logoutRoutes = require('./routes/logout')
 const testRoutes = require('./routes/test')
+const loginRoutes = require('./routes/login')
+
 const fs = require('fs')
 const https = require('https')
 
@@ -88,6 +90,7 @@ app.use('/signup', signupRoutes)
 app.use('/admin', adminRoutes)
 app.use('/logout', logoutRoutes)
 app.use('/test', testRoutes)
+app.use('/login', loginRoutes)
 
 //Listen
 app.listen(app.get('port'), () => {
