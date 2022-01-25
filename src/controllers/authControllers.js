@@ -51,7 +51,7 @@ exports.login = async (req, res) => {
             })
         } else {
 
-            mysqlConnection.query("SELECT id FROM usuario WHERE ?", {email:user}, async (err, results) => {
+            mysqlConnection.query("SELECT id, clave FROM usuario WHERE ?", {email:user}, async (err, results) => {
 
                 console.log(await results)
                 /* if (results.length == 0 || ! (await bcrypt.compare(pass, results[0].clave))) { */
