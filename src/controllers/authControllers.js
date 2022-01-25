@@ -51,11 +51,12 @@ exports.login = async (req, res) => {
             })
         } else {
 
-            mysqlConnection.query("SELECT * FROM usuario WHERE ?", {email:user}, async (err, results) => {
+            mysqlConnection.query("SELECT id FROM usuario WHERE ?", {email:user}, async (err, results) => {
 
                 console.log(await results)
-    
-                    if (results.length == 0 || ! (await bcrypt.compare(pass, results[0].clave))) {
+                /* if (results.length == 0 || ! (await bcrypt.compare(pass, results[0].clave))) { */
+
+                    if (results.length == 0 || (results[0].clave != md5(pass) )) {
                         res.render("signin", {
                             alert:true,
                             alertTitle:"Error",

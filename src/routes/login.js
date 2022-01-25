@@ -10,15 +10,26 @@ router.get('/', (req, res) => {
         clave : req.query['clave']
     }
 
-    mysqlConnection.query(`SELECT * FROM usuario WHERE email = '${user.email}' AND clave = '${user.clave}'`, (err, results, query) => {
+    mysqlConnection.query(`SELECT id, email FROM usuario WHERE email = '${user.email}' AND clave = '${user.clave}'`, (err, results, query) => {
         if (err) throw err;
-        console.log(results, " resultados")
-        console.log("Dentro")
+        
+        if (results[0]) {
+           
+            res.send({
+                status:true,
+                id:results[0]['id'],
+                email:results[0]['email']
+            })
+
+        } else {
+            res.send({
+                status:false
+            })
+        }
+
+
     })
 
-    res.send({
-        status:"ok"
-    })
 })
 
 module.exports = router;
