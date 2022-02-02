@@ -3,6 +3,7 @@ const path = require('path')
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const express = require('express')
 const app = express()
+const multer = require('multer')
 const indexRoutes = require('./routes/index')
 const signinRoutes = require('./routes/signin')
 const signupRoutes = require('./routes/signup')
@@ -10,6 +11,9 @@ const adminRoutes = require('./routes/admin')
 const logoutRoutes = require('./routes/logout')
 const testRoutes = require('./routes/test')
 const loginRoutes = require('./routes/login')
+const uploadRoutes = require('./routes/upload')
+const getDataRoutes = require('./routes/getData')
+
 
 const fs = require('fs')
 const https = require('https')
@@ -72,6 +76,20 @@ app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
+
+const storage = multer.diskStorage({
+    destination:path.join(__dirname, 'public/uploads'),
+    filename:(req, file, cb) => {
+        cb(null, file.originalname);
+    }
+})
+
+app.use(multer({
+    storage:storage,
+    dest: path.join(__dirname, 'public/uploads')
+}).single('data'))
+
+
 app.use((req,res,next)=>{
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Headers', 'Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method,');
@@ -82,7 +100,6 @@ app.use((req,res,next)=>{
 })
 
 
-
 //Ruteo
 app.use('/', indexRoutes)
 app.use('/signin', signinRoutes)
@@ -91,6 +108,8 @@ app.use('/admin', adminRoutes)
 app.use('/logout', logoutRoutes)
 app.use('/test', testRoutes)
 app.use('/login', loginRoutes)
+app.use('/upload', uploadRoutes)
+app.use(getDataRoutes)
 
 //Listen
 app.listen(app.get('port'), () => {

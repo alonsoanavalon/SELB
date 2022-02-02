@@ -11,13 +11,18 @@ const md5 = require('md5')
 exports.register = async (req, res) => {
 
     try {
+
+        console.log(req.body)
+
         const user = req.body.user
         const pass = req.body.password
+        const name = req.body.name
+        const surname = req.body.surname
         let passHash = await md5(pass)   
     
-
+        console.log(passHash, " PASsword hash")
         
-        mysqlConnection.query("INSERT INTO usuario SET ?", {email:user, clave:passHash}, (err, results, rows) => {
+        mysqlConnection.query("INSERT INTO user SET ?", {email:user, password:passHash, name, surname}, (err, results, rows) => {
             if (err) throw err;
             if (results) console.log(results)
         })
@@ -51,12 +56,12 @@ exports.login = async (req, res) => {
             })
         } else {
 
-            mysqlConnection.query("SELECT id, clave FROM usuario WHERE ?", {email:user}, async (err, results) => {
+            mysqlConnection.query("SELECT id, password FROM user WHERE ?", {email:user}, async (err, results) => {
 
-                console.log(await results)
+                console.log(results, "ACA LO QUE ME TRAJO EL SEVR")
                 /* if (results.length == 0 || ! (await bcrypt.compare(pass, results[0].clave))) { */
 
-                    if (results.length == 0 || (results[0].clave != md5(pass) )) {
+                    if (results.length == 0 || (results[0].password != md5(pass) )) {
                         res.render("signin", {
                             alert:true,
                             alertTitle:"Error",
@@ -70,7 +75,7 @@ exports.login = async (req, res) => {
 
                         // INICIO OK
 
-                        const id = results[0].clave
+                        const id = results[0].password
                         const token = jwt.sign({id:id}, 'secretito', {
                             expiresIn:'7d'
                         } )
@@ -116,7 +121,7 @@ exports.isAuthenticated = async (req, res, next) => {
     if (req.cookies.jwt) {
         try {
             const decoded = await promisify(jwt.verify)(req.cookies.jwt, 'secretito')
-            mysqlConnection.query('SELECT * FROM usuario WHERE clave = ?', [decoded.id], (error, results) => {
+            mysqlConnection.query('SELECT * FROM user WHERE password = ?', [decoded.id], (error, results) => {
                 if(!results){return next()}
                 req.user = results[0]
                 return next()
