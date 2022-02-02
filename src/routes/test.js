@@ -2,7 +2,7 @@ const router = require('express').Router()
 const mysqlConnection = require('../database/database')
 
 router.get('/', (req, res) => {
-    mysqlConnection.query("SELECT * FROM usuario", (err, results) => {
+    mysqlConnection.query("SELECT * FROM user", (err, results) => {
 
         res.send({
             results
@@ -21,7 +21,7 @@ router.post('/', (req, res, next) => {
 
     if (data[0] == undefined) {
         console.log("AGREGANDO 1 ELEMENTO")
-        mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${data['id']}, '${data['email']}')`, (err, res) => {
+        mysqlConnection.query(`INSERT INTO user (id, email) VALUES (${data['id']}, '${data['email']}')`, (err, res) => {
             console.log(res)
             if (err) throw err; 
         })
@@ -29,7 +29,7 @@ router.post('/', (req, res, next) => {
         console.log("AGREGANDO VARIOS ELEMENTOSSSSS")
         data.forEach(element => {
             
-            mysqlConnection.query(`INSERT INTO usuario (id, email) VALUES (${element['id']}, '${element['email']}')`, (err, res) => {
+            mysqlConnection.query(`INSERT INTO user (id, email) VALUES (${element['id']}, '${element['email']}')`, (err, res) => {
                 if (err) throw err; 
             })
         })
