@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const mysqlConnection = require('../database/database')
+import { getAllData } from '../controllers/getDataControllers'
 
 router.get('/students', (req, res) => {
     mysqlConnection.query(`
@@ -13,15 +14,24 @@ router.get('/students', (req, res) => {
 })
 
 router.get('/schools', (req, res) => {
-    mysqlConnection.query("SELECT * FROM school", (err, results) => {
+    getAllData('school')
+/*     mysqlConnection.query("SELECT * FROM school", (err, results) => {
         res.send(results)
-    })
+    }) */
 })
 
 router.get('/instruments', (req, res) => {
-    mysqlConnection.query("SELECT * FROM instrument", (err, results) => {
+    getAllData('instruments')
+/*     mysqlConnection.query("SELECT * FROM instrument", (err, results) => {
         res.send(results)
-    })
+    }) */
+})
+
+router.get('/items', (req, res) => {
+    getAllData('item')
+/*     mysqlConnection.query("SELECT * FROM item", (err, results) => {
+        res.send(results)
+    }) */
 })
 
 module.exports = router;
