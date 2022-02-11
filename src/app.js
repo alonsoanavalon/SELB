@@ -13,6 +13,7 @@ const testRoutes = require('./routes/test')
 const loginRoutes = require('./routes/login')
 const uploadRoutes = require('./routes/upload')
 const getDataRoutes = require('./routes/getData')
+const postDataRoutes = require('./routes/postData')
 
 
 const fs = require('fs')
@@ -110,6 +111,7 @@ app.use('/test', testRoutes)
 app.use('/login', loginRoutes)
 app.use('/upload', uploadRoutes)
 app.use(getDataRoutes)
+app.use(postDataRoutes)
 
 //Listen
 app.listen(app.get('port'), () => {

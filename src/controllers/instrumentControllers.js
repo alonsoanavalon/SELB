@@ -1,4 +1,7 @@
 const mysqlConnection = require('../database/database')
+const mysql = require('mysql')
+
+
 
 
 exports.saveDataFromInstrument = (req, res) => {
@@ -9,3 +12,198 @@ exports.saveDataFromInstrument = (req, res) => {
         console.log(results)
     })
 }   
+
+exports.getMoment = (date) => { 
+
+    return new Promise((resolve, reject) => {
+        mysqlConnection.query(`SELECT moment.id FROM moment WHERE moment.begin <= '${date}' AND moment.until >= '${date}'`, (err, results) => {
+            results = JSON.parse(JSON.stringify(results))
+            id = results[0]['id']
+            resolve(id) 
+        })
+    })
+
+}
+
+exports.getEvaluation = (momentId, studentId) => {
+
+
+        return new Promise((resolve, reject) => {
+
+                mysqlConnection.query(`SELECT evaluation.id FROM evaluation WHERE evaluation.student_id = ${studentId} AND evaluation.moment_id = ${momentId}`, (err, results) => {
+                    console.log(`SELECT evaluation.id FROM evaluation WHERE evaluation.student_id = ${studentId} AND evaluation.moment_id = ${momentId}`)
+                    results = JSON.parse(JSON.stringify(results))
+                    console.log(results, "ACA ESTA LA PAPITA*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q")
+                    results.length === 0 ? resolve(false) : resolve(results[0]['id'])
+                })
+
+
+        })
+    
+
+
+
+}
+
+exports.createEvaluation = (userId, studentId, momentId) => {
+
+    return new Promise((resolve, reject) => {
+        sql = `INSERT INTO evaluation (user_id, student_id, moment_id) values (${userId}, ${studentId}, ${momentId})`
+        mysqlConnection.query(sql, (err, res) => {
+            if (err) throw err;
+            res = JSON.parse(JSON.stringify(res))
+            resolve (res['insertId'])
+        })
+    })
+
+}
+
+exports.createInstrumentList = (evaluationId, instrumentId) => {
+
+    return new Promise((resolve, reject) => {
+        sql = `INSERT INTO instrument_list (evaluation_id, instrument_id) VALUES (${evaluationId}, ${instrumentId})`
+        mysqlConnection.query(sql, (err, res) => {
+            if (err) throw err;
+            res = JSON.parse(JSON.stringify(res))
+            console.log(res, "CREAMOS LA WEA")
+            resolve(res['insertId'])
+        })
+    })
+}
+
+exports.getInstrumentList = (evaluationId, instrumentId) => {
+    return new Promise((resolve, reject) => {
+        sql = `SELECT instrument_list.id FROM instrument_list WHERE instrument_list.evaluation_id = ${evaluationId} AND instrument_list.instrument_id = ${instrumentId}`
+        
+
+            mysqlConnection.query(sql, (err, res) => {
+                if (err) throw err;
+                console.log(sql)
+                /* Esto esta fallando */
+                res = JSON.parse(JSON.stringify(res))
+                console.log(res[0], "ESta es la wea que nos mandaron del instrumentId")
+                resolve(res[0])
+            })
+
+        
+
+    })
+}
+
+exports.saveInstrumentData = (infoObject, choicesObject) => {
+
+    console.log("COMIENZA EL WEBEO!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+    let instrumentId = infoObject['instrument'];
+    let studentId = infoObject['student_id']
+    let userId = infoObject['user_id']
+    let instrumentDate = infoObject['date']
+
+    let evaluationId;
+    let newInstrumentId;
+    let updateInstrument = true; 
+
+    let sql = ''
+
+
+
+
+
+        console.log(`InstrumentId 
+        ${instrumentId}, StudentId ${studentId}, userId ${userId}, instrumentDate ${instrumentDate}`)
+
+        this.getMoment('2022/2/9')
+        .then(async (res) => {
+    
+            evaluationId = await this.getEvaluation(res, studentId)
+            
+    
+            if (evaluationId === false) {
+                evaluationId = await this.createEvaluation(userId, studentId, res)
+                console.log("Evaluation ID", evaluationId)
+            } 
+    
+            console.log(`moment, eva ${evaluationId}, ins ${instrumentId}`)
+    
+            return [evaluationId, instrumentId]
+    
+        })
+        .then(async (evaluationInfo) => {
+    
+            
+            let [evaluationId, instrumentId] = evaluationInfo
+            newInstrumentId = await this.getInstrumentList(evaluationId, instrumentId)
+            
+            console.log(`Estamos consiguiendo el instrumentId con evlauation ${evaluationId}  e instrumento ${instrumentId}`)
+            console.log(newInstrumentId, "Este es el instrumento encontrado")
+    
+                if (newInstrumentId === undefined) {
+                    newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId)
+                    updateInstrument = false;
+                }  else {
+                    newInstrumentId = newInstrumentId['id']
+                }
+    
+                return [newInstrumentId, updateInstrument]
+    
+            }
+        ) .then(async (response) => {
+            const [newInstrumentId, updateInstrument] = response
+    
+
+    
+            let objectLength = Object.keys(choicesObject).length
+    
+            /* Hay algun */
+    
+            
+            if (updateInstrument) {
+                console.log("Actualizaremos, es creado? ")
+                
+                let counter = 0;
+    
+                for (choice in choicesObject) {
+                    counter += 1
+    
+                    sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice]}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                }
+    
+      
+            } else {
+                console.log("insertaremos")
+    
+                let counter = 0;
+       
+                sql += `INSERT INTO choice (item_id, value, instrument_list_id) VALUES `
+                for (choice in choicesObject) {
+                    counter += 1
+                    if (counter == objectLength) {
+                        sql+= `(${choice}, '${choicesObject[choice]}', ${newInstrumentId});`
+                    } else {
+                        sql+=`(${choice}, '${choicesObject[choice]}', ${newInstrumentId}),`
+    
+                    }
+    
+    
+                }
+    
+    
+            }
+    
+    
+            mysqlConnection.query(sql, (err, res) => {
+                if(err) throw err;
+            })
+    
+            console.log(sql)
+    
+        })
+
+
+
+
+
+
+
+
+}

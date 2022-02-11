@@ -13,7 +13,8 @@ const mysql = require('mysql');
     host:'localhost',
     user:"root",
     password:process.env.PASS || "elmasmejor",
-    database:"selb"
+    database:"selb",
+    multipleStatements: true
     })
 
 

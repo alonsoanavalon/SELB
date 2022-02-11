@@ -3,7 +3,6 @@ const mysqlConnection = require('../database/database')
 
 router.get('/', (req, res) => {
     mysqlConnection.query("SELECT id, email FROM user", (err, results) => {
-
         res.send({
             results
         })
