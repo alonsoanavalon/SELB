@@ -43,7 +43,7 @@ router.get('/instrument/:id', (req, res) => {
 
 router.get('/instrumentlist/', (req, res) => {
 
-    let instrumentListId = req.query.instrument
+    let instrumentListId = req.query.instrument 
     let userId = req.query.user
     mysqlConnection.query(`SELECT COUNT(*) FROM instrument_list INNER JOIN evaluation ON evaluation.id = instrument_list.evaluation_id WHERE evaluation.user_id = ${userId} AND instrument_list.instrument_id = ${instrumentListId}`, (err, response) => {
         if (err) throw err;

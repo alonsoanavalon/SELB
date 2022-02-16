@@ -105,9 +105,7 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
 
     let sql = ''
 
-
-
-
+    return new Promise((resolve, reject) => {
 
         console.log(`InstrumentId 
         ${instrumentId}, StudentId ${studentId}, userId ${userId}, instrumentDate ${instrumentDate}`)
@@ -191,13 +189,21 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
             }
     
     
-            mysqlConnection.query(sql, (err, res) => {
+            resolve(mysqlConnection.query(sql, (err, res) => {
                 if(err) throw err;
-            })
+            }))
     
-            console.log(sql)
+            
+
+            
     
         })
+
+    })
+
+
+
+      
 
 
 
