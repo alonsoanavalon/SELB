@@ -41,6 +41,14 @@ router.get('/instrument/:id', (req, res) => {
     })
 })
 
+router.get('/studies', (req, res) => {
+    let sql = `SELECT * FROM study`
+    mysqlConnection.query(sql, (err, results) => {
+        if (err) throw err;
+        res.send(results)
+    })
+})
+
 router.get('/instrumentlist/', (req, res) => {
 
     let instrumentListId = req.query.instrument 

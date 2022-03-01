@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs')
 const mysqlConnection = require('../database/database')
 const {promisify} = require('util')
 const md5 = require('md5')
-//const config = require('../config/cfg')
+//const config = require('../config/cfg')   
 
 
 // procedimientos para registrarnos

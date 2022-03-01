@@ -14,6 +14,7 @@ const loginRoutes = require('./routes/login')
 const uploadRoutes = require('./routes/upload')
 const getDataRoutes = require('./routes/getData')
 const postDataRoutes = require('./routes/postData')
+const excelRoutes = require('./routes/excel')
 
 
 const fs = require('fs')
@@ -112,8 +113,9 @@ app.use('/login', loginRoutes)
 app.use('/upload', uploadRoutes)
 app.use(getDataRoutes)
 app.use(postDataRoutes)
+app.use('/excel', excelRoutes)
 
 //Listen
 app.listen(app.get('port'), () => {
-    console.log(`Conectado enn ${app.get("port")}`)
+    console.log(`Conectado en ${app.get("port")}`)
 })
