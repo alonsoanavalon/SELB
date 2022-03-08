@@ -3,15 +3,11 @@ const mysqlConnection = require('../database/database')
 const excelControllers = require('../controllers/excelControllers')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;
 
-
-
-
 router.post('/', async (req, res) => {
 
     let instrument = req.body['instrument']
     let study = req.body['study']
     let schools = req.body['schools']
-
     let sql = `SELECT student.rut as rut, concat(student.name , " ", student.surname) as alumno, concat(course.level , " ", course.letter) as curso,concat(user.name, " ", user.surname) as profesor, school.name as colegio, instrument_list.date as fecha, choice.value,  item.num, choice.id FROM choice  INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id INNER JOIN instrument ON instrument.id = instrument_list.instrument_id INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id INNER JOIN user ON user.id = evaluation.user_id INNER JOIN student ON evaluation.student_id = student.id INNER JOIN moment ON moment.id = evaluation.moment_id INNER JOIN study_list ON instrument.id = study_list.instrument_id INNER JOIN course ON student.course_id = course.id INNER JOIN school ON course.school_id = school.id INNER JOIN item ON choice.item_id = item.id WHERE instrument.id = ${instrument} AND study_list.study_id = ${study} AND school.id IN (${schools}); `
     
     function getDataRows () {
@@ -27,12 +23,8 @@ router.post('/', async (req, res) => {
     }
 
     let rows = await getDataRows()
-
     let infoHeaders = ['rut', 'alumno', 'curso', 'profesor', 'colegio', 'fecha'];
-
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
-
-
     let infoChoices = [] 
     
     filteredRows.map(row => {
@@ -51,7 +43,6 @@ router.post('/', async (req, res) => {
         rows.forEach(row => {
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
-
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
                 studentRow.push(currentStudent['rut'])
@@ -75,7 +66,6 @@ router.post('/', async (req, res) => {
                     studentRow.push(currentStudent['value'])
                 } 
             }
-
             studentCounter++
             previousStudent = currentStudentRut;
         })
@@ -93,20 +83,12 @@ router.post('/', async (req, res) => {
      
     const records = allStudentsRows;
      
-    csvWriter.writeRecords(records)       // returns a promise
+    csvWriter.writeRecords(records)      
         .then(() => {
             console.log('...Done');
         });
 
-
-        
- 
-
 })
-
-
-
-
 
 
 module.exports = router;
