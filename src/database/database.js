@@ -7,9 +7,9 @@ console.log(process.env.PASS)
 console.log(process.env.DATABASE)
 console.log("***") */
 
-let host = '164.92.71.11'
-let user = "keyzen2022"
-let password = "$Selb2022"
+let host = process.env.HOST
+let user = process.env.USER
+let password = process.env.PASSWORD
 
 let envProduction = false;
 
