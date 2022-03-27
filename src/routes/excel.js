@@ -70,7 +70,16 @@ router.post('/', async (req, res) => {
             previousStudent = currentStudentRut;
         })
 
-        console.log(allStudentsRows)
+        let csvData = [];
+        csvData.push([...info])
+        
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        res.send(csvData)
         
     }
 
