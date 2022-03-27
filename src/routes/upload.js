@@ -65,11 +65,39 @@ router.post('/students', (req, res) =>{
 
     let counter = 0;
 
+    // Id necesario para students_courses;
+    let studentId = 4500;
+
     fs.createReadStream(path.join('src', 'data.csv'))
         .pipe(csv())
         .on('data', (row) => {
+
+            // SELB PWA
             
-            console.log(`INSERT INTO student(course_id, name, surname, rut, gender) VALUES (${row['Curso']}, '${row['Nombre']}', '${row['Apellido']}', '${row['Rut']}', '${row['Sexo']}');`)
+            /* console.log(`INSERT INTO student(course_id, name, surname, rut, gender) VALUES (${row['Curso']}, '${row['Nombre']}', '${row['Apellido']}', '${row['Rut']}', '${row['Sexo']}');`) */
+
+            // SELB AÑEJO
+
+            // Insertar alumnos (1)
+
+            /* console.log(`insert into students (name, last_name, rut, created_at, updated_at, course_id) VALUES ('${row['Nombre']}', '${row['Apellido']}', '${row['Rut']}', current_timestamp, current_timestamp, ${row['Curso']} );`) */
+
+            // Ligarnos a nivel de students_courses; (2)
+
+            // Aca si lo quisiera hacer automático debería primero tener el ID del curso, luego preguntar por todos los estudiantes (una vez ya cargados) y obtener el ID del primero, en base a ese asignarlo a studentId y sumarle 1 hasta que se acaben.
+
+
+            // Este es de test para ver si todo va bien.
+            /* console.log(`insert into student_courses (student_id, course_id, created_at, updated_at, entry) VALUES (${studentId}, ${row['Curso']}, ${row['Nombre']}, current_timestamp, current_timestamp);`) */
+
+            // ESTE ES
+
+            console.log(`insert into student_courses (student_id, course_id, created_at, updated_at, entry) VALUES (${studentId}, ${row['Curso']}, current_timestamp, current_timestamp, current_timestamp);`)
+            
+
+    
+
+            studentId++
             counter++
         })
         .on('end', () => {
