@@ -86,10 +86,14 @@ const storage = multer.diskStorage({
     }
 })
 
+
 app.use(multer({
     storage:storage,
     dest: path.join(__dirname, 'public/uploads')
 }).single('data'))
+
+
+
 
 
 app.use((req,res,next)=>{
@@ -114,6 +118,8 @@ app.use('/upload', uploadRoutes)
 app.use(getDataRoutes)
 app.use(postDataRoutes)
 app.use('/excel', excelRoutes)
+
+
 
 //Listen
 app.listen(app.get('port'), () => {
