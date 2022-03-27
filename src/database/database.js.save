@@ -15,7 +15,7 @@ const mysql = require('mysql');
     password:'$Selb2022',
     database:"selb",
     multipleStatements: true,
-    port:'/var/run/mysqld/mysqld.sock'
+
     })
 
 
