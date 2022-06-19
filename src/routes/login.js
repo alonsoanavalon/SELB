@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
         password : req.query['password']
     }
 
-    mysqlConnection.query(`SELECT id, email, name, surname FROM user WHERE email = '${user.email}' AND password = '${user.password}'`, (err, results, query) => {
+    mysqlConnection.query(`SELECT id, email, name, surname, role FROM user WHERE email = '${user.email}' AND password = '${user.password}'`, (err, results, query) => {
         if (err) throw err;
 
         
