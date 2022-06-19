@@ -24,7 +24,8 @@ router.get('/', (req, res) => {
                 id:results[0]['id'],
                 email:results[0]['email'],
                 name:results[0]['name'],
-                surname:results[0]['surname']
+                surname:results[0]['surname'],
+                role:results[0]['role']
             
             })
 
