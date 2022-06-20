@@ -110,7 +110,10 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
         console.log(`InstrumentId 
         ${instrumentId}, StudentId ${studentId}, userId ${userId}, instrumentDate ${instrumentDate}`)
 
-        this.getMoment('2022/2/9')
+        const today = new Date();
+        const date = today.getFullYear()+'/'+(today.getMonth()+1)+'/'+today.getDate();
+
+        this.getMoment(date)
         .then(async (res) => {
     
             evaluationId = await this.getEvaluation(res, studentId)
