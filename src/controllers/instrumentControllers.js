@@ -17,9 +17,26 @@ exports.getMoment = (date) => {
 
     return new Promise((resolve, reject) => {
         mysqlConnection.query(`SELECT moment.id FROM moment WHERE moment.begin <= '${date}' AND moment.until >= '${date}'`, (err, results) => {
-            results = JSON.parse(JSON.stringify(results))
-            id = results[0]['id']
-            resolve(id) 
+            
+            if (results !== undefined) {
+                results = JSON.parse(JSON.stringify(results))
+                id = results[0]['id']
+                if (id) {
+                    resolve(id) 
+                }
+                else {
+                    throw new Error('No existe el momento')
+                }
+            } else {
+                console.error("No existe el momento")
+                resolve(2)
+/*                 const today = new Date();
+                const untilDate = (today.getFullYear() + 1)+'/'+(today.getMonth()+1)+'/'+today.getDate();
+                
+                mysqlConnection.query("INSERT INTO moment") */
+            }
+            
+
         })
     })
 
@@ -92,7 +109,6 @@ exports.getInstrumentList = (evaluationId, instrumentId) => {
 
 exports.saveInstrumentData = (infoObject, choicesObject) => {
 
-    console.log("COMIENZA EL WEBEO!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
     let instrumentId = infoObject['instrument'];
     let studentId = infoObject['student_id']
