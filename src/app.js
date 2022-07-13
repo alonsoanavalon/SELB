@@ -16,6 +16,7 @@ const uploadRoutes = require('./routes/upload')
 const getDataRoutes = require('./routes/getData')
 const postDataRoutes = require('./routes/postData')
 const excelRoutes = require('./routes/excel')
+const momentRoutes = require('./routes/moments')
 
 
 const fs = require('fs')
@@ -119,6 +120,7 @@ app.use('/upload', uploadRoutes)
 app.use(getDataRoutes)
 app.use(postDataRoutes)
 app.use('/excel', excelRoutes)
+app.use('/moments', momentRoutes)
 
 
 

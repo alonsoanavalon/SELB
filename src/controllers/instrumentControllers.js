@@ -1,9 +1,6 @@
 const mysqlConnection = require('../database/database')
 const mysql = require('mysql')
 
-
-
-
 exports.saveDataFromInstrument = (req, res) => {
     const data = req.body
     console.log(data)
@@ -175,7 +172,6 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
     
             
             if (updateInstrument) {
-                console.log("Actualizaremos, es creado? ")
                 
                 let counter = 0;
     
@@ -187,7 +183,6 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
     
       
             } else {
-                console.log("insertaremos")
     
                 let counter = 0;
        
