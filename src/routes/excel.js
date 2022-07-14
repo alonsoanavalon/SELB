@@ -23,6 +23,7 @@ router.post('/', async (req, res) => {
     }
 
     let rows = await getDataRows()
+    console.log(rows)
     let infoHeaders = ['rut', 'alumno', 'curso', 'profesor', 'colegio', 'fecha'];
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
     let infoChoices = [] 
@@ -51,7 +52,7 @@ router.post('/', async (req, res) => {
                 studentRow.push(currentStudent['profesor'])
                 studentRow.push(currentStudent['colegio'])
                 studentRow.push(currentStudent['fecha'])
-                studentRow.push(currentStudent['value'])
+
                 if (currentStudent['value'].length == 0) {
                     studentRow.push('0') 
                 } else {

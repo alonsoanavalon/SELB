@@ -10,7 +10,7 @@ router.get('/students', (req, res) => {
     INNER JOIN course ON student.course_id = course.id
     INNER JOIN school ON course.school_id = school.id;
     `, (err, results) => {
-        if (err) thw
+        if (err) throw err;
         res.send(results)
     })
 })
