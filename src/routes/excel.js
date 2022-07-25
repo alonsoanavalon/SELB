@@ -150,7 +150,8 @@ router.post('/', async (req, res) => {
      
     csvWriter.writeRecords(records)      
         .then(() => {
-            console.log('...Done');
+            console.log('....Done');
+            console.log(sql)
         });
 
 })
