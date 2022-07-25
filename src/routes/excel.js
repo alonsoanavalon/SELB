@@ -64,7 +64,6 @@ router.post('/', async (req, res) => {
     
     function getDataRows () {
 
-        console.log(sql)
 
         return new Promise((resolve, reject) => {
             mysqlConnection.query(sql, (err, response) => {

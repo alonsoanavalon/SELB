@@ -17,7 +17,7 @@ router.post('/newevaluation', async (req, res) => {
         console.log(`TEST N° ${instrumentIndex} ---------------------------------------------`)
         let [infoObject, choicesObject] = instrument
         await instrumentControllers.saveInstrumentData(infoObject, choicesObject, instrumentIndex)
-        console.log(`FIN  N° ${instrumentIndex} ---------------------------------------------`)
+        console.log(`FIN  N° ${instrumentIndex} **********************************************`)
         instrumentIndex++
  
     }
