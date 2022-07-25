@@ -11,6 +11,8 @@ router.post('/', async (req, res) => {
 
     let sql;
 
+    // Este if es porque los primeros 2 momentos sacamos el userId de Evaluation, y desde los otros desde instrument_list
+    // Como el userId lo agregamos recientemente a instrument_list, tenemos que realizar queries distintas
     if (moment == 1 || moment == 2) {
         sql = `SELECT 
         student.rut as rut, 
@@ -34,7 +36,6 @@ router.post('/', async (req, res) => {
         AND evaluation.moment_id = ${moment} 
         AND school.id 
         IN (${schools}); `
-        console.log("moment 1 / 2")
     } else {
         sql = `SELECT 
         student.rut as rut, 
@@ -58,10 +59,7 @@ router.post('/', async (req, res) => {
         AND evaluation.moment_id = ${moment} 
         AND school.id 
         IN (${schools});`
-        console.log("moment diferente (")
     }
-
-    console.log("ASDASDASD")
 
     
     function getDataRows () {
@@ -151,7 +149,6 @@ router.post('/', async (req, res) => {
     csvWriter.writeRecords(records)      
         .then(() => {
             console.log('....Done');
-            console.log(sql)
         });
 
 })
