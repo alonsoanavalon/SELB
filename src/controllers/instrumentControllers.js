@@ -203,8 +203,7 @@ exports.saveInstrumentData = (infoObject, choicesObject, instrumentIndex) => {
                 } else {
                     console.log(`Test N°${instrumentIndex} ingresado con exito`)
                 }
-
-                console.log(res)
+                console.log(newInstrumentId)
                 
             }))
     
