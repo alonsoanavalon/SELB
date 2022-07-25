@@ -65,20 +65,63 @@ router.get('/studies', (req, res) => {
     })
 })
 
-router.get('/instrumentlist/', (req, res) => {
+router.get('/instrumentlist/', async (req, res) => {
 
     let instrumentListId = req.query.instrument 
     let userId = req.query.user
 
-    try {
-        mysqlConnection.query(`SELECT COUNT(*) FROM instrument_list INNER JOIN evaluation ON evaluation.id = instrument_list.evaluation_id WHERE evaluation.user_id = ${userId} AND instrument_list.instrument_id = ${instrumentListId}`, (err, response) => {
-            if (err) throw err;
-            response = JSON.parse(JSON.stringify(response))
-            res.send(response)
+    
+    
+    /* Por lo que creo el tema del conteo se puede solucionar si tiro 2 querys. 
+    la primera query es la que esta aca, pero buscaremos solo en momentos 1 y 2 
+    la segunda query será una query que traera el conteo pero haciendo el match con Instrument_list y no evaluation con el USER.
+
+    Luego sumamos ambos count y los devolvemos.
+
+
+
+    */  
+    let sql;
+    const getEvaluatorFromEvaluation = () => {
+        return new Promise ((resolve, reject) => {
+            try {
+                sql = `SELECT COUNT(*) FROM instrument_list INNER JOIN evaluation ON evaluation.id = instrument_list.evaluation_id WHERE evaluation.user_id = ${userId} AND instrument_list.instrument_id = ${instrumentListId} AND evaluation.moment_id IN (1,2)`;
+                mysqlConnection.query(sql, (err, response) => {
+                    if (err) throw err;
+                    response = JSON.parse(JSON.stringify(response))
+                    resolve(response[0]['COUNT(*)'])
+                })
+            } catch (err) {
+                if (err) throw err;
+            }
+        
+
         })
-    } catch (err) {
-        if (err) throw err;
     }
+
+    const getEvaluatorFromInstrument = () => {
+        return new Promise((resolve, reject) => {
+            try {
+                sql = `SELECT COUNT(*) FROM instrument_list INNER JOIN evaluation ON evaluation.id = instrument_list.evaluation_id WHERE instrument_list.evaluator_id = ${userId} AND instrument_list.instrument_id = ${instrumentListId} AND evaluation.moment_id NOT IN (1,2)`
+                mysqlConnection.query(sql, (err, response) => {
+                    if (err) throw err;
+                    response = JSON.parse(JSON.stringify(response))
+                    resolve(response[0]['COUNT(*)'])
+                })
+            } catch (err) {
+                if (err) throw err;
+            }
+        })
+    }
+ 
+    let evaluationCount = await getEvaluatorFromEvaluation()
+    let instrumentCount = await getEvaluatorFromInstrument()
+    let totalCount = evaluationCount + instrumentCount
+
+    res.send(
+        [{"COUNT(*)":totalCount}]
+    )
+
 
 
 })
