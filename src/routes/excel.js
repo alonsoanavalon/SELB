@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
         console.log("moment diferente (")
     }
 
-    console.log(sql)
+    console.log("ASDASDASD")
     
     function getDataRows () {
 
