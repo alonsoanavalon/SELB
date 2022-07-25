@@ -11,16 +11,18 @@ router.post('/newevaluation', async (req, res) => {
         
     }) */
 
-    console.log(`Ingresaron ${allInstruments.length} test`)
+    console.log(`[                       INGRESARON ${allInstruments.length} test                        ]`)
     let instrumentIndex = 1;
     for (const instrument of allInstruments) {
-        console.log(`TEST N° ${instrumentIndex} ........................`)
+        console.log(`TEST N° ${instrumentIndex} ---------------------------------------------`)
         let [infoObject, choicesObject] = instrument
         await instrumentControllers.saveInstrumentData(infoObject, choicesObject, instrumentIndex)
         instrumentIndex++
-        console.log(`FIN ..........................................`)
+        console.log(`FIN  N° ${instrumentIndex} ---------------------------------------------`)
  
     }
+    console.log(`[                         FIN                                                           ]`)
+    
 
 })
 
