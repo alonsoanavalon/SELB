@@ -60,6 +60,8 @@ router.post('/', async (req, res) => {
         IN (${schools});`
         console.log("moment diferente (")
     }
+
+    console.log(sql)
     
     function getDataRows () {
 
