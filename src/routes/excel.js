@@ -23,7 +23,6 @@ router.post('/', async (req, res) => {
     }
 
     let rows = await getDataRows()
-    console.log(rows)
     let infoHeaders = ['rut', 'alumno', 'curso', 'profesor', 'colegio', 'fecha'];
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
     let infoChoices = [] 

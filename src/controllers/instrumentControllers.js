@@ -3,15 +3,14 @@ const mysql = require('mysql')
 
 exports.saveDataFromInstrument = (req, res) => {
     const data = req.body
-    console.log(data)
     mysqlConnection.query(`INSERT INTO test (test) VALUES ('${data.test}')`, (err, results, rows) => {
         if (err) throw err;
-        console.log(results)
     })
 }   
 
 exports.getMoment = (date) => { 
 
+    console.log("fecha: ", date)
     return new Promise((resolve, reject) => {
         mysqlConnection.query(`SELECT moment.id FROM moment WHERE moment.begin <= '${date}' AND moment.until >= '${date}'`, (err, results) => {
             
@@ -44,12 +43,15 @@ exports.getEvaluation = (momentId, studentId) => {
 
         return new Promise((resolve, reject) => {
 
+            try {
                 mysqlConnection.query(`SELECT evaluation.id FROM evaluation WHERE evaluation.student_id = ${studentId} AND evaluation.moment_id = ${momentId}`, (err, results) => {
-                    console.log(`SELECT evaluation.id FROM evaluation WHERE evaluation.student_id = ${studentId} AND evaluation.moment_id = ${momentId}`)
                     results = JSON.parse(JSON.stringify(results))
-                    console.log(results, "ACA ESTA LA PAPITA*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q*Q")
                     results.length === 0 ? resolve(false) : resolve(results[0]['id'])
                 })
+            } catch (err) {
+                console.log(err);
+            }
+
 
 
         })
@@ -79,7 +81,6 @@ exports.createInstrumentList = (evaluationId, instrumentId) => {
         mysqlConnection.query(sql, (err, res) => {
             if (err) throw err;
             res = JSON.parse(JSON.stringify(res))
-            console.log(res, "CREAMOS LA WEA")
             resolve(res['insertId'])
         })
     })
@@ -92,10 +93,8 @@ exports.getInstrumentList = (evaluationId, instrumentId) => {
 
             mysqlConnection.query(sql, (err, res) => {
                 if (err) throw err;
-                console.log(sql)
                 /* Esto esta fallando */
                 res = JSON.parse(JSON.stringify(res))
-                console.log(res[0], "ESta es la wea que nos mandaron del instrumentId")
                 resolve(res[0])
             })
 
@@ -104,7 +103,7 @@ exports.getInstrumentList = (evaluationId, instrumentId) => {
     })
 }
 
-exports.saveInstrumentData = (infoObject, choicesObject) => {
+exports.saveInstrumentData = (infoObject, choicesObject, instrumentIndex) => {
 
 
     let instrumentId = infoObject['instrument'];
@@ -134,11 +133,7 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
     
             if (evaluationId === false) {
                 evaluationId = await this.createEvaluation(userId, studentId, res)
-                console.log("Evaluation ID", evaluationId)
             } 
-    
-            console.log(`moment, eva ${evaluationId}, ins ${instrumentId}`)
-    
             return [evaluationId, instrumentId]
     
         })
@@ -147,9 +142,7 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
             
             let [evaluationId, instrumentId] = evaluationInfo
             newInstrumentId = await this.getInstrumentList(evaluationId, instrumentId)
-            
-            console.log(`Estamos consiguiendo el instrumentId con evlauation ${evaluationId}  e instrumento ${instrumentId}`)
-            console.log(newInstrumentId, "Este es el instrumento encontrado")
+        
     
                 if (newInstrumentId === undefined) {
                     newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId)
@@ -204,7 +197,13 @@ exports.saveInstrumentData = (infoObject, choicesObject) => {
     
     
             resolve(mysqlConnection.query(sql, (err, res) => {
-                if(err) throw err;
+                if(err){
+                    console.log("Error en índice: ", instrumentIndex)
+                    throw err;
+                } else {
+                    console.log(`Test N°${instrumentIndex} ingresado con exito`)
+                }
+                
             }))
     
             

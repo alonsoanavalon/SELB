@@ -76,7 +76,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 //Middlewares
-app.use(morgan('dev'))
+/* app.use(morgan('dev')) */
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())

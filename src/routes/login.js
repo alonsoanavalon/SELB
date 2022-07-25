@@ -3,8 +3,6 @@ const mysqlConnection = require('../database/database')
 
 router.get('/', (req, res) => {
 
-    console.log(req.query['email'], "QUERY")
-
     const user = {
         email : req.query['email'],
         password : req.query['password']
@@ -13,10 +11,6 @@ router.get('/', (req, res) => {
     mysqlConnection.query(`SELECT id, email, name, surname, role FROM user WHERE email = '${user.email}' AND password = '${user.password}'`, (err, results, query) => {
         if (err) throw err;
 
-        
-        console.log(results, "ACAAAAAA")
-        console.log(query, " QUERY")
-        
         if (results[0]) {
 
             res.send({

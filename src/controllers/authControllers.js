@@ -12,16 +12,12 @@ exports.register = async (req, res) => {
 
     try {
 
-        console.log(req.body)
-
         const user = req.body.user
         const pass = req.body.password
         const name = req.body.name
         const surname = req.body.surname
         let passHash = await md5(pass)   
     
-        console.log(passHash, " PASsword hash")
-        
         mysqlConnection.query("INSERT INTO user SET ?", {email:user, password:passHash, name, surname}, (err, results, rows) => {
             if (err) throw err;
             if (results) console.log(results)
@@ -58,7 +54,6 @@ exports.login = async (req, res) => {
 
             mysqlConnection.query("SELECT id, password FROM user WHERE ?", {email:user}, async (err, results) => {
 
-                console.log(results, "ACA LO QUE ME TRAJO EL SEVR")
                 /* if (results.length == 0 || ! (await bcrypt.compare(pass, results[0].clave))) { */
 
                     if (results.length == 0 || (results[0].password != md5(pass) )) {
@@ -79,8 +74,6 @@ exports.login = async (req, res) => {
                         const token = jwt.sign({id:id}, 'secretito', {
                             expiresIn:'7d'
                         } )
-
-                        console.log("token", token)
 
                         const cookiesOptions = {
                             expires: new Date(Date.now()+90 * 24 * 60 * 60 * 1000),
