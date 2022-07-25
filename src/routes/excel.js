@@ -34,7 +34,7 @@ router.post('/', async (req, res) => {
         AND evaluation.moment_id = ${moment} 
         AND school.id 
         IN (${schools}); `
-
+        console.log("moment 1 / 2")
     } else {
         sql = `SELECT 
         student.rut as rut, 
@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
         INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
         INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
         INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
-        INNER JOIN user ON user.id = instrument_list.evaluator_id
+        INNER JOIN user ON instrument_list.evaluator_id = user.id
         INNER JOIN student ON evaluation.student_id = student.id 
         INNER JOIN moment ON moment.id = evaluation.moment_id 
         INNER JOIN study_list ON instrument.id = study_list.instrument_id 
@@ -58,6 +58,7 @@ router.post('/', async (req, res) => {
         AND evaluation.moment_id = ${moment} 
         AND school.id 
         IN (${schools});`
+        console.log("moment diferente (")
     }
     
     function getDataRows () {
