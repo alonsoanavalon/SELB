@@ -74,10 +74,10 @@ exports.createEvaluation = (userId, studentId, momentId) => {
 
 }
 
-exports.createInstrumentList = (evaluationId, instrumentId) => {
+exports.createInstrumentList = (evaluationId, instrumentId, userId) => {
 
     return new Promise((resolve, reject) => {
-        sql = `INSERT INTO instrument_list (evaluation_id, instrument_id) VALUES (${evaluationId}, ${instrumentId})`
+        sql = `INSERT INTO instrument_list (evaluation_id, instrument_id, evaluator_id) VALUES (${evaluationId}, ${instrumentId}, ${userId})`
         mysqlConnection.query(sql, (err, res) => {
             if (err) throw err;
             res = JSON.parse(JSON.stringify(res))
@@ -145,7 +145,7 @@ exports.saveInstrumentData = (infoObject, choicesObject, instrumentIndex) => {
         
     
                 if (newInstrumentId === undefined) {
-                    newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId)
+                    newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId, userId)
                     updateInstrument = false;
                 }  else {
                     newInstrumentId = newInstrumentId['id']
