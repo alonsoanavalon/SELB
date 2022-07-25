@@ -12,10 +12,52 @@ router.post('/', async (req, res) => {
     let sql;
 
     if (moment == 1 || moment == 2) {
-        sql = `SELECT student.rut as rut, concat(student.name , " ", student.surname) as alumno, concat(course.level , " ", course.letter) as curso,concat(user.name, " ", user.surname) as profesor, school.name as colegio, instrument_list.date as fecha, choice.value,  item.num, choice.id FROM choice  INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id INNER JOIN instrument ON instrument.id = instrument_list.instrument_id INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id INNER JOIN user ON user.id = evaluation.user_id INNER JOIN student ON evaluation.student_id = student.id INNER JOIN moment ON moment.id = evaluation.moment_id INNER JOIN study_list ON instrument.id = study_list.instrument_id INNER JOIN course ON student.course_id = course.id INNER JOIN school ON course.school_id = school.id INNER JOIN item ON choice.item_id = item.id WHERE instrument.id = ${instrument} AND evaluation.moment_id = ${moment} AND school.id IN (${schools}); `
+        sql = `SELECT 
+        student.rut as rut, 
+        concat(student.name , " ", student.surname) as alumno, 
+        concat(course.level , " ", course.letter) as curso,
+        concat(user.name, " ", user.surname) as profesor, 
+        school.name as colegio, instrument_list.date as fecha, 
+        choice.value,  item.num, choice.id 
+        FROM choice  
+        INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
+        INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
+        INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
+        INNER JOIN user ON user.id = evaluation.user_id 
+        INNER JOIN student ON evaluation.student_id = student.id 
+        INNER JOIN moment ON moment.id = evaluation.moment_id 
+        INNER JOIN study_list ON instrument.id = study_list.instrument_id 
+        INNER JOIN course ON student.course_id = course.id 
+        INNER JOIN school ON course.school_id = school.id 
+        INNER JOIN item ON choice.item_id = item.id 
+        WHERE instrument.id = ${instrument} 
+        AND evaluation.moment_id = ${moment} 
+        AND school.id 
+        IN (${schools}); `
 
     } else {
-        sql = `SELECT student.rut as rut, concat(student.name , " ", student.surname) as alumno, concat(course.level , " ", course.letter) as curso,concat(user.name, " ", user.surname) as profesor, school.name as colegio, instrument_list.date as fecha, choice.value,  item.num, choice.id FROM choice  INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id INNER JOIN instrument ON instrument.id = instrument_list.instrument_id INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id INNER JOIN user ON user.id = evaluation.user_id INNER JOIN student ON evaluation.student_id = student.id INNER JOIN moment ON moment.id = evaluation.moment_id INNER JOIN study_list ON instrument.id = study_list.instrument_id INNER JOIN course ON student.course_id = course.id INNER JOIN school ON course.school_id = school.id INNER JOIN item ON choice.item_id = item.id WHERE instrument.id = ${instrument} AND evaluation.moment_id = ${moment} AND school.id IN (${schools}); `
+        sql = `SELECT 
+        student.rut as rut, 
+        concat(student.name , " ", student.surname) as alumno, 
+        concat(course.level , " ", course.letter) as curso,
+        concat(user.name, " ", user.surname) as profesor, 
+        school.name as colegio, instrument_list.date as fecha, 
+        choice.value,  item.num, choice.id 
+        FROM choice  
+        INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
+        INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
+        INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
+        INNER JOIN user ON user.id = instrument_list.evaluator_id
+        INNER JOIN student ON evaluation.student_id = student.id 
+        INNER JOIN moment ON moment.id = evaluation.moment_id 
+        INNER JOIN study_list ON instrument.id = study_list.instrument_id 
+        INNER JOIN course ON student.course_id = course.id 
+        INNER JOIN school ON course.school_id = school.id 
+        INNER JOIN item ON choice.item_id = item.id 
+        WHERE instrument.id = ${instrument} 
+        AND evaluation.moment_id = ${moment} 
+        AND school.id 
+        IN (${schools});`
     }
     
     function getDataRows () {
