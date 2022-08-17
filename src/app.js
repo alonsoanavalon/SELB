@@ -65,6 +65,9 @@ const hbs = exphbs.create({
         },
         selectImg : function (bddImg, image) {
             return bddImg || image
+        },
+        renderAdmin: function (role) {
+            return (role == "Admin") ? true : false
         }
     }
 })

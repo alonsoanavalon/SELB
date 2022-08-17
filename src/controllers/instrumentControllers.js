@@ -116,6 +116,35 @@ exports.getInstrumentList = (evaluationId, instrumentId) => {
     })
 }
 
+exports.isAnyChoices = (instrument_list_id) => {
+    const sql = `SELECT COUNT(*) FROM choice where instrument_list_id = ${instrument_list_id};`
+    return new Promise((resolve, reject) => {
+        mysqlConnection.query(sql, (err, res) => {
+            if (err) throw err;
+            console.log(res)
+            resolve(res[0]['COUNT(*)'])
+        }) 
+    })
+}
+
+exports.insertMode = async (evaluationId, instrumentId) => {
+    const instrumentList = await this.getInstrumentList(evaluationId, instrumentId)
+    console.log(instrumentList)
+
+    if (instrumentList == undefined) {
+        return undefined
+    } else {
+        const choices = await this.isAnyChoices(instrumentList['id']);
+        if (choices > 0) {
+            return instrumentList
+        } else {
+            return undefined
+        }
+
+    }
+
+}
+
 exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) => {
 
 
@@ -152,7 +181,9 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) 
     
             
             let [evaluationId, instrumentId] = evaluationInfo
-            newInstrumentId = await this.getInstrumentList(evaluationId, instrumentId)
+            newInstrumentId = await this.insertMode(evaluationId, instrumentId)
+
+
         
     
                 if (newInstrumentId === undefined) {

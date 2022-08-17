@@ -1,4 +1,24 @@
 <div>
+{{!--     {{#if (renderAdmin user.role)}}
+    <h1>Admin!</h1>    
+    {{/if}} --}}
+
+    <header class="header">
+        <div class="nav-links-wrapper">
+            <div class="nav-link"><a href="#">Evaluaciones</a></div>
+            <div class="nav-link"><a href="#">Evaluadores</a></div>
+            <div class="nav-link"><a href="#">Colegios</a></div>
+            <div class="nav-link"><a href="#">Cursos</a></div>
+            <div class="nav-link"><a href="#">Estudios</a></div>
+            <div class="nav-link"><a href="#">Momentos</a></div>
+            <div class="nav-link"><a href="#">Instrumentos</a></div>
+        </div>
+        <div class="title-wrapper">
+            <h1>SELB</h1>
+        </div>
+        
+    </header>
+
     <a id="logout" href="/logout">Salir</a>
     <h4>Hola {{{user.email}}}</h4>
     <a href="admin/firstInstrument">Primer Instrumento</a>

@@ -1,0 +1,36 @@
+.header {
+    padding: 0 1rem;
+    display:flex;
+    position:relative;
+    background-color:#1674d8;
+    justify-content:space-between;
+
+    width:100%;
+
+    .nav-links-wrapper {
+
+        display:flex;
+        flex-wrap: wrap;
+        gap:1rem;
+        align-items: center;
+        align-content: center;
+
+        .nav-link {
+            color:#fff;
+            font-size:1.1rem;
+            a {
+                color:#fff;
+            }
+        }
+
+
+    }
+
+    .title-wrapper {
+        justify-self:flex-start;
+        h1 {
+            color:#fff;
+            font-family: 'Kanit', sans-serif;
+        }
+    }
+}
