@@ -41,14 +41,14 @@ exports.login = async (req, res) => {
 
         if (!user || !pass) {
 
-            res.render("signin", {
+            res.render("index", {
                 alert:true,
                 alertTitle:"Advertencia",
                 alertMessage:"Ingrese un user y password",
                 alertIcon:'info',
                 showConfirmButton:'true',
                 timer:false,
-                ruta:'signin'
+                ruta:'/'
             })
         } else {
 
@@ -57,7 +57,7 @@ exports.login = async (req, res) => {
                 /* if (results.length == 0 || ! (await bcrypt.compare(pass, results[0].clave))) { */
 
                     if (results.length == 0 || (results[0].password != md5(pass) )) {
-                        res.render("signin", {
+                        res.render("index", {
                             alert:true,
                             alertTitle:"Error",
                             alertMessage:"Usuario y/o contraseña incorrectas",
@@ -81,7 +81,7 @@ exports.login = async (req, res) => {
                         }
 
                         res.cookie('jwt', token, cookiesOptions)
-                        res.render("signin", {
+                        res.render("admin", {
                             alert:true,
                             alertTitle:"Exitoso",
                             alertMessage:"Conexión exitosa",
@@ -125,7 +125,7 @@ exports.isAuthenticated = async (req, res, next) => {
             return next()
         }
     } else {
-        res.redirect('signin')
+        res.redirect('/')
     }
     
 }

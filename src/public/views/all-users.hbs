@@ -1,0 +1,22 @@
+{{> header }}
+
+{{#if results}}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Email</th>
+    <th>Nombre</th>
+    <th>Rol</th>
+    <th>Editar</th>
+  </tr>
+    {{#each results}}
+        <tr>
+            <td>{{id}}</td>
+            <td>{{email}}</td>
+            <td>{{name}} {{surname}}</td>
+            <td>{{role}}</td>
+            <td><a href="#">Editar</a></td>
+        </tr>
+    {{/each}}
+</table>
+{{/if}}

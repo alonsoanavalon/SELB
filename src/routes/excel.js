@@ -78,12 +78,55 @@ router.post('/', async (req, res) => {
     let rows = await getDataRows()
     let infoHeaders = ['rut', 'alumno', 'curso', 'evaluador', 'colegio', 'fecha'];
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
-    let infoChoices = [] 
+    let infoChoices = []
+    let correctAnswers = { // Respuestas correctas
+        1:1,
+        2:2,
+        3:0,
+        4:3,
+        5:4,
+        6:0,
+        7:0,
+        8:2,
+        9:3,
+        10:4,
+        11:1,
+        12:0,
+        13:0,
+        14:3,
+        15:0,
+        16:0,
+        17:2,
+        18:0,
+        19:1,
+        20:4,
+        21:0,
+        22:1,
+        23:1,
+        24:4,
+        25:2,
+        26:0
+   }
+        
+
     
-    filteredRows.map(row => {
-        infoRow = `pregunta_${row.num}`
-        infoChoices.push(infoRow)
-    })
+    
+    if (instrument == 4) {
+        filteredRows.map(row => {
+            infoAnswer = `puntaje_${row.num}`
+            infoRow = `pregunta_${row.num}`
+            infoChoices.push(infoAnswer)
+            infoChoices.push(infoRow)
+        })
+
+        infoChoices.push('puntaje_total')
+    } else {
+        filteredRows.map(row => {
+            infoRow = `pregunta_${row.num}`
+            infoChoices.push(infoRow)
+        })
+    }
+    
 
     let info = [...infoHeaders, ...infoChoices]
 
@@ -136,7 +179,79 @@ router.post('/', async (req, res) => {
         
     }
 
-    getStudentInfo(rows)
+
+    function getStudentInfoAces(rows) {
+        let studentRow = []
+        let studentCounter = 0
+        let previousStudent = undefined;
+        let totalPoints = 0
+        rows.forEach(row => {
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+                studentRow = []
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(currentStudent['fecha'])
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                    studentRow.push('0') 
+                } else {
+                    if (correctAnswers[row['num']] == row['value']) {
+                        studentRow.push('1')
+                        studentRow.push(currentStudent['value'])
+                        totalPoints++
+                    } else {
+                        studentRow.push('0')
+                        studentRow.push(currentStudent['value'])
+                    }
+
+                } 
+                allStudentsRows.push(studentRow)
+                
+            } else {
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                    studentRow.push('0') 
+                } else {
+                    if (correctAnswers[row['num']] == row['value']) {
+                        studentRow.push('1')
+                        studentRow.push(currentStudent['value'])
+                        totalPoints++
+                    } else {
+                        studentRow.push('0')
+                        studentRow.push(currentStudent['value'])
+                    }
+                } 
+            }
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+        let csvData = [];
+        csvData.push([...info])
+        
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        csvData[1].push(totalPoints)
+
+        res.send(csvData)
+        
+    }
+
+    if (instrument == 4) {
+        getStudentInfoAces(rows)
+    } else {
+        getStudentInfo(rows)
+    }
 
     const csvWriter = createCsvWriter({
         header: info,

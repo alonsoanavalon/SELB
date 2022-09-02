@@ -1,0 +1,18 @@
+{{> header }}
+
+{{#if results}}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Nombre</th>
+      <th>Editar</th>
+  </tr>
+    {{#each results}}
+        <tr>
+            <td>{{id}}</td>
+            <td>{{name}}</td>
+            <td><a href="#">Editar</a></td>
+        </tr>
+    {{/each}}
+</table>
+{{/if}}

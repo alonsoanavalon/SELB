@@ -1,0 +1,20 @@
+{{> header }}
+
+{{#if results}}
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Begin</th>
+    <th>Until</th>
+    <th>Editar</th>
+  </tr>
+    {{#each results}}
+        <tr>
+            <td>{{id}}</td>
+            <td>{{begin}}</td>
+            <td>{{until}}</td>
+            <td><a href="#">Editar</a></td>
+        </tr>
+    {{/each}}
+</table>
+{{/if}}

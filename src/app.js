@@ -16,7 +16,11 @@ const uploadRoutes = require('./routes/upload')
 const getDataRoutes = require('./routes/getData')
 const postDataRoutes = require('./routes/postData')
 const excelRoutes = require('./routes/excel')
-const momentRoutes = require('./routes/moments')
+const instrumentRoutes = require('./instruments/instruments.controller')
+const userRoutes = require('./users/users.controller')
+const schoolsRoutes = require('./schools/schools.controller')
+const momentRoutes = require('./moments/moments.controller')
+const coursesRoutes = require('./courses/courses.controller')
 
 
 const fs = require('fs')
@@ -123,7 +127,12 @@ app.use('/upload', uploadRoutes)
 app.use(getDataRoutes)
 app.use(postDataRoutes)
 app.use('/excel', excelRoutes)
-app.use('/moments', momentRoutes)
+app.use('/admin/instruments', instrumentRoutes)
+app.use('/admin/users', userRoutes)
+app.use('/admin/schools', schoolsRoutes)
+app.use('/admin/moments', momentRoutes) 
+app.use('/admin/courses', coursesRoutes)
+
 
 
 

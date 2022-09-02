@@ -129,8 +129,6 @@ exports.isAnyChoices = (instrument_list_id) => {
 
 exports.insertMode = async (evaluationId, instrumentId) => {
     const instrumentList = await this.getInstrumentList(evaluationId, instrumentId)
-    console.log(instrumentList)
-
     if (instrumentList == undefined) {
         return undefined
     } else {
@@ -270,3 +268,4 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) 
 
 
 }
+
