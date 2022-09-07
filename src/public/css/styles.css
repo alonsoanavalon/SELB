@@ -75,13 +75,13 @@
 .header .nav-links-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.5rem;
   align-items: center;
   align-content: center;
 }
 .header .nav-links-wrapper .nav-link {
   color: #fff;
-  font-size: 1.1rem;
+  font-size: 1rem;
 }
 .header .nav-links-wrapper .nav-link a {
   color: #fff;
@@ -441,20 +441,9 @@ a {
   text-decoration: none;
 }
 
-table {
-  font-family: arial, sans-serif;
-  border-collapse: collapse;
-  width: 100%;
-}
-
-td, th {
-  border: 1px solid #dddddd;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #dddddd;
+.edit-form {
+  max-width: 1600px;
+  margin: 0 auto;
 }
 
 /*# sourceMappingURL=styles.css.map */

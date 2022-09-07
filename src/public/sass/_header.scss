@@ -11,13 +11,13 @@
 
         display:flex;
         flex-wrap: wrap;
-        gap:1rem;
+        gap:.5rem;
         align-items: center;
         align-content: center;
 
         .nav-link {
             color:#fff;
-            font-size:1.1rem;
+            font-size:1rem;
             a {
                 color:#fff;
             }

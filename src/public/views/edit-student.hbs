@@ -1,0 +1,31 @@
+{{> header }}
+<h1 style="margin:1rem;">Editar estudiante</h1>
+{{#if student}}
+<form class="edit-form">
+  <div class="form-group">
+    <label for="exampleFormControlInput1">Nombre</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" value={{student.name}}>
+  </div>
+    <div class="form-group">
+    <label for="exampleFormControlInput1">Apellido</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" value={{student.surname}}>
+  </div>
+    <div class="form-group">
+    <label for="exampleFormControlInput1">Rut</label>
+    <input type="email" class="form-control" id="exampleFormControlInput1" value={{student.rut}}>
+  </div>    
+    </div>
+  <div class="form-group">
+    <label for="exampleFormControlSelect1">Género</label>
+    <select class="form-control" id="exampleFormControlSelect1">
+      <option value="M">M</option>
+      <option value="F">F</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary">Guardar</button>
+</form>
+    
+{{/if }}
+{{#else}}
+<p>No hay resultados</p>
+{{/else}}

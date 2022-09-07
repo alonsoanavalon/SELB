@@ -21,6 +21,7 @@ const userRoutes = require('./users/users.controller')
 const schoolsRoutes = require('./schools/schools.controller')
 const momentRoutes = require('./moments/moments.controller')
 const coursesRoutes = require('./courses/courses.controller')
+const studentsRoutes = require('./students/students.controller')
 
 
 const fs = require('fs')
@@ -132,6 +133,7 @@ app.use('/admin/users', userRoutes)
 app.use('/admin/schools', schoolsRoutes)
 app.use('/admin/moments', momentRoutes) 
 app.use('/admin/courses', coursesRoutes)
+app.use('/admin/students', studentsRoutes)
 
 
 

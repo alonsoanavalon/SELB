@@ -1,20 +1,26 @@
 {{> header }}
-<h1 style="margin:1rem;">Instrumentos</h1>
-
+<h1 style="margin:1rem;">Estudiantes</h1>
 {{#if results}}
 <table class="table">
   <thead class="thead-dark">
     <tr>
       <th>ID</th>
       <th>Nombre</th>
+      <th>Rut</th>
+      <th>Colegio</th>
+      <th>Curso</th>
       <th>Acciones</th>
     </tr>
   </thead>
     {{#each results}}
         <tr>
             <td>{{id}}</td>
-            <td>{{name}}</td>
+            <td>{{name}} {{surname}}</td>
+            <td>{{rut}}</td>
+            <td>{{school}}</td>
+            <td>{{level}} {{letter}}</td>
             <td>
+              <a href="/admin/students/{{id}}"type="button" class="btn btn-warning">Editar</a>
               <button type="button" class="btn btn-info">Ver</button>
             </td>
         </tr>
