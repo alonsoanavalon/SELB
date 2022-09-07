@@ -1,22 +1,32 @@
 {{> header }}
-
+<h1 style="margin:1rem;">Usuarios</h1>
 {{#if results}}
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Email</th>
-    <th>Nombre</th>
-    <th>Rol</th>
-    <th>Editar</th>
-  </tr>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Email</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Rol</th>
+      <th scope="col">Acciones</th>
+
+    </tr>
+  </thead>
     {{#each results}}
         <tr>
             <td>{{id}}</td>
             <td>{{email}}</td>
             <td>{{name}} {{surname}}</td>
             <td>{{role}}</td>
-            <td><a href="#">Editar</a></td>
+            <td>
+              <button type="button" class="btn btn-warning">Editar</button>
+              <button type="button" class="btn btn-info">Ver</button>
+            </td>
         </tr>
     {{/each}}
 </table>
 {{/if}}
+
+<script>
+
+</script>
