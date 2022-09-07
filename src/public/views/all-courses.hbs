@@ -1,21 +1,26 @@
 {{> header }}
-
+<h1 style="margin:1rem;">Cursos</h1>
 {{#if results}}
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Colegio</th>
-    <th>Curso</th>
-    <th>Letra</th>
-    <th>Editar</th>
-  </tr>
+<table class="table">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">ID</th>
+      <th scope="col">Colegio</th>
+      <th scope="col">Curso</th>
+      <th scope="col">Letra</th>
+      <th scope="col">Acciones</th>
+    </tr>
+  </thead>
     {{#each results}}
         <tr>
             <td>{{id}}</td>
             <td>{{name}}</td>
             <td>{{level}}</td>
             <td>{{letter}}</td>
-            <td><a href="#">Editar</a></td>
+            <td>
+              <button type="button" class="btn btn-warning">Editar</button>
+              <button type="button" class="btn btn-info">Ver</button>
+            </td>
         </tr>
     {{/each}}
 </table>
