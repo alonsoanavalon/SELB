@@ -73,6 +73,14 @@ const hbs = exphbs.create({
         },
         renderAdmin: function (role) {
             return (role == "Admin") ? true : false
+        },
+        selectedOption: function (courses, course_id) {
+            console.log(courses)
+            courses.map(course => {
+                if (course.id == course_id) {
+                    return "selected"
+                }
+            })
         }
     }
 })

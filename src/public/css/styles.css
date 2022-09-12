@@ -446,4 +446,9 @@ a {
   margin: 0 auto;
 }
 
+.new-title {
+  margin: 2rem;
+  text-align: center;
+}
+
 /*# sourceMappingURL=styles.css.map */

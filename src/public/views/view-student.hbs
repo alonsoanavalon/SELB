@@ -1,0 +1,44 @@
+{{> header }}
+<h1 style="margin:1rem;">Editar estudiante</h1>
+{{#if student}}
+<form class="edit-form" id="edit-form-student" method="put" action="/admin/student/{{student.id}}">
+<input type="hidden" name="id" value={{student.id}}>
+  <div class="form-group">
+    <label for="name">Nombre</label>
+    <input type="text" class="form-control" id="name" name="name"disabled value={{student.name}} disabled>
+  </div>
+    <div class="form-group">
+    <label for="surname">Apellido</label>
+    <input type="text" class="form-control" id="surname" name="surname"  disabled value={{student.surname}}>
+  </div>
+    <div class="form-group">
+    <label for="rut">Rut</label>
+    <input type="text" class="form-control" id="rut" name="rut" disabled value={{student.rut}}>
+  </div>    
+      <div class="form-group">
+    <label for="age">Edad</label>
+    <input type="number" class="form-control" id="age" name="age" disabled  value={{student.age}} >
+  </div>
+    </div>
+      <div class="form-group">
+    <label for="course_id">Curso</label>
+    <select class="form-control" id="course_id" name="course_id" required="required" disabled>
+      <option value={{selectedCourse.id}}> {{selectedCourse.level}} {{selectedCourse.letter}} - {{selectedCourse.name}}</option>
+    </select>
+  
+  </div>
+  <div class="form-group">
+    <label for="gender">Género</label>
+    </select>
+      <select class="form-control" id="gender" name="gender" required="required" disabled>
+      <option value={{selectedGender}}> {{selectedGender}}</option>
+    </select>
+  </div>
+  <input type="submit" id="edit-student-btn" class="btn btn-primary" value="Guardar"/>
+</form>
+    
+{{/if }}
+{{#else}}
+<p>No hay resultados</p>
+{{/else}}
+

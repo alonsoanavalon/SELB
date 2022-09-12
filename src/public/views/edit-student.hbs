@@ -1,31 +1,70 @@
 {{> header }}
 <h1 style="margin:1rem;">Editar estudiante</h1>
 {{#if student}}
-<form class="edit-form">
+<form class="edit-form" id="edit-form-student" method="put" action="/admin/student/{{student.id}}">
+<input type="hidden" name="id" value={{student.id}}>
   <div class="form-group">
-    <label for="exampleFormControlInput1">Nombre</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" value={{student.name}}>
+    <label for="name">Nombre</label>
+    <input type="text" class="form-control" id="name" name="name" value={{student.name}}>
   </div>
     <div class="form-group">
-    <label for="exampleFormControlInput1">Apellido</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" value={{student.surname}}>
+    <label for="surname">Apellido</label>
+    <input type="text" class="form-control" id="surname" name="surname" value={{student.surname}}>
   </div>
     <div class="form-group">
-    <label for="exampleFormControlInput1">Rut</label>
-    <input type="email" class="form-control" id="exampleFormControlInput1" value={{student.rut}}>
+    <label for="rut">Rut</label>
+    <input type="text" class="form-control" id="rut" name="rut" value={{student.rut}}>
   </div>    
+      <div class="form-group">
+    <label for="age">Edad</label>
+    <input type="number" class="form-control" id="age" name="age" value={{student.age}}>
+  </div>
     </div>
+      <div class="form-group">
+    <label for="course_id">Curso</label>
+    <select class="form-control" id="course_id" name="course_id" required="required">
+      <option value={{selectedCourse.id}}> {{selectedCourse.level}} {{selectedCourse.letter}} - {{selectedCourse.name}}</option>
+        {{#each courses}}
+      <option value={{id}}> {{level}} {{letter}} - {{name}}</option>
+      {{/each}}
+    </select>
+  
+  </div>
   <div class="form-group">
-    <label for="exampleFormControlSelect1">Género</label>
-    <select class="form-control" id="exampleFormControlSelect1">
-      <option value="M">M</option>
-      <option value="F">F</option>
+    <label for="gender">Género</label>
+    </select>
+      <select class="form-control" id="gender" name="gender" required="required">
+      <option value={{selectedGender}}> {{selectedGender}}</option>
+      <option value={{genders}}> {{genders}}</option>
     </select>
   </div>
-  <button type="submit" class="btn btn-primary">Guardar</button>
+  <input type="submit" id="edit-student-btn" class="btn btn-primary" value="Guardar"/>
 </form>
     
 {{/if }}
 {{#else}}
 <p>No hay resultados</p>
 {{/else}}
+
+<script>
+  const d = document;
+  let button = d.querySelector("#edit-student-btn");
+
+  button.addEventListener("click", e => {
+  let form = document.querySelector('#edit-form-student');
+  let data = new FormData(form);
+  let id = data.get('id');
+    e.preventDefault();
+    fetch(`http://localhost:3500/admin/students/${id}` || `https://selb.bond/admin/students/${id}`, {
+      method: "PUT",
+      body: data
+    })
+    .then(data => {
+      if (data.ok) {
+        window.location.href = "http://localhost:3500/admin/students"
+      }
+    })
+    .catch(err => console.log(err))
+  })
+  
+</script>
