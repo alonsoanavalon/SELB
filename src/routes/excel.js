@@ -181,69 +181,82 @@ router.post('/', async (req, res) => {
 
 
     function getStudentInfoAces(rows) {
-        let studentRow = []
-        let studentCounter = 0
-        let previousStudent = undefined;
-        let totalPoints = 0
-        rows.forEach(row => {
-            currentStudentRut = rows[studentCounter]['rut']
-            currentStudent = rows[studentCounter]
-            if (previousStudent !== currentStudentRut) {
-                studentRow = []
-                studentRow.push(currentStudent['rut'])
-                studentRow.push(currentStudent['alumno'])
-                studentRow.push(currentStudent['curso'])
-                studentRow.push(currentStudent['profesor'])
-                studentRow.push(currentStudent['colegio'])
-                studentRow.push(currentStudent['fecha'])
 
-                if (currentStudent['value'].length == 0) {
-                    studentRow.push('0')
-                    studentRow.push('0') 
-                } else {
-                    if (correctAnswers[row['num']] == row['value']) {
-                        studentRow.push('1')
-                        studentRow.push(currentStudent['value'])
-                        totalPoints++
-                    } else {
+        try {
+            let studentRow = []
+            let studentCounter = 0
+            let previousStudent = undefined;
+            let totalPoints = 0
+            let choicesLength = 25
+            let index = 0
+       
+            rows.forEach((row) => {
+                currentStudentRut = rows[studentCounter]['rut']
+                currentStudent = rows[studentCounter]
+                if (previousStudent !== currentStudentRut) {
+                    totalPoints = 0
+                    index = 0
+                    studentRow = []
+                    studentRow.push(currentStudent['rut'])
+                    studentRow.push(currentStudent['alumno'])
+                    studentRow.push(currentStudent['curso'])
+                    studentRow.push(currentStudent['profesor'])
+                    studentRow.push(currentStudent['colegio'])
+                    studentRow.push(currentStudent['fecha'])
+    
+                    if (currentStudent['value'].length == 0) {
                         studentRow.push('0')
-                        studentRow.push(currentStudent['value'])
-                    }
-
-                } 
-                allStudentsRows.push(studentRow)
-                
-            } else {
-                if (currentStudent['value'].length == 0) {
-                    studentRow.push('0')
-                    studentRow.push('0') 
-                } else {
-                    if (correctAnswers[row['num']] == row['value']) {
-                        studentRow.push('1')
-                        studentRow.push(currentStudent['value'])
-                        totalPoints++
+                        studentRow.push('0') 
                     } else {
-                        studentRow.push('0')
-                        studentRow.push(currentStudent['value'])
+                        if (correctAnswers[row['num']] == row['value']) {
+                            studentRow.push('1')
+                            studentRow.push(currentStudent['value'])
+                            totalPoints++
+                        } else {
+                            studentRow.push('0')
+                            studentRow.push(currentStudent['value'])
+                        }
+    
                     }
+                                        
+                } else {
+                    if (currentStudent['value'].length == 0) {
+                        studentRow.push('0')
+                        studentRow.push('0') 
+                    } else {
+                        if (correctAnswers[row['num']] == row['value']) {
+                            studentRow.push('1')
+                            studentRow.push(currentStudent['value'])
+                            totalPoints++
+                        } else {
+                            studentRow.push('0')
+                            studentRow.push(currentStudent['value'])
+                        }
+                    } 
+                }
+
+                if (index == choicesLength) { // cada vez que terminamos de recorrerlos, sumamos los puntos totales al array de respuestas
+                    studentRow.push(JSON.stringify(totalPoints))
+                    allStudentsRows.push(studentRow)
                 } 
-            }
-            studentCounter++
-            previousStudent = currentStudentRut;
-        })
-
-        let csvData = [];
-        csvData.push([...info])
-        
-        allStudentsRows.forEach(
-            row => {
-                csvData.push(row);
-            }
-        )
-
-        csvData[1].push(totalPoints)
-
-        res.send(csvData)
+                index++
+                studentCounter++
+                previousStudent = currentStudentRut;
+            })
+    
+            let csvData = [];
+            csvData.push([...info])
+            
+            allStudentsRows.forEach(
+                row => {
+                    csvData.push(row);
+                }
+            )
+            res.send(csvData)
+            
+        } catch (error) {
+            throw error.message;
+        }
         
     }
 
