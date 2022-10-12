@@ -120,6 +120,19 @@ router.post('/', async (req, res) => {
         })
 
         infoChoices.push('puntaje_total')
+    } else if (instrument == 5){
+        let index = 1;
+        filteredRows.map(row => {
+            if (index % 2 ==! 0) {
+                infoRow = `emocion_${row.num}`
+                infoChoices.push(infoRow)
+            } else {
+                infoRow = `reaccion_${row.num}`
+                infoChoices.push(infoRow)
+            }
+            index++
+
+        })
     } else {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`
