@@ -19,6 +19,7 @@ router.post('/', async (req, res) => {
         concat(student.name , " ", student.surname) as alumno, 
         concat(course.level , " ", course.letter) as curso,
         concat(user.name, " ", user.surname) as profesor, 
+        student.gender as genero,
         school.name as colegio, instrument_list.date as fecha, 
         choice.value,  item.num, choice.id 
         FROM choice  
@@ -42,6 +43,7 @@ router.post('/', async (req, res) => {
         concat(student.name , " ", student.surname) as alumno, 
         concat(course.level , " ", course.letter) as curso,
         concat(user.name, " ", user.surname) as profesor, 
+        student.gender as genero,
         school.name as colegio, instrument_list.date as fecha, 
         choice.value,  item.num, choice.id 
         FROM choice  
@@ -76,7 +78,7 @@ router.post('/', async (req, res) => {
     }
 
     let rows = await getDataRows()
-    let infoHeaders = ['rut', 'alumno', 'curso', 'evaluador', 'colegio', 'fecha'];
+    let infoHeaders = ['rut', 'alumno','genero','curso', 'evaluador', 'colegio', 'fecha'];
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
     let infoChoices = []
     let correctAnswers = { // Respuestas correctas
@@ -127,12 +129,18 @@ router.post('/', async (req, res) => {
                 infoRow = `emocion_${row.num}`
                 infoChoices.push(infoRow)
             } else {
-                infoRow = `reaccion_${row.num}`
+                infoRow = `conducta_${row.num}`
                 infoChoices.push(infoRow)
             }
             index++
 
         })
+    } else if (instrument == 1){
+        filteredRows.map(row => {
+            infoRow = `pregunta_${row.num}`
+            infoChoices.push(infoRow)
+        })
+        infoChoices.push('puntaje_total')
     } else {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`
@@ -141,9 +149,90 @@ router.post('/', async (req, res) => {
     }
     
 
+
     let info = [...infoHeaders, ...infoChoices]
 
     let allStudentsRows = []
+
+    function getStudentInfoTejas(rows) {
+
+        try {
+            let studentRow = []
+            let studentCounter = 0
+            let previousStudent = undefined;
+            let totalPoints = 0
+            let choicesLength = 71
+            let index = 0
+       
+            rows.forEach((row) => {
+                currentStudentRut = rows[studentCounter]['rut']
+                currentStudent = rows[studentCounter]
+                if (previousStudent !== currentStudentRut) {
+                    totalPoints = 0
+                    index = 0
+                    studentRow = []
+                    studentRow.push(currentStudent['rut'])
+                    studentRow.push(currentStudent['alumno'])
+                    studentRow.push(currentStudent['genero'])
+                    studentRow.push(currentStudent['curso'])
+                    studentRow.push(currentStudent['profesor'])
+                    studentRow.push(currentStudent['colegio'])
+                    studentRow.push(currentStudent['fecha'])
+    
+                    if (currentStudent['value'].length == 0) {
+                        studentRow.push('0')
+                    } else {
+                        if (row['value'] == 1) {
+                            studentRow.push(currentStudent['value'])
+                            totalPoints++
+                        } else {
+                            studentRow.push(currentStudent['value'])
+                        }
+    
+                    }
+                                        
+                } else {
+                    if (currentStudent['value'].length == 0) {
+                        studentRow.push('0')
+                    } else {
+                        if (row['value'] == 1) {
+                            studentRow.push(currentStudent['value'])
+                            totalPoints++
+                        } else {
+                            studentRow.push(currentStudent['value'])
+                        }
+                    } 
+                }
+
+                if (index > 71) {
+                    console.log(index)
+                }
+
+                if (index == choicesLength) { // cada vez que terminamos de recorrerlos, sumamos los puntos totales al array de respuestas
+                    studentRow.push(JSON.stringify(totalPoints))
+                    allStudentsRows.push(studentRow)
+                } 
+                index++
+                studentCounter++
+                previousStudent = currentStudentRut;
+            })
+    
+            let csvData = [];
+            csvData.push([...info])
+            
+            allStudentsRows.forEach(
+                row => {
+                    csvData.push(row);
+                }
+            )
+            res.send(csvData)
+            
+        } catch (error) {
+            throw error.message;
+        }
+        
+    }
+
 
     function getStudentInfo(rows) {
         let studentRow = []
@@ -156,6 +245,7 @@ router.post('/', async (req, res) => {
                 studentRow = []
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
                 studentRow.push(currentStudent['curso'])
                 studentRow.push(currentStudent['profesor'])
                 studentRow.push(currentStudent['colegio'])
@@ -174,6 +264,102 @@ router.post('/', async (req, res) => {
                 } else {
                     studentRow.push(currentStudent['value'])
                 } 
+            }
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+        let csvData = [];
+        csvData.push([...info])
+        
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        res.send(csvData)
+        
+    }
+
+    function getStudentInfoCalculo(rows) {
+        let studentRow = []
+        let studentCounter = 0
+        let previousStudent = undefined;
+        rows.forEach(row => {
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+                studentRow = []
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(currentStudent['fecha'])
+                
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0') 
+                } else {
+                    studentRow.push(currentStudent['value'])
+                } 
+                allStudentsRows.push(studentRow)
+                
+            } else {
+                
+                if (currentStudent['num'] == 18) {
+                    if (currentStudent['value'] == 3) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                } else if (currentStudent['num'] == 19) {
+                    if (currentStudent['value'] == 4) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                } else if (currentStudent['num'] == 20) {
+                    if (currentStudent['value'] == 6) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                }else if (currentStudent['num'] == 21) {
+                    if (currentStudent['value'] == 8) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                }else if (currentStudent['num'] == 22) {
+                    if (currentStudent['value'] == 10) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                }else if (currentStudent['num'] == 23) {
+                    if (currentStudent['value'] == 11) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                }else if (currentStudent['num'] == 24) {
+                    if (currentStudent['value'] == 16) {
+                        studentRow.push('1') 
+                    } else {
+                        studentRow.push('0') 
+                    }
+                }else {
+                    if (currentStudent['value'].length == 0) {
+                        studentRow.push('0') 
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                    } 
+                }
+
+
             }
             studentCounter++
             previousStudent = currentStudentRut;
@@ -212,6 +398,7 @@ router.post('/', async (req, res) => {
                     studentRow = []
                     studentRow.push(currentStudent['rut'])
                     studentRow.push(currentStudent['alumno'])
+                    studentRow.push(currentStudent['genero'])
                     studentRow.push(currentStudent['curso'])
                     studentRow.push(currentStudent['profesor'])
                     studentRow.push(currentStudent['colegio'])
@@ -275,7 +462,11 @@ router.post('/', async (req, res) => {
 
     if (instrument == 4) {
         getStudentInfoAces(rows)
-    } else {
+    } else if (instrument == 1) {
+        getStudentInfoTejas(rows)
+    }else if (instrument == 2) {
+        getStudentInfoCalculo(rows)
+    }else {
         getStudentInfo(rows)
     }
 
