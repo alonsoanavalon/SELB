@@ -14,7 +14,7 @@ router.get('/:id', async(req, res)=> {
 })
 
 router.post('/', async (req, res) => {
-    const newMoment = await momentsService.createMoment(req.body.study_id, req.body.begin, req.body.until)
+    const newMoment = await momentsService.createMoment(req.body)
     res.send(newMoment);
 })
 

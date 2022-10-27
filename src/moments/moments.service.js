@@ -31,9 +31,20 @@ exports.getMoment = (id) => {
     return this.getResults(sql);
 }
 
-exports.createMoment = (studyId, begin, until) => {
-    const sql = `INSERT INTO moment (study_id, begin, until) VALUES (${studyId}, '${begin}', '${until}')`;
-    return this.getResults(sql);
+exports.createMoment = async (moments) => {
+    const lastMoment = moments['moments'].slice(-1)[0];
+    const date = new Date(new Date().toLocaleDateString('zh-Hans-CN')).getTime();
+    const lastMomentBegin = new Date(lastMoment.begin).toLocaleDateString('zh-Hans-CN');
+    const currentDate = new Date(date).toLocaleDateString('zh-Hans-CN');
+    const newBegin = new Date(new Date(date + 86400000)).toLocaleDateString('zh-Hans-CN');
+
+
+    const updatedPreviousMoment = await this.updateMoment(lastMoment.id, lastMomentBegin, currentDate);
+    if (updatedPreviousMoment) {
+        const sql = `INSERT INTO moment (id, study_id, begin, until) VALUES (${lastMoment.id + 1}, ${lastMoment.study_id}, '${newBegin}', '2100-10-10')`;
+        return this.getResults(sql);
+    }
+
 }
 
 exports.updateMoment = (momentId, begin, until) => {
