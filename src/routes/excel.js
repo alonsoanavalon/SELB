@@ -172,17 +172,25 @@ router.post('/', async (req, res) => {
         infoChoices.push('intentos_desordenado');
 
         filteredRows.map((row)=> {
-            if (row.num <= 11) {
-                infoRow = `ordenado_${row.num}`;
+            if (row.num === 1|| row.num === 2 || row.num === 13 || row.num === 14 ) {
+                infoRow = `ordenado_${row.num}_ejemplo`;
                 infoChoices.push(infoRow);
                 infoRow = `respuesta`;
                 infoChoices.push(infoRow);
-            } else if (row.num <= 22) {
-                infoRow = `reversa_${row.num}`;
-                infoChoices.push(infoRow);
-                infoRow = `respuesta`;
-                infoChoices.push(infoRow);
+            } else {
+                if (row.num <= 11) {
+                    infoRow = `ordenado_${row.num}`;
+                    infoChoices.push(infoRow);
+                    infoRow = `respuesta`;
+                    infoChoices.push(infoRow);
+                } else if (row.num <= 22) {
+                    infoRow = `reversa_${row.num}`;
+                    infoChoices.push(infoRow);
+                    infoRow = `respuesta`;
+                    infoChoices.push(infoRow);
+                }
             }
+            
 
         })
     
@@ -554,14 +562,25 @@ router.post('/', async (req, res) => {
                     studentRow.splice(8, 0, row.value);
                 } else {
                 //aca tengo que pushear resultado y respuesta
-                if (corsiAnswers[row.num] === row.value) {
-                    studentRow.push(currentStudent['value'])
-                    studentRow.push('1')
-                    puntaje_total++
+                if (row.num === 14 || row.num === 15 || row.num === 2 || row.num === 3) {
+                    if (corsiAnswers[row.num] === row.value) {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('1')
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('0')
+                    }
                 } else {
-                    studentRow.push(currentStudent['value'])
-                    studentRow.push('0')
+                    if (corsiAnswers[row.num] === row.value) {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('1')
+                        puntaje_total++
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('0')
+                    }
                 }
+
             }}
 
             if (row.num === 24) { // cada vez que terminamos de recorrerlos, sumamos los puntos totales al array de respuestas
