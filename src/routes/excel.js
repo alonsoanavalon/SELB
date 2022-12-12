@@ -108,11 +108,36 @@ router.post('/', async (req, res) => {
         24:4,
         25:2,
         26:0
-   }
+    }
+
+    let corsiAnswers = {
+        2: '6-9',
+        3: '3-8',
+        4: '2-7-6',
+        5: '5-4-3',
+        6: '8-2-7-1',
+        7: '9-1-4-3',
+        8: '1-10-2-8-5',
+        9: '10-3-7-5-4',
+        10: '8-2-7-6-5-9',
+        11: '7-4-1-3-6-10',
+        12: '9-2-1-8-5-10-3',
+        14: '8-3',
+        15: '9-6',
+        16: '3-4-5',
+        17: '6-7-2',
+        18: '3-4-1-9',
+        19: '1-7-2-8',
+        20: '4-5-7-3-10',
+        21: '5-8-2-10-1',
+        22: '10-6-3-1-4-7',
+        23: '9-5-6-7-2-8',
+        24: '4-1-6-5-4-9-2'
+    }
         
 
     
-    
+    // ACA añadimos los headers personalizados
     if (instrument == 4) {
         filteredRows.map(row => {
             infoAnswer = `puntaje_${row.num}`
@@ -137,10 +162,30 @@ router.post('/', async (req, res) => {
         })
     } else if (instrument == 1){
         filteredRows.map(row => {
-            infoRow = `pregunta_${row.num}`
-            infoChoices.push(infoRow)
+            infoRow = `pregunta_${row.num}`;
+            infoChoices.push(infoRow);
         })
         infoChoices.push('puntaje_total')
+    } else if (instrument == 6){
+        infoChoices.push('puntaje_total');
+        infoChoices.push('intentos_ordenado');
+        infoChoices.push('intentos_desordenado');
+
+        filteredRows.map((row)=> {
+            if (row.num <= 11) {
+                infoRow = `ordenado_${row.num}`;
+                infoChoices.push(infoRow);
+                infoRow = `respuesta`;
+                infoChoices.push(infoRow);
+            } else if (row.num <= 22) {
+                infoRow = `reversa_${row.num}`;
+                infoChoices.push(infoRow);
+                infoRow = `respuesta`;
+                infoChoices.push(infoRow);
+            }
+
+        })
+    
     } else {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`
@@ -148,10 +193,7 @@ router.post('/', async (req, res) => {
         })
     }
     
-
-
     let info = [...infoHeaders, ...infoChoices]
-
     let allStudentsRows = []
 
     function getStudentInfoTejas(rows) {
@@ -460,14 +502,99 @@ router.post('/', async (req, res) => {
         
     }
 
+
+    function getStudentInfoCorsi(rows) {
+        let studentRow = []
+        let studentCounter = 0
+        let previousStudent = undefined;
+        let puntaje_total = 0;
+        rows.forEach(row => {
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+                studentRow = []
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(currentStudent['fecha'])
+                //agregar intentos
+                puntaje_total = 0;
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0') 
+                } else {
+                    if (row.num === 1) {
+                        studentRow.push(currentStudent['value']);
+                    } else if (row.num === 13) {
+                        //cambiar lugar en el studentRow
+                        studentRow.push(currentStudent['value'])
+                    } else {
+                    //aca tengo que pushear resultado y respuesta
+                    if (corsiAnswers[row.num] === row.value) {
+                        studentRow.push('1')
+                        studentRow.push(currentStudent['value'])
+                        puntaje_total++
+                    } else {
+                        studentRow.push('0')
+                        studentRow.push(currentStudent['value'])
+                    }
+                    }
+
+                } 
+                allStudentsRows.push(studentRow)
+                
+            } else {
+                if (row.num === 1) {
+                    studentRow.push(currentStudent['value']);
+                } else if (row.num === 13) {
+                    //cambiar lugar en el studentRow
+                    studentRow.splice(8, 0, row.value);
+                } else {
+                //aca tengo que pushear resultado y respuesta
+                if (corsiAnswers[row.num] === row.value) {
+                    studentRow.push(currentStudent['value'])
+                    studentRow.push('1')
+                    puntaje_total++
+                } else {
+                    studentRow.push(currentStudent['value'])
+                    studentRow.push('0')
+                }
+            }}
+
+            if (row.num === 24) { // cada vez que terminamos de recorrerlos, sumamos los puntos totales al array de respuestas
+                studentRow.splice(7, 0, puntaje_total);
+            } 
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+
+        let csvData = [];
+        csvData.push([...info])
+        
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        res.send(csvData)
+        
+    }
+
     if (instrument == 4) {
-        getStudentInfoAces(rows)
+        getStudentInfoAces(rows);
     } else if (instrument == 1) {
-        getStudentInfoTejas(rows)
+        getStudentInfoTejas(rows);
     }else if (instrument == 2) {
-        getStudentInfoCalculo(rows)
-    }else {
-        getStudentInfo(rows)
+        getStudentInfoCalculo(rows);
+    } else if (instrument == 6) {
+        getStudentInfoCorsi(rows);
+    } else {
+        getStudentInfo(rows);
     }
 
     const csvWriter = createCsvWriter({
