@@ -221,13 +221,15 @@ router.post('/', async (req, res) => {
                     totalPoints = 0
                     index = 0
                     studentRow = []
+                    const fechaTest = new Date(currentStudent['fecha']);
+                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
                     studentRow.push(currentStudent['rut'])
                     studentRow.push(currentStudent['alumno'])
                     studentRow.push(currentStudent['genero'])
                     studentRow.push(currentStudent['curso'])
                     studentRow.push(currentStudent['profesor'])
                     studentRow.push(currentStudent['colegio'])
-                    studentRow.push(currentStudent['fecha'])
+                    studentRow.push(fechaParseada)
     
                     if (currentStudent['value'].length == 0) {
                         studentRow.push('0')
@@ -293,13 +295,15 @@ router.post('/', async (req, res) => {
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
                 studentRow.push(currentStudent['genero'])
                 studentRow.push(currentStudent['curso'])
                 studentRow.push(currentStudent['profesor'])
                 studentRow.push(currentStudent['colegio'])
-                studentRow.push(currentStudent['fecha'])
+                studentRow.push(fechaParseada)
 
                 if (currentStudent['value'].length == 0) {
                     studentRow.push('0') 
@@ -341,13 +345,15 @@ router.post('/', async (req, res) => {
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
                 studentRow.push(currentStudent['genero'])
                 studentRow.push(currentStudent['curso'])
                 studentRow.push(currentStudent['profesor'])
                 studentRow.push(currentStudent['colegio'])
-                studentRow.push(currentStudent['fecha'])
+                studentRow.push(fechaParseada)
                 
 
                 if (currentStudent['value'].length == 0) {
@@ -446,13 +452,15 @@ router.post('/', async (req, res) => {
                     totalPoints = 0
                     index = 0
                     studentRow = []
+                    const fechaTest = new Date(currentStudent['fecha']);
+                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
                     studentRow.push(currentStudent['rut'])
                     studentRow.push(currentStudent['alumno'])
                     studentRow.push(currentStudent['genero'])
                     studentRow.push(currentStudent['curso'])
                     studentRow.push(currentStudent['profesor'])
                     studentRow.push(currentStudent['colegio'])
-                    studentRow.push(currentStudent['fecha'])
+                    studentRow.push(fechaParseada)
     
                     if (currentStudent['value'].length == 0) {
                         studentRow.push('0')
@@ -521,13 +529,15 @@ router.post('/', async (req, res) => {
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
                 studentRow.push(currentStudent['genero'])
                 studentRow.push(currentStudent['curso'])
                 studentRow.push(currentStudent['profesor'])
                 studentRow.push(currentStudent['colegio'])
-                studentRow.push(currentStudent['fecha'])
+                studentRow.push(fechaParseada)
                 //agregar intentos
                 puntaje_total = 0;
 
