@@ -222,7 +222,7 @@ router.post('/', async (req, res) => {
                     index = 0
                     studentRow = []
                     const fechaTest = new Date(currentStudent['fecha']);
-                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
+                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
                     studentRow.push(currentStudent['rut'])
                     studentRow.push(currentStudent['alumno'])
                     studentRow.push(currentStudent['genero'])
@@ -296,7 +296,7 @@ router.post('/', async (req, res) => {
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
                 const fechaTest = new Date(currentStudent['fecha']);
-                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
                 studentRow.push(currentStudent['genero'])
@@ -346,7 +346,7 @@ router.post('/', async (req, res) => {
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
                 const fechaTest = new Date(currentStudent['fecha']);
-                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
                 studentRow.push(currentStudent['genero'])
@@ -453,7 +453,7 @@ router.post('/', async (req, res) => {
                     index = 0
                     studentRow = []
                     const fechaTest = new Date(currentStudent['fecha']);
-                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
+                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
                     studentRow.push(currentStudent['rut'])
                     studentRow.push(currentStudent['alumno'])
                     studentRow.push(currentStudent['genero'])
@@ -530,7 +530,7 @@ router.post('/', async (req, res) => {
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
                 const fechaTest = new Date(currentStudent['fecha']);
-                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()}/${fechaTest.getFullYear()}`
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
                 studentRow.push(currentStudent['alumno'])
                 studentRow.push(currentStudent['genero'])
