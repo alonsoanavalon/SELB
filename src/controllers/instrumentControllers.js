@@ -202,40 +202,110 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) 
             let objectLength = Object.keys(choicesObject).length
     
             /* Hay algun */
-    
+
+            if (instrumentId !== 7 && instrumentId !== 8) {
             
-            if (updateInstrument) {
+                if (updateInstrument) {
                 
-                let counter = 0;
-                isCreated = false;
-    
-                for (choice in choicesObject) {
-                    counter += 1
-    
-                    sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice]}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
-                }
-    
-      
-            } else {
-    
-                let counter = 0;
-                isCreated = true;
-                sql += `INSERT INTO choice (item_id, value, instrument_list_id) VALUES `
-                for (choice in choicesObject) {
-                    counter += 1
-                    if (counter == objectLength) {
-                        sql+= `(${choice}, '${choicesObject[choice]}', ${newInstrumentId});`
-                    } else {
-                        sql+=`(${choice}, '${choicesObject[choice]}', ${newInstrumentId}),`
-    
+                    let counter = 0;
+                    isCreated = false;
+        
+                    for (choice in choicesObject) {
+                        counter += 1
+        
+                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice]}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
                     }
-    
-    
+        
+          
+                } else {
+        
+                    let counter = 0;
+                    isCreated = true;
+                    sql += `INSERT INTO choice (item_id, value, instrument_list_id) VALUES `
+                    for (choice in choicesObject) {
+                        counter += 1
+                        if (counter == objectLength) {
+                            sql+= `(${choice}, '${choicesObject[choice]}', ${newInstrumentId});`
+                        } else {
+                            sql+=`(${choice}, '${choicesObject[choice]}', ${newInstrumentId}),`
+        
+                        }
+        
+        
+                    }
+        
+        
                 }
-    
-    
+        
+            } else if (instrumentId == 7) {
+                if (updateInstrument) {
+                
+                    let counter = 0;
+                    isCreated = false;
+        
+                    for (choice in choicesObject) {
+                        counter += 1
+        
+                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].choice}', time='${choicesObject[choice].time}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                    }
+        
+          
+                } else {
+        
+                    let counter = 0;
+                    isCreated = true;
+                    sql += `INSERT INTO choice (item_id, value, time, instrument_list_id) VALUES `
+                    for (choice in choicesObject) {
+                        counter += 1
+                        if (counter == objectLength) {
+                            sql+= `(${choice}, '${choicesObject[choice].choice}', '${choicesObject[choice].time}', ${newInstrumentId});`
+                        } else {
+                            sql+=` (${choice}, '${choicesObject[choice].choice}', '${choicesObject[choice].time}', ${newInstrumentId}),`
+        
+                        }
+        
+        
+                    }
+        
+        
+                }
+            } else if (instrumentId === 8){
+
+                if (updateInstrument) {
+                
+                    let counter = 0;
+                    isCreated = false;
+        
+                    for (choice in choicesObject) {
+                        counter += 1
+        
+                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].value}', text='${choicesObject[choice].options}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                    }
+        
+          
+                } else {
+        
+                    let counter = 0;
+                    isCreated = true;
+                    sql += `INSERT INTO choice (item_id, value, text, instrument_list_id) VALUES `
+                    for (choice in choicesObject) {
+                        counter += 1
+                        if (counter == objectLength) {
+                            sql+= `(${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options}', ${newInstrumentId});`
+                        } else {
+                            sql+=` (${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options}', ${newInstrumentId}),`
+        
+                        }
+        
+        
+                    }
+        
+        
+                }
+
             }
     
+
     
             await mysqlConnection.query(sql, (err, res) => {
                 if(err){
