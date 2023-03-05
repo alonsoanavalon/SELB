@@ -84,7 +84,7 @@ exports.getInfoFonoFinal = (rows) => {
             } 
         }
 
-        if (row['value'] > 0) {
+        if (row[1]['value'] > 0) {
             totalPoints = parseInt(totalPoints) + parseInt(row[1]['value']);
         }
 
@@ -327,7 +327,7 @@ exports.getInfoFinalCorsi = (rows) => {
             //aca tengo que pushear resultado y respuesta
             if (row[1].num === 14 || row[1].num === 15 || row[1].num === 2 || row[1].num === 3) {
                 if (corsiAnswers[row[1].num] === row[1].value) {
-                    studentRow.push(row['value'])
+                    studentRow.push(row[1]['value'])
                     studentRow.push('1')
                 } else {
                     studentRow.push(row[1]['value'])
@@ -347,7 +347,7 @@ exports.getInfoFinalCorsi = (rows) => {
         }}
 
         if (row[1].num === 24) { // cada vez que terminamos de recorrerlos, sumamos los puntos totales al array de respuestas
-            studentRow.splice(7, 0, puntaje_total);
+            studentRow.splice(0, 0, puntaje_total);
         } 
 
     })
@@ -389,6 +389,8 @@ exports.getInfoFinal = (rows) => {
 
 
 exports.getInfoHNFFinal = (rows) => {
+    let lastIndex = Object.entries(rows).length;
+
     let rowArray = Object.entries(rows)
     let studentRow = []
     let studentAnswers = [];
@@ -419,7 +421,7 @@ exports.getInfoHNFFinal = (rows) => {
             })
         }
 
-        if (key == 68) {
+        if (key == lastIndex-1) {
             if (studentAnswers.length > 0) {
                 console.log("Hacemos logica para sacar los resultados")
  

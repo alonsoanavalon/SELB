@@ -401,6 +401,7 @@ router.post('/', async (req, res) => {
         INNER JOIN course ON student.course_id = course.id 
         INNER JOIN school ON course.school_id = school.id 
         INNER JOIN item ON choice.item_id = item.id 
+        
     GROUP BY student.rut, user.name, user.surname, instrument_list.date, choice.value, item.num, choice.id, evaluation.id, choice.time, choice.text, choice.alternative
     LIMIT 1000000;`
 
@@ -795,6 +796,13 @@ router.post('/', async (req, res) => {
                         const corsiRows = excelService.getInfoFinalCorsi(row['instrument-6']);
                         const HNFRows = excelService.getInfoHNFFinal(row['instrument-7']);
                         const fonoRows = excelService.getInfoFonoFinal(row['instrument-8']);
+                        if (row.rut == "20728918-3"){
+                            console.log("ql con problemas")
+                            if (row.moment > 4) {
+                                console.log("ql con problemas")
+                            }
+
+                        }
 
                         if (tejasRows.length !== 73){
                             console.log("algo pasa")
@@ -813,6 +821,7 @@ router.post('/', async (req, res) => {
                         }
                         if (HNFRows.length !== 8){
                             console.log("algo pasa")
+                            console.log("aca")
                         }
                         if (fonoRows.length !== 49){
                             console.log("algo pasa")
@@ -824,6 +833,13 @@ router.post('/', async (req, res) => {
                         finalParsedRow.push(...tejasRows, ...precalculoRows, ...acesRows, ...wallyRows, ...corsiRows, ...HNFRows, ...fonoRows)
                     } else {
 
+                        if (row.rut == "20728918-3"){
+                            console.log("ql con problemas")
+                            if (row.moment > 4) {
+                                console.log("ql con problemas")
+                            }
+
+                        }
 
                         
 
@@ -863,6 +879,12 @@ router.post('/', async (req, res) => {
                         finalParsedRow.push(...tejasRows, ...precalculoRows, ...acesRows, ...wallyRows, ...corsiRows, ...HNFRows, ...fonoRows)
                     }
                 })
+
+                if (finalParsedRow.length !== 1223) {
+                    console.log("problemilla")
+                } else {
+                    console.log("WHAT?")
+                }
 
 
                 allFinalParsedRows.push(finalParsedRow)
