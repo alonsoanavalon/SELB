@@ -57,3 +57,20 @@ exports.deleteMoment = (momentId) => {
     const sql = `DELETE FROM moment WHERE moment.id = ${momentId}`;
     return this.getResults(sql);
 }
+
+
+exports.getMomentsIds = () => {
+    return new Promise((resolve, reject) => {
+        try {
+            const sql = `SELECT id FROM moment`;
+            mysqlConnection.query(sql, (err, res) => {
+                if (err) throw err;
+                resolve (res);
+            })
+        } catch (err) {
+            reject(err)
+            throw err;
+        }
+    })
+
+}

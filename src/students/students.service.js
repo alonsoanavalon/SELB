@@ -72,3 +72,28 @@ exports.createStudent = (student) => {
         }
     })
 }
+
+exports.getAllStudentsInfo = () => {
+    return new Promise( async (resolve, reject) => {
+        try {
+            const sql = `SELECT
+            student.id,
+            concat(student.name , " ", student.surname) as alumno, 
+            course.level as level,
+            course.letter as course,
+            student.rut,
+            student.gender,
+            school.name as escuela
+            FROM student 
+            INNER JOIN course on course.id = student.course_id
+            INNER JOIN school on school.id = course.school_id
+            order by id;`
+            await mysqlConnection.query(sql, async (err, results) => { 
+                resolve(results)
+            })
+        } catch (err) {
+            reject(err)
+            throw err;
+        }
+    })
+}

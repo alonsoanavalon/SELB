@@ -1,7 +1,361 @@
 const router = require('express').Router();
 const mysqlConnection = require('../database/database')
-const excelControllers = require('../controllers/excelControllers')
+const momentService = require('../moments/moments.service')
+const studentsService = require('../students/students.service')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;
+const excelService = require('../services/excel.service')
+
+
+const instrument_1 = {
+    1: { num: 1, value: "", text: null, alternative: null, time: null},
+    2: { num: 2, value: "", text: null, alternative: null, time: null},
+    3: { num: 3, value: "", text: null, alternative: null, time: null},
+    4: { num: 4, value: "", text: null, alternative: null, time: null},
+    5: { num: 5, value: "", text: null, alternative: null, time: null},
+    6: { num: 6, value: "", text: null, alternative: null, time: null},
+    7: { num: 7, value: "", text: null, alternative: null, time: null},
+    8: { num: 8, value: "", text: null, alternative: null, time: null},
+    9: { num: 9, value: "", text: null, alternative: null, time: null},
+    10: { num: 10, value: "", text: null, alternative: null, time: null},
+    11: { num: 11, value: "", text: null, alternative: null, time: null},
+    12: { num: 12, value: "", text: null, alternative: null, time: null},
+    13: { num: 13, value: "", text: null, alternative: null, time: null},
+    14: { num: 14, value: "", text: null, alternative: null, time: null},
+    15: { num: 15, value: "", text: null, alternative: null, time: null},
+    16: { num: 16, value: "", text: null, alternative: null, time: null},
+    17: { num: 17, value: "", text: null, alternative: null, time: null},
+    18: { num: 18, value: "", text: null, alternative: null, time: null},
+    19: { num: 19, value: "", text: null, alternative: null, time: null},
+    20: { num: 20, value: "", text: null, alternative: null, time: null},
+    21: { num: 21, value: "", text: null, alternative: null, time: null},
+    22: { num: 22, value: "", text: null, alternative: null, time: null},
+    23: { num: 23, value: "", text: null, alternative: null, time: null},
+    24: { num: 24, value: "", text: null, alternative: null, time: null},
+    25: { num: 25, value: "", text: null, alternative: null, time: null},
+    26: { num: 26, value: "", text: null, alternative: null, time: null},
+    27: { num: 27, value: "", text: null, alternative: null, time: null},
+    28: { num: 28, value: "", text: null, alternative: null, time: null},
+    29: { num: 29, value: "", text: null, alternative: null, time: null},
+    30: { num: 30, value: "", text: null, alternative: null, time: null},
+    31: { num: 31, value: "", text: null, alternative: null, time: null},
+    32: { num: 32, value: "", text: null, alternative: null, time: null},
+    33: { num: 33, value: "", text: null, alternative: null, time: null},
+    34: { num: 34, value: "", text: null, alternative: null, time: null},
+    35: { num: 35, value: "", text: null, alternative: null, time: null},
+    36: { num: 36, value: "", text: null, alternative: null, time: null},
+    37: { num: 37, value: "", text: null, alternative: null, time: null},
+    38: { num: 38, value: "", text: null, alternative: null, time: null},
+    39: { num: 39, value: "", text: null, alternative: null, time: null},
+    40: { num: 40, value: "", text: null, alternative: null, time: null},
+    41: { num: 41, value: "", text: null, alternative: null, time: null},
+    42: { num: 42, value: "", text: null, alternative: null, time: null},
+    43: { num: 43, value: "", text: null, alternative: null, time: null},
+    44: { num: 44, value: "", text: null, alternative: null, time: null},
+    45: { num: 45, value: "", text: null, alternative: null, time: null},
+    46: { num: 46, value: "", text: null, alternative: null, time: null},
+    47: { num: 47, value: "", text: null, alternative: null, time: null},
+    48: { num: 48, value: "", text: null, alternative: null, time: null},
+    49: { num: 49, value: "", text: null, alternative: null, time: null},
+    50: { num: 50, value: "", text: null, alternative: null, time: null},
+    51: { num: 51, value: "", text: null, alternative: null, time: null},
+    52: { num: 52, value: "", text: null, alternative: null, time: null},
+    53: { num: 53, value: "", text: null, alternative: null, time: null},
+    54: { num: 54, value: "", text: null, alternative: null, time: null},
+    55: { num: 55, value: "", text: null, alternative: null, time: null},
+    56: { num: 56, value: "", text: null, alternative: null, time: null},
+    57: { num: 57, value: "", text: null, alternative: null, time: null},
+    58: { num: 58, value: "", text: null, alternative: null, time: null},
+    59: { num: 59, value: "", text: null, alternative: null, time: null},
+    60: { num: 60, value: "", text: null, alternative: null, time: null},
+    61: { num: 61, value: "", text: null, alternative: null, time: null},
+    62: { num: 62, value: "", text: null, alternative: null, time: null},
+    63: { num: 63, value: "", text: null, alternative: null, time: null},
+    64: { num: 64, value: "", text: null, alternative: null, time: null},
+    65: { num: 65, value: "", text: null, alternative: null, time: null},
+    66: { num: 66, value: "", text: null, alternative: null, time: null},
+    67: { num: 67, value: "", text: null, alternative: null, time: null},
+    68: { num: 68, value: "", text: null, alternative: null, time: null},
+    69: { num: 69, value: "", text: null, alternative: null, time: null},
+    70: { num: 70, value: "", text: null, alternative: null, time: null},
+    71: { num: 71, value: "", text: null, alternative: null, time: null},
+    72: { num: 72, value: "", text: null, alternative: null, time: null},
+
+    
+}
+
+const instrument_2 = {
+    1: {num: 1, value: '', text: null, alternative: null, time: null},
+    2: {num: 2, value: '', text: null, alternative: null, time: null},
+    3: {num: 3, value: '', text: null, alternative: null, time: null},
+    4: {num: 4, value: '', text: null, alternative: null, time: null},
+    5: {num: 5, value: '', text: null, alternative: null, time: null},
+    6: {num: 6, value: '', text: null, alternative: null, time: null},
+    7: {num: 7, value: '', text: null, alternative: null, time: null},
+    8: {num: 8, value: '', text: null, alternative: null, time: null},
+    9: {num: 9, value: '', text: null, alternative: null, time: null},
+    10: {num: 10, value: '', text: null, alternative: null, time: null},
+    11: {num: 11, value: '', text: null, alternative: null, time: null},
+    12: {num: 12, value: '', text: null, alternative: null, time: null},
+    13: {num: 13, value: '', text: null, alternative: null, time: null},
+    14: {num: 14, value: '', text: null, alternative: null, time: null},
+    15: {num: 15, value: '', text: null, alternative: null, time: null},
+    16: {num: 16, value: '', text: null, alternative: null, time: null},
+    17: {num: 17, value: '', text: null, alternative: null, time: null},
+    18: {num: 18, value: '', text: null, alternative: null, time: null},
+    19: {num: 19, value: '', text: null, alternative: null, time: null},
+    20: {num: 20, value: '', text: null, alternative: null, time: null},
+    21: {num: 21, value: '', text: null, alternative: null, time: null},
+    22: {num: 22, value: '', text: null, alternative: null, time: null},
+    23: {num: 23, value: '', text: null, alternative: null, time: null},
+    24: {num: 24, value: '', text: null, alternative: null, time: null},
+    25: {num: 25, value: '', text: null, alternative: null, time: null},
+    26: {num: 26, value: '', text: null, alternative: null, time: null},
+    27: {num: 27, value: '', text: null, alternative: null, time: null},
+    28: {num: 28, value: '', text: null, alternative: null, time: null},
+    29: {num: 29, value: '', text: null, alternative: null, time: null},
+    30: {num: 30, value: '', text: null, alternative: null, time: null},
+    31: {num: 31, value: '', text: null, alternative: null, time: null},
+    32: {num: 32, value: '', text: null, alternative: null, time: null},
+    33: {num: 33, value: '', text: null, alternative: null, time: null},
+    34: {num: 34, value: '', text: null, alternative: null, time: null},
+    35: {num: 35, value: '', text: null, alternative: null, time: null},
+    36: {num: 36, value: '', text: null, alternative: null, time: null},
+    37: {num: 37, value: '', text: null, alternative: null, time: null},
+    38: {num: 38, value: '', text: null, alternative: null, time: null},
+    39: {num: 39, value: '', text: null, alternative: null, time: null},
+    40: {num: 40, value: '', text: null, alternative: null, time: null},
+    41: {num: 41, value: '', text: null, alternative: null, time: null},
+    42: {num: 42, value: '', text: null, alternative: null, time: null},
+    43: {num: 43, value: '', text: null, alternative: null, time: null},
+    44: {num: 44, value: '', text: null, alternative: null, time: null},
+    45: {num: 45, value: '', text: null, alternative: null, time: null},
+    46: {num: 46, value: '', text: null, alternative: null, time: null},
+    47: {num: 47, value: '', text: null, alternative: null, time: null},
+    48: {num: 48, value: '', text: null, alternative: null, time: null},
+    49: {num: 49, value: '', text: null, alternative: null, time: null},
+    50: {num: 50, value: '', text: null, alternative: null, time: null},
+    51: {num: 51, value: '', text: null, alternative: null, time: null},
+    52: {num: 52, value: '', text: null, alternative: null, time: null},
+    53: {num: 53, value: '', text: null, alternative: null, time: null},
+    54: {num: 54, value: '', text: null, alternative: null, time: null},
+    55: {num: 55, value: '', text: null, alternative: null, time: null},
+    56: {num: 56, value: '', text: null, alternative: null, time: null},
+    57: {num: 57, value: '', text: null, alternative: null, time: null},
+    58: {num: 58, value: '', text: null, alternative: null, time: null},
+    59: {num: 59, value: '', text: null, alternative: null, time: null}
+}
+
+// const instrument_3 = {
+//     1: {num: 1, value: '', text: null, alternative: null, time: null},
+//     2: {num: 2, value: '', text: null, alternative: null, time: null},
+//     3: {num: 3, value: '', text: null, alternative: null, time: null},
+//     4: {num: 4, value: '', text: null, alternative: null, time: null},
+//     5: {num: 5, value: '', text: null, alternative: null, time: null},
+//     6: {num: 6, value: '', text: null, alternative: null, time: null},
+//     7: {num: 7, value: '', text: null, alternative: null, time: null},
+//     8: {num: 8, value: '', text: null, alternative: null, time: null},
+//     9: {num: 9, value: '', text: null, alternative: null, time: null},
+//     10: {num: 10, value: '', text: null, alternative: null, time: null},
+//     11: {num: 11, value: '', text: null, alternative: null, time: null},
+//     12: {num: 12, value: '', text: null, alternative: null, time: null},
+//     13: {num: 13, value: '', text: null, alternative: null, time: null},
+//     14: {num: 14, value: '', text: null, alternative: null, time: null},
+//     15: {num: 15, value: '', text: null, alternative: null, time: null},
+//     16: {num: 16, value: '', text: null, alternative: null, time: null},
+//     17: {num: 17, value: '', text: null, alternative: null, time: null},
+//     18: {num: 18, value: '', text: null, alternative: null, time: null},
+//     19: {num: 19, value: '', text: null, alternative: null, time: null},
+//     20: {num: 20, value: '', text: null, alternative: null, time: null},
+//     21: {num: 21, value: '', text: null, alternative: null, time: null},
+//     22: {num: 22, value: '', text: null, alternative: null, time: null},
+//     23: {num: 23, value: '', text: null, alternative: null, time: null},
+//     24: {num: 24, value: '', text: null, alternative: null, time: null},
+//     25: {num: 25, value: '', text: null, alternative: null, time: null},
+//     26: {num: 26, value: '', text: null, alternative: null, time: null},
+//     27: {num: 27, value: '', text: null, alternative: null, time: null},
+//     28: {num: 28, value: '', text: null, alternative: null, time: null},
+//     29: {num: 29, value: '', text: null, alternative: null, time: null},
+//     30: {num: 30, value: '', text: null, alternative: null, time: null},
+//     31: {num: 31, value: '', text: null, alternative: null, time: null}
+
+// }
+
+const instrument_4 = {
+    1: {num: 1, value: '', text: null, alternative: null, time: null},
+    2: {num: 2, value: '', text: null, alternative: null, time: null},
+    3: {num: 3, value: '', text: null, alternative: null, time: null},
+    4: {num: 4, value: '', text: null, alternative: null, time: null},
+    5: {num: 5, value: '', text: null, alternative: null, time: null},
+    6: {num: 6, value: '', text: null, alternative: null, time: null},
+    7: {num: 7, value: '', text: null, alternative: null, time: null},
+    8: {num: 8, value: '', text: null, alternative: null, time: null},
+    9: {num: 9, value: '', text: null, alternative: null, time: null},
+    10: {num: 10, value: '', text: null, alternative: null, time: null},
+    11: {num: 11, value: '', text: null, alternative: null, time: null},
+    12: {num: 12, value: '', text: null, alternative: null, time: null},
+    13: {num: 13, value: '', text: null, alternative: null, time: null},
+    14: {num: 14, value: '', text: null, alternative: null, time: null},
+    15: {num: 15, value: '', text: null, alternative: null, time: null},
+    16: {num: 16, value: '', text: null, alternative: null, time: null},
+    17: {num: 17, value: '', text: null, alternative: null, time: null},
+    18: {num: 18, value: '', text: null, alternative: null, time: null},
+    19: {num: 19, value: '', text: null, alternative: null, time: null},
+    20: {num: 20, value: '', text: null, alternative: null, time: null},
+    21: {num: 21, value: '', text: null, alternative: null, time: null},
+    22: {num: 22, value: '', text: null, alternative: null, time: null},
+    23: {num: 23, value: '', text: null, alternative: null, time: null},
+    24: {num: 24, value: '', text: null, alternative: null, time: null},
+    25: {num: 25, value: '', text: null, alternative: null, time: null},
+    26: {num: 26, value: '', text: null, alternative: null, time: null},
+}
+
+const instrument_5 = {
+    1: {num: 1, value: 0, text: null, alternative: null, time: null},
+    2: {num: 2, value: 0, text: null, alternative: null, time: null},
+    3: {num: 3, value: 0, text: null, alternative: null, time: null},
+    4: {num: 4, value: 0, text: null, alternative: null, time: null},
+    5: {num: 5, value: 0, text: null, alternative: null, time: null},
+    6: {num: 6, value: 0, text: null, alternative: null, time: null},
+    7: {num: 7, value: 0, text: null, alternative: null, time: null},
+    8: {num: 8, value: 0, text: null, alternative: null, time: null},
+    9: {num: 9, value: 0, text: null, alternative: null, time: null},
+    10: {num: 10, value: 0, text: null, alternative: null, time: null},
+    11: {num: 11, value: 0, text: null, alternative: null, time: null},
+    12: {num: 12, value: 0, text: null, alternative: null, time: null},
+}
+
+const instrument_6 = {
+    1: {num: 1, value: '', text: null, alternative: null, time: null},
+    2: {num: 2, value: '', text: null, alternative: null, time: null},
+    3: {num: 3, value: '', text: null, alternative: null, time: null},
+    4: {num: 4, value: '', text: null, alternative: null, time: null},
+    5: {num: 5, value: '', text: null, alternative: null, time: null},
+    6: {num: 6, value: '', text: null, alternative: null, time: null},
+    7: {num: 7, value: '', text: null, alternative: null, time: null},
+    8: {num: 8, value: '', text: null, alternative: null, time: null},
+    9: {num: 9, value: '', text: null, alternative: null, time: null},
+    10: {num: 10, value: '', text: null, alternative: null, time: null},
+    11: {num: 11, value: '', text: null, alternative: null, time: null},
+    12: {num: 12, value: '', text: null, alternative: null, time: null},
+    13: {num: 13, value: '', text: null, alternative: null, time: null},
+    14: {num: 14, value: '', text: null, alternative: null, time: null},
+    15: {num: 15, value: '', text: null, alternative: null, time: null},
+    16: {num: 16, value: '', text: null, alternative: null, time: null},
+    17: {num: 17, value: '', text: null, alternative: null, time: null},
+    18: {num: 18, value: '', text: null, alternative: null, time: null},
+    19: {num: 19, value: '', text: null, alternative: null, time: null},
+    20: {num: 20, value: '', text: null, alternative: null, time: null},
+    21: {num: 21, value: '', text: null, alternative: null, time: null},
+    22: {num: 22, value: '', text: null, alternative: null, time: null},
+    23: {num: 23, value: '', text: null, alternative: null, time: null},
+    24: {num: 24, value: '', text: null, alternative: null, time: null},
+
+}
+
+const instrument_7 = {
+    1: { num: 1, value: "0", text: null, alternative: null, time: 0},
+    2: { num: 2, value: "0", text: null, alternative: null, time: 0},
+    3: { num: 3, value: "0", text: null, alternative: null, time: 0},
+    4: { num: 4, value: "0", text: null, alternative: null, time: 0},
+    5: { num: 5, value: "0", text: null, alternative: null, time: 0},
+    6: { num: 6, value: "0", text: null, alternative: null, time: 0},
+    7: { num: 7, value: "0", text: null, alternative: null, time: 0},
+    8: { num: 8, value: "0", text: null, alternative: null, time: 0},
+    9: { num: 9, value: "0", text: null, alternative: null, time: 0},
+    10: { num: 10, value: "0", text: null, alternative: null, time: 0},
+    11: { num: 11, value: "0", text: null, alternative: null, time: 0},
+    12: { num: 12, value: "0", text: null, alternative: null, time: 0},
+    13: { num: 13, value: "0", text: null, alternative: null, time: 0},
+    14: { num: 14, value: "0", text: null, alternative: null, time: 0},
+    15: { num: 15, value: "0", text: null, alternative: null, time: 0},
+    16: { num: 16, value: "0", text: null, alternative: null, time: 0},
+    17: { num: 17, value: "0", text: null, alternative: null, time: 0},
+    18: { num: 18, value: "0", text: null, alternative: null, time: 0},
+    19: { num: 19, value: "0", text: null, alternative: null, time: 0},
+    20: { num: 20, value: "0", text: null, alternative: null, time: 0},
+    21: { num: 21, value: "0", text: null, alternative: null, time: 0},
+    22: { num: 22, value: "0", text: null, alternative: null, time: 0},
+    23: { num: 23, value: "0", text: null, alternative: null, time: 0},
+    24: { num: 24, value: "0", text: null, alternative: null, time: 0},
+    25: { num: 25, value: "0", text: null, alternative: null, time: 0},
+    26: { num: 26, value: "0", text: null, alternative: null, time: 0},
+    27: { num: 27, value: "0", text: null, alternative: null, time: 0},
+    28: { num: 28, value: "0", text: null, alternative: null, time: 0},
+    29: { num: 29, value: "0", text: null, alternative: null, time: 0},
+    30: { num: 30, value: "0", text: null, alternative: null, time: 0},
+    31: { num: 31, value: "0", text: null, alternative: null, time: 0},
+    32: { num: 32, value: "0", text: null, alternative: null, time: 0},
+    33: { num: 33, value: "0", text: null, alternative: null, time: 0},
+    34: { num: 34, value: "0", text: null, alternative: null, time: 0},
+    35: { num: 35, value: "0", text: null, alternative: null, time: 0},
+    36: { num: 36, value: "0", text: null, alternative: null, time: 0},
+    37: { num: 37, value: "0", text: null, alternative: null, time: 0},
+    38: { num: 38, value: "0", text: null, alternative: null, time: 0},
+    39: { num: 39, value: "0", text: null, alternative: null, time: 0},
+    40: { num: 40, value: "0", text: null, alternative: null, time: 0},
+    41: { num: 41, value: "0", text: null, alternative: null, time: 0},
+    42: { num: 42, value: "0", text: null, alternative: null, time: 0},
+    43: { num: 43, value: "0", text: null, alternative: null, time: 0},
+    44: { num: 44, value: "0", text: null, alternative: null, time: 0},
+    45: { num: 45, value: "0", text: null, alternative: null, time: 0},
+    46: { num: 46, value: "0", text: null, alternative: null, time: 0},
+    47: { num: 47, value: "0", text: null, alternative: null, time: 0},
+    48: { num: 48, value: "0", text: null, alternative: null, time: 0},
+    49: { num: 49, value: "0", text: null, alternative: null, time: 0},
+    50: { num: 50, value: "0", text: null, alternative: null, time: 0},
+    51: { num: 51, value: "0", text: null, alternative: null, time: 0},
+    52: { num: 52, value: "0", text: null, alternative: null, time: 0},
+    53: { num: 53, value: "0", text: null, alternative: null, time: 0},
+    54: { num: 54, value: "0", text: null, alternative: null, time: 0},
+    55: { num: 55, value: "0", text: null, alternative: null, time: 0},
+    56: { num: 56, value: "0", text: null, alternative: null, time: 0},
+    57: { num: 57, value: "0", text: null, alternative: null, time: 0},
+    58: { num: 58, value: "0", text: null, alternative: null, time: 0},
+    59: { num: 59, value: "0", text: null, alternative: null, time: 0},
+    60: { num: 60, value: "0", text: null, alternative: null, time: 0},
+    61: { num: 61, value: "0", text: null, alternative: null, time: 0},
+    62: { num: 62, value: "0", text: null, alternative: null, time: 0},
+    63: { num: 63, value: "0", text: null, alternative: null, time: 0},
+    64: { num: 64, value: "0", text: null, alternative: null, time: 0},
+    65: { num: 65, value: "0", text: null, alternative: null, time: 0},
+    66: { num: 66, value: "0", text: null, alternative: null, time: 0},
+    67: { num: 67, value: "0", text: null, alternative: null, time: 0},
+    68: { num: 68, value: "0", text: null, alternative: null, time: 0},
+    69: { num: 69, value: "0", text: null, alternative: null, time: 0},
+
+}
+
+const instrument_8 = {
+    0: {num: 0, value: '0', text: '', alternative: null, time: null},
+    1: {num: 1, value: '0', text: '', alternative: null, time: null},
+    2: {num: 2, value: '0', text: '', alternative: null, time: null},
+    3: {num: 3, value: '0', text: '', alternative: null, time: null},
+    4: {num: 4, value: '0', text: '', alternative: null, time: null},
+    5: {num: 5, value: '0', text: '', alternative: null, time: null},
+    6: {num: 6, value: '0', text: '', alternative: null, time: null},
+    7: {num: 7, value: '0', text: '', alternative: null, time: null},
+    8: {num: 8, value: '0', text: '', alternative: null, time: null},
+    9: {num: 9, value: '0', text: '', alternative: null, time: null},
+    10: {num: 10, value: '0', text: '', alternative: null, time: null},
+    11: {num: 11, value: '0', text: '', alternative: null, time: null},
+    12: {num: 12, value: '0', text: '', alternative: null, time: null},
+    13: {num: 13, value: '0', text: '', alternative: null, time: null},
+    14: {num: 14, value: '0', text: '', alternative: null, time: null},
+    15: {num: 15, value: '0', text: '', alternative: null, time: null},
+    16: {num: 16, value: '0', text: '', alternative: null, time: null},
+    17: {num: 17, value: '0', text: '', alternative: null, time: null},
+    18: {num: 18, value: '0', text: '', alternative: null, time: null},
+    19: {num: 19, value: '0', text: '', alternative: null, time: null},
+    20: {num: 20, value: '0', text: '', alternative: null, time: null},
+    21: {num: 21, value: '0', text: '', alternative: null, time: null},
+    22: {num: 22, value: '0', text: '', alternative: null, time: null},
+    23: {num: 23, value: '0', text: '', alternative: null, time: null},
+
+}
+
+//1. DATA: Basicamente esta cosa lo que hace es primero traerse toda la data dependiendo el momento
+//2. HEADERS: Luego lo que hace es dado el primer elemento, saca todos los HEADERS
+//3. ROWS: luego dependiendo del instrumento, hay una forma para calcular puntajes y setear la row
 
 router.post('/', async (req, res) => {
 
@@ -13,16 +367,30 @@ router.post('/', async (req, res) => {
 
     // Este if es porque los primeros 2 momentos sacamos el userId de Evaluation, y desde los otros desde instrument_list
     // Como el userId lo agregamos recientemente a instrument_list, tenemos que realizar queries distintas
-    if (moment == 1 || moment == 2) {
+    
+    if (instrument == 0) {
+
+        // no necesitamos una consulta para cada momento, ya que el userId en este caso al ser el instrumento 0 siempre será al user del evaluation
+
         sql = `SELECT 
         student.rut as rut, 
         concat(student.name , " ", student.surname) as alumno, 
-        concat(course.level , " ", course.letter) as curso,
+        course.level as nivel,
+        course.letter as curso,
         concat(user.name, " ", user.surname) as profesor, 
         student.gender as genero,
-        school.name as colegio, instrument_list.date as fecha, 
-        choice.value,  item.num, choice.id 
-        FROM choice  
+        school.name as colegio, 
+        instrument_list.date as fecha, 
+        choice.value,  
+		choice.alternative,
+        choice.time,
+        choice.text,
+        item.num, 
+        choice.id,
+        instrument.id as instrument,
+        evaluation.id as eva,
+        moment_id as moment
+    FROM choice  
         INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
         INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
         INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
@@ -33,35 +401,64 @@ router.post('/', async (req, res) => {
         INNER JOIN course ON student.course_id = course.id 
         INNER JOIN school ON course.school_id = school.id 
         INNER JOIN item ON choice.item_id = item.id 
-        WHERE instrument.id = ${instrument} 
-        AND evaluation.moment_id = ${moment} 
-        AND school.id 
-        IN (${schools}); `
+    GROUP BY student.rut, user.name, user.surname, instrument_list.date, choice.value, item.num, choice.id, evaluation.id, choice.time, choice.text, choice.alternative
+    LIMIT 1000000;`
+
     } else {
-        sql = `SELECT 
-        student.rut as rut, 
-        concat(student.name , " ", student.surname) as alumno, 
-        concat(course.level , " ", course.letter) as curso,
-        concat(user.name, " ", user.surname) as profesor, 
-        student.gender as genero,
-        school.name as colegio, instrument_list.date as fecha, 
-        choice.value,  item.num, choice.id 
-        FROM choice  
-        INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
-        INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
-        INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
-        INNER JOIN user ON instrument_list.evaluator_id = user.id
-        INNER JOIN student ON evaluation.student_id = student.id 
-        INNER JOIN moment ON moment.id = evaluation.moment_id 
-        INNER JOIN study_list ON instrument.id = study_list.instrument_id 
-        INNER JOIN course ON student.course_id = course.id 
-        INNER JOIN school ON course.school_id = school.id 
-        INNER JOIN item ON choice.item_id = item.id 
-        WHERE instrument.id = ${instrument} 
-        AND evaluation.moment_id = ${moment} 
-        AND school.id 
-        IN (${schools});`
+
+        if (moment == 1 || moment == 2) {
+            sql = `SELECT 
+            student.rut as rut, 
+            concat(student.name , " ", student.surname) as alumno, 
+            concat(course.level , " ", course.letter) as curso,
+            concat(user.name, " ", user.surname) as profesor, 
+            student.gender as genero,
+            school.name as colegio, instrument_list.date as fecha, 
+            choice.value,  item.num, choice.id 
+            FROM choice  
+            INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
+            INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
+            INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
+            INNER JOIN user ON user.id = evaluation.user_id 
+            INNER JOIN student ON evaluation.student_id = student.id 
+            INNER JOIN moment ON moment.id = evaluation.moment_id 
+            INNER JOIN study_list ON instrument.id = study_list.instrument_id 
+            INNER JOIN course ON student.course_id = course.id 
+            INNER JOIN school ON course.school_id = school.id 
+            INNER JOIN item ON choice.item_id = item.id 
+            WHERE instrument.id = ${instrument} 
+            AND evaluation.moment_id = ${moment} 
+            AND school.id 
+            IN (${schools}); `
+        } else {
+            sql = `SELECT 
+            student.rut as rut, 
+            concat(student.name , " ", student.surname) as alumno, 
+            concat(course.level , " ", course.letter) as curso,
+            concat(user.name, " ", user.surname) as profesor, 
+            student.gender as genero,
+            school.name as colegio, instrument_list.date as fecha, 
+            choice.value,  item.num, item.title, choice.id, choice.alternative as alternative, choice.text as text, choice.time as time
+            FROM choice  
+            INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
+            INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
+            INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
+            INNER JOIN user ON instrument_list.evaluator_id = user.id
+            INNER JOIN student ON evaluation.student_id = student.id 
+            INNER JOIN moment ON moment.id = evaluation.moment_id 
+            INNER JOIN study_list ON instrument.id = study_list.instrument_id 
+            INNER JOIN course ON student.course_id = course.id 
+            INNER JOIN school ON course.school_id = school.id 
+            INNER JOIN item ON choice.item_id = item.id 
+            WHERE instrument.id = ${instrument} 
+            AND evaluation.moment_id = ${moment} 
+            AND school.id 
+            IN (${schools});`
+        }
+
     }
+    
+    
 
     
     function getDataRows () {
@@ -78,6 +475,481 @@ router.post('/', async (req, res) => {
     }
 
     let rows = await getDataRows()
+
+
+    if (instrument == 0) {
+        let allStudents = await studentsService.getAllStudentsInfo();
+        let allMoments = await momentService.getMomentsIds();
+
+
+        function getAllRows(allRows) {
+
+            let parsedStudentsChoices = {};
+            let studentRows = [];
+            let currentStudent;
+            let previousStudent = null;
+            let studentData = {}
+            let currentMoment = null;
+            let previousMoment = null;
+            let instrumentObject = {};
+            let previousInstrument = null;
+            let currentInstrument = null;
+
+            allRows.forEach((row, key) => {
+
+        
+                currentInstrument = row.instrument;
+                currentMoment = row.moment;
+                currentStudent = row.rut;
+
+                if (row.rut == '20788918-1' && row.instrument == "5"){
+                    console.log("lo ultim")
+                    // esta funcion esta recibienedo los 12 datos pero los sobre erscribe y quedan 12.. ha yq hacer algo condiciona la ael instrument 5
+                }
+
+                if (previousInstrument !== null && previousInstrument !== currentInstrument) {
+
+                    studentData[`instrument-${previousInstrument}`] = instrumentObject;
+                    instrumentObject = {};
+                }
+
+                    if (previousMoment !== currentMoment) {
+                        parsedStudentsChoices[`${previousMoment}`] = studentRows;
+                        studentRows = [];
+                        instrumentObject = {}
+
+                    }
+
+                if (row.instrument == "5") {
+                        instrumentObject[Object.entries(instrumentObject).length+1] = {
+                            "num": row.num,
+                            "value": row.value,
+                            "text": row.text,
+                            "alternative":row.alternative,
+                            "time":row.time
+                        };
+        
+                } else{ 
+                    instrumentObject[row.num] = {
+                        "num": row.num,
+                        "value": row.value,
+                        "text": row.text,
+                        "alternative":row.alternative,
+                        "time":row.time
+                    };
+                }
+
+
+
+                if (previousStudent === null) {
+                    studentData.evaluador = row.profesor;
+                    studentData.genero = row.genero;
+                    studentData.colegio = row.colegio;
+                    studentData.nombre = row.alumno;
+                    studentData.rut = row.rut;
+                    studentData.level = row.nivel;
+                    studentData.course = row.curso;
+                    studentData.date = row.fecha;
+
+
+                } else {
+                    if (previousStudent !== currentStudent) {
+                        studentRows.push(studentData);
+                        studentData = {}
+                        studentData.evaluador = row.profesor;
+                        studentData.genero = row.genero;
+                        studentData.colegio = row.colegio;
+                        studentData.nombre = row.alumno;
+                        studentData.rut = row.rut;
+                        studentData.level = row.nivel;
+                        studentData.course = row.curso;
+                        studentData.date = row.fecha;
+                        studentData.moment = row.moment;
+                        instrumentObject = {}                        
+                        instrumentObject[row.num] = {
+                            "num": row.num,
+                            "value": row.value,
+                            "text": row.text,
+                            "alternative":row.alternative,
+                            "time":row.time
+                        };
+
+                        if (currentMoment !== previousMoment){
+                            console.log("ok")
+                        }
+
+                    }
+                }
+
+
+                previousStudent = currentStudent;
+                previousMoment = currentMoment;
+                previousInstrument = currentInstrument;
+            })
+            parsedStudentsChoices[`${previousMoment}`] = studentRows;
+            return parsedStudentsChoices
+        }
+
+        const testsByMoment = getAllRows(rows);
+        delete testsByMoment.null;
+
+
+        let infoHeaders = ['rut', 'alumno','genero','fecha_de_nacimiento', 'colegio', 'diagnostico_oficial', 'observacion_evaluador'];
+        let thisMomentInfo = ['evaluador_responsable', 'nivel', 'curso', 'fecha_evaluacion', 'edad_etapa']
+        let tejasHeaders = ['pregunta_1', 'pregunta_2', 'pregunta_3', 'pregunta_4', 'pregunta_5', 'pregunta_6', 'pregunta_7', 'pregunta_8', 'pregunta_9', 'pregunta_10', 'pregunta_11', 'pregunta_12', 'pregunta_13', 'pregunta_14', 'pregunta_15', 'pregunta_16', 'pregunta_17', 'pregunta_18', 'pregunta_19', 'pregunta_20', 'pregunta_21', 'pregunta_22', 'pregunta_23', 'pregunta_24', 'pregunta_25', 'pregunta_26', 'pregunta_27', 'pregunta_28', 'pregunta_29', 'pregunta_30', 'pregunta_31', 'pregunta_32', 'pregunta_33', 'pregunta_34', 'pregunta_35', 'pregunta_36', 'pregunta_37', 'pregunta_38', 'pregunta_39', 'pregunta_40', 'pregunta_41', 'pregunta_42', 'pregunta_43',  'pregunta_44', 'pregunta_45', 'pregunta_46', 'pregunta_47', 'pregunta_48', 'pregunta_49', 'pregunta_50', 'pregunta_51', 'pregunta_52', 'pregunta_53', 'pregunta_54', 'pregunta_55', 'pregunta_56', 'pregunta_57', 'pregunta_58', 'pregunta_59', 'pregunta_60', 'pregunta_61', 'pregunta_62', 'pregunta_63', 'pregunta_64', 'pregunta_65', 'pregunta_66', 'pregunta_67', 'pregunta_68', 'pregunta_69', 'pregunta_70', 'pregunta_71', 'pregunta_72', 'puntaje_total']
+        let precalculoHeaders = ['pregunta_1', 'pregunta_2', 'pregunta_3', 'pregunta_4', 'pregunta_5', 'pregunta_6', 'pregunta_7', 'pregunta_8', 'pregunta_9', 'pregunta_10', 'pregunta_11', 'pregunta_12', 'pregunta_13', 'pregunta_14', 'pregunta_15', 'pregunta_16', 'pregunta_17', 'pregunta_18', 'pregunta_19', 'pregunta_20', 'pregunta_21', 'pregunta_22', 'pregunta_23', 'pregunta_24', 'pregunta_25', 'pregunta_26', 'pregunta_27', 'pregunta_28', 'pregunta_29', 'pregunta_30', 'pregunta_31', 'pregunta_32', 'pregunta_33', 'pregunta_34', 'pregunta_35', 'pregunta_36', 'pregunta_37', 'pregunta_38', 'pregunta_39', 'pregunta_40', 'pregunta_41', 'pregunta_42', 'pregunta_43',  'pregunta_44', 'pregunta_45', 'pregunta_46', 'pregunta_47', 'pregunta_48', 'pregunta_49', 'pregunta_50', 'pregunta_51', 'pregunta_52', 'pregunta_53', 'pregunta_54', 'pregunta_55', 'pregunta_56', 'pregunta_57', 'pregunta_58', 'pregunta_59']
+        let acesHeaders = ['puntaje_1', 'pregunta_1', 'puntaje_2', 'pregunta_2','puntaje_3', 'pregunta_3','puntaje_4', 'pregunta_4','puntaje_5', 'pregunta_5','puntaje_6', 'pregunta_6','puntaje_7', 'pregunta_7','puntaje_8', 'pregunta_8','puntaje_9', 'pregunta_9','puntaje_10', 'pregunta_10','puntaje_11', 'pregunta_11','puntaje_12', 'pregunta_12','puntaje_13', 'pregunta_13','puntaje_14', 'pregunta_14','puntaje_15', 'pregunta_15','puntaje_16', 'pregunta_16','puntaje_17', 'pregunta_17','puntaje_18', 'pregunta_18','puntaje_19', 'pregunta_19','puntaje_20', 'pregunta_20','puntaje_21', 'pregunta_21','puntaje_22', 'pregunta_22','puntaje_23', 'pregunta_23','puntaje_24', 'pregunta_24','puntaje_25', 'pregunta_25','puntaje_26', 'pregunta_26', 'puntaje_total']
+        let wallyHeaders = ['emocion_1', 'conducta_1', 'emocion_2', 'conducta_2', 'emocion_3', 'conducta_3', 'emocion_4', 'conducta_4', 'emocion_5', 'conducta_5', 'emocion_6', 'conducta_6'];
+        let corsiHeaders = ['corsi_total_0', 'ordered_tries', 'reversed_tries_0', 'corsi_ordered_example_1_0', 'answer', 'corsi_ordered_example_2_0', 'answer', 'corsi_ordered_example_3_0', 'answer', 'corsi_ordered_example_4_0', 'answer', 'corsi_ordered_example_5_0', 'answer', 'corsi_ordered_example_6_0', 'answer', 'corsi_ordered_example_7_0', 'answer', 'corsi_ordered_example_8_0', 'answer', 'corsi_ordered_example_9_0', 'answer', 'corsi_ordered_example_10_0', 'answer', 'corsi_ordered_example_11_0', 'answer', 'corsi_ordered_example_12_0', 'answer', 'corsi_ordered_example_13_0', 'answer', 'corsi_ordered_example_14_0', 'answer', 'corsi_reverse_example_15_0', 'answer', 'corsi_reverse_example_16_0', 'answer', 'corsi_reverse_example_17_0', 'answer', 'corsi_reverse_example_18_0', 'answer', 'corsi_reverse_example_19_0', 'answer', 'corsi_reverse_example_20_0', 'answer', 'corsi_reverse_example_21_0', 'answer', 'corsi_reverse_example_22_0', 'answer'];
+        let HNFHeaders = ['hnf_total', 'score_hearts', 'time_seconds_hearts', 'score_flowers', 'time_seconds_flowers', 'score_heart_flowers', 'time_seconds_heart_flowers', 'total_time'];
+        let fonoHeaders = ['ejemplo_a_score', 'ejemplo_a_answer', 'ejemplo_b_score', 'ejemplo_b_answer', 'item_1_score', 'item_1_answer', 'item_2_score', 'item_2_answer', 'item_3_score', 'item_3_answer','ejemplo_c_score', 'ejemplo_c_answer','item_4_score', 'item_4_answer','item_5_score', 'item_5_answer','item_6_score', 'item_6_answer','item_7_score', 'item_7_answer','item_8_score', 'item_8_answer','item_9_score', 'item_9_answer','item_10_score', 'item_10_answer','item_11_score', 'item_11_answer', 'item_12_score', 'item_12_answer','item_13_score', 'item_13_answer','item_14_score', 'item_14_answer','item_15_score', 'item_15_answer','item_16_score', 'item_16_answer','item_17_score', 'item_17_answer','item_18_score', 'item_18_answer','item_19_score', 'item_19_answer','item_20_score', 'item_20_answer','item_21_score', 'item_21_answer', 'total_points']
+
+        // hay que agregar los headers principales solo 1 vez
+
+        
+
+        const momentsIds = Object.keys(testsByMoment);
+
+        let allMomentsHeaders = [];
+
+        momentsIds.forEach((moment) => {
+            allMomentsHeaders.push(...thisMomentInfo,...tejasHeaders, ...precalculoHeaders, ...acesHeaders, ...wallyHeaders, ...corsiHeaders, ...HNFHeaders, ...fonoHeaders)
+        })
+
+        let allHeaders = [...infoHeaders, ...allMomentsHeaders]
+        
+
+        // let thisMomentHeaders = [...thisMomentInfo,...tejasHeaders, ...precalculoHeaders, ...acesHeaders, ...wallyHeaders, ...corsiHeaders, ...HNFHeaders, ...fonoHeaders];
+
+
+
+        function addEmptyInstruments(studentRows) {
+            const completedStudentRows = studentRows.map((momentRow, key) => {
+                if (momentRow[0]) {
+                    if (momentRow[0]['instrument-1'] == undefined){
+                        momentRow[0]['instrument-1'] = instrument_1
+                    } 
+                    if (momentRow[0]['instrument-2'] == undefined) {
+                        momentRow[0]['instrument-2'] = instrument_2
+                    } 
+                    if (momentRow[0]['instrument-4'] == undefined) {
+                        momentRow[0]['instrument-4'] = instrument_4
+                    } 
+                    if (momentRow[0]['instrument-5'] == undefined) {
+                        momentRow[0]['instrument-5'] = instrument_5
+                    } 
+                    if (momentRow[0]['instrument-6'] == undefined) {
+                        momentRow[0]['instrument-6'] = instrument_6
+                    }
+                    if (momentRow[0]['instrument-7'] == undefined) {
+                        momentRow[0]['instrument-7'] = instrument_7
+                    }
+    
+                    if (momentRow[0]['instrument-8'] == undefined) {
+                        momentRow[0]['instrument-8'] = instrument_8
+                    }
+                } else {
+                    console.log("Debo ver q pasa aca")
+                }
+
+                return momentRow[0];
+
+   
+                
+            })
+
+            return completedStudentRows;
+        }
+
+        function addEmptyMoments(studentRows, allMoments, emptyStudentInfo = undefined) {
+
+
+            //Ahora deberia obtener cuales keys faltan
+            // por cada key que falta, iremos a buscar a allMoments que momento le corresponde a esa key
+            // obteniendo el momento y con la key, insertaremos un objeto en la key correspondiente
+            // usaremos la data general que exista en otra llave (la podemos obtener cuando row no es undefined)
+            // en la key insertaremos con esa data lo general y los instrumentos los asignaremos todos 
+            // los que ya estan definidos arriba... luego se pasará al otro key que falta.
+            
+            let studentInfo = {}
+            let emptyKeys = []
+            studentRows.forEach((row, key) => {
+                if (key === 0) {
+                    if (emptyStudentInfo !== undefined && Object.entries(studentInfo).length == 0) {
+                        studentInfo['evaluador'] = '';
+                        studentInfo['genero'] = emptyStudentInfo.gender;
+                        studentInfo['colegio'] = emptyStudentInfo.escuela;
+                        studentInfo['nombre'] = emptyStudentInfo.alumno;
+                        studentInfo['rut'] = emptyStudentInfo.rut;
+                        studentInfo['nivel'] = emptyStudentInfo.level;
+                        studentInfo['curso'] = emptyStudentInfo.course;
+                        if (row) {
+                            if (row.hasOwnProperty("date"))  {
+                                studentInfo['fecha'] = row.date;
+                            }
+                        } else {
+                            studentInfo['fecha'] = '';
+                        }
+ 
+                        
+
+                    } else if (Object.entries(studentInfo).length == 0) {
+                        studentInfo['evaluador'] = '';
+                        studentInfo['genero'] = row.genero;
+                        studentInfo['colegio'] = row.colegio;
+                        studentInfo['nombre'] = row.nombre;
+                        studentInfo['rut'] = row.rut;
+                        studentInfo['nivel'] = row.level;
+                        studentData['curso'] = row.course;
+                        if (row) {
+                            //tendre que comprobar de esta misma forma para enviar la edad u otras posibles cosas que no tengamos.
+                            if (row.hasOwnProperty("date"))  {
+                                studentInfo['fecha'] = row.date;
+                            }
+                        } else {
+                            studentInfo['fecha'] = '';
+                        }
+                    }
+                }
+                if (row === undefined || row.length === 0) {
+                    emptyKeys.push(key)
+                } 
+            })
+
+            // no se estan contando las emptyKeys nose pq con los qu no tienen
+
+            if (emptyKeys.length > 0) {
+                emptyKeys.forEach((key) => {
+                    const momentId = allMoments[key].id;
+
+                    // studentInfo['evaluador'] = '';
+                    // studentInfo['genero'] = row.genero;
+                    // studentInfo['colegio'] = row.colegio;
+                    // studentInfo['nombre'] = row.nombre;
+                    // studentInfo['rut'] = row.rut;
+                    // studentInfo['nivel'] = row.level;
+                    // studentData['curso'] = row.course;
+                    
+                    studentRows[key] = {
+                        "evaluador": studentInfo['evaluador'],
+                        "genero": studentInfo['genero'],
+                        "colegio": studentInfo['colegio'],
+                        "nombre": studentInfo['nombre'],
+                        "rut": studentInfo['rut'],
+                        "nivel": studentInfo['nivel'],
+                        "curso": studentInfo['curso'],
+                        "moment": momentId,
+                        "instrument-1": instrument_1,
+                        "instrument-2": instrument_2,
+                        "instrument-4": instrument_4,
+                        "instrument-5": instrument_5,
+                        "instrument-6": instrument_6,
+                        "instrument-7": instrument_7,
+                        "instrument-8": instrument_8
+                    }
+                })
+            }
+
+            return studentRows
+        }
+
+        function checkStudentMoments(studentRows) {
+            let response = false;
+            studentRows.forEach((row) => {
+                if (row === undefined) {
+                    response = true;
+                }
+            })
+            return response;
+        }
+
+        function finalParsedRows (allStudentRows) {
+
+
+
+        // let infoHeaders = ['rut', 'alumno','genero','fecha_de_nacimiento', 'colegio', 'diagnostico_oficial', 'observacion_evaluador'];
+        // let thisMomentInfo = ['evaluador_responsable', 'nivel', 'curso', 'fecha_evaluacion', 'edad_etapa']
+            const allFinalParsedRows = [];
+
+            allStudentRows.forEach((studentRows, key) => {
+                const finalParsedRow = [];
+                studentRows.forEach((row, key) => {
+                    if (key == 0) {
+
+
+
+        // let infoHeaders = ['rut', 'alumno','genero','fecha_de_nacimiento', 'colegio', 'diagnostico_oficial', 'observacion_evaluador'];
+        // let thisMomentInfo = ['evaluador_responsable', 'nivel', 'curso', 'fecha_evaluacion', 'edad_etapa']
+
+                        //pusheo de datos generales
+                        finalParsedRow.push(row.rut, row.nombre, row.genero, '2017/01/01', row.colegio, 'Diagnostico test', 'Observacion test')
+
+                        //datos ya del momento
+
+                        finalParsedRow.push(row.profesor ? row.profesor : row.evaluador, row.level ? row.level : row.nivel, row.course ? row.course : row.curso, row.date ? row.date : '', '0')
+
+                        const tejasRows = excelService.getInfoTejasFinal(row['instrument-1']);
+                        const precalculoRows = excelService.getInfoCalculoFinal(row['instrument-2']);
+                        const acesRows = excelService.getInfoAcesFinal(row['instrument-4']);
+                        const wallyRows = excelService.getInfoFinal(row['instrument-5']);
+                        const corsiRows = excelService.getInfoFinalCorsi(row['instrument-6']);
+                        const HNFRows = excelService.getInfoHNFFinal(row['instrument-7']);
+                        const fonoRows = excelService.getInfoFonoFinal(row['instrument-8']);
+
+                        if (tejasRows.length !== 73){
+                            console.log("algo pasa")
+                        }
+                        if (precalculoRows.length !== 59){
+                            console.log("algo pasa")
+                        }
+                        if (acesRows.length !== 53){
+                            console.log("algo pasa")
+                        }
+                        if (wallyRows.length !== 12){
+                            console.log("algo pasa")
+                        }
+                        if (corsiRows.length !== 47){
+                            console.log("algo pasa")
+                        }
+                        if (HNFRows.length !== 8){
+                            console.log("algo pasa")
+                        }
+                        if (fonoRows.length !== 49){
+                            console.log("algo pasa")
+                        }
+                
+
+
+
+                        finalParsedRow.push(...tejasRows, ...precalculoRows, ...acesRows, ...wallyRows, ...corsiRows, ...HNFRows, ...fonoRows)
+                    } else {
+
+
+                        
+
+
+                        finalParsedRow.push(row.profesor ? row.profesor : row.evaluador, row.level ? row.level : row.nivel, row.course ? row.course : row.curso, row.date ? row.date : '', '0')
+                        const tejasRows = excelService.getInfoTejasFinal(row['instrument-1']);
+                        const precalculoRows = excelService.getInfoCalculoFinal(row['instrument-2']);
+                        const acesRows = excelService.getInfoAcesFinal(row['instrument-4']);
+                        const wallyRows = excelService.getInfoFinal(row['instrument-5']);
+                        const corsiRows = excelService.getInfoFinalCorsi(row['instrument-6']);
+                        const HNFRows = excelService.getInfoHNFFinal(row['instrument-7']);
+                        const fonoRows = excelService.getInfoFonoFinal(row['instrument-8']);
+                        
+
+                        if (tejasRows.length !== 73){
+                            console.log("algo pasa")
+                        }
+                        if (precalculoRows.length !== 59){
+                            console.log("algo pasa")
+                        }
+                        if (acesRows.length !== 53){
+                            console.log("algo pasa")
+                        }
+                        if (wallyRows.length !== 12){
+                            console.log("algo pasa")
+                        }
+                        if (corsiRows.length !== 47){
+                            console.log("algo pasa")
+                        }
+                        if (HNFRows.length !== 8){
+                            console.log("algo pasa")
+                        }
+                        if (fonoRows.length !== 49){
+                            console.log("algo pasa")
+                        }
+
+                        finalParsedRow.push(...tejasRows, ...precalculoRows, ...acesRows, ...wallyRows, ...corsiRows, ...HNFRows, ...fonoRows)
+                    }
+                })
+
+
+                allFinalParsedRows.push(finalParsedRow)
+            })
+
+            return allFinalParsedRows
+
+        }
+
+        function numberOfEvaluations (studentRowsByMoment) {
+            let counter = 0;
+            studentRowsByMoment.forEach((row) => {
+                counter = counter + row.length;
+            })
+
+            return counter;
+        }
+
+        const allStudentCompletedRows = allStudents.map((student) =>  {
+
+            // esta funcion basicamente se encarga de dejar todo el orden qeu ya habiamos dado a un next level
+            // se preocupa de integrar los momentos e instrumentos que no existan y dejar todo con el mismo formato.
+
+            //recuerda que por cada alumno, estamos generando la ROW con todas sus datos correspondientes, es decir, info general y info por momento [instrumento]
+            
+            const localTestsByMoment = testsByMoment; // esto es para agarrar la data que llega nomas de la bdd
+            const momentsIds = Object.keys(localTestsByMoment);
+
+
+            const studentRowsByMoment = momentsIds.map((momentId) => {
+                const rowsByMoment = localTestsByMoment[momentId].filter((row) => row.rut == student.rut)
+                return rowsByMoment;
+            })
+
+            // Esto es para contar la cantidad de evaluaciones que tiene el alumno actual
+            //Mas abajo si es que es 0 agregamos todos los momentos vacios..
+            // en caso de que no sea 0, agregaremos los instrumentos faltantes (ya que el de empty moments no añade instrumentos, solo evas, asi que es necesario del deinstrumentos)
+            const evaluationCounter = numberOfEvaluations(studentRowsByMoment) 
+
+            let newRows;
+
+            if (evaluationCounter == 0) {
+                newRows = addEmptyMoments(studentRowsByMoment, allMoments, student);
+            } else {
+
+                newRows = addEmptyInstruments(studentRowsByMoment);
+                let isIncomplete = checkStudentMoments(newRows);
+                if (isIncomplete){
+                    newRows = addEmptyMoments(newRows, allMoments, student);
+                }
+            }
+
+            return newRows;
+
+        })
+
+        const finalRows = finalParsedRows(allStudentCompletedRows);
+
+        const csvDataFinal = [];
+        csvDataFinal.push([...allHeaders])
+        
+        finalRows.forEach(
+            row => {
+                csvDataFinal.push(row);
+            }
+        )
+
+        res.send(csvDataFinal)
+
+
+        const csvWriter = createCsvWriter({
+            header: allHeaders,
+            path: 'file.csv'
+        });
+         
+        const records = finalRows;
+         
+        csvWriter.writeRecords(records)      
+            .then(() => {
+                console.log('....Done');
+            })
+            .catch(err => console.log(err))
+
+
+
+
+    } else {
     let infoHeaders = ['rut', 'alumno','genero','curso', 'evaluador', 'colegio', 'fecha'];
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
     let infoChoices = []
@@ -135,8 +1007,6 @@ router.post('/', async (req, res) => {
         24: '4-1-6-5-4-9-2'
     }
         
-
-    
     // ACA añadimos los headers personalizados
     if (instrument == 4) {
         filteredRows.map(row => {
@@ -194,6 +1064,33 @@ router.post('/', async (req, res) => {
 
         })
     
+    } else if (instrument == 7) {
+        infoRow = `hnf_total`;
+        infoChoices.push(infoRow)
+        infoRow = `score_hearts`;
+        infoChoices.push(infoRow)
+        infoRow = `time_seconds_hearts`;
+        infoChoices.push(infoRow)
+        infoRow = `score_flowers`;
+        infoChoices.push(infoRow)
+        infoRow = `time_seconds_flowers`;
+        infoChoices.push(infoRow)
+        infoRow = `score_heart_flowers`;
+        infoChoices.push(infoRow)
+        infoRow = `time_seconds_heart_flowers`;
+        infoChoices.push(infoRow)
+        infoRow = `total_time`;
+        infoChoices.push(infoRow)
+    } else if (instrument == 8) {
+        filteredRows.map(row => {
+            infoRow = `${row.title}_score`
+            infoChoices.push(infoRow)
+            infoRow = `${row.title}_answer`
+            infoChoices.push(infoRow)
+        })
+
+        infoRow = `total_points`
+        infoChoices.push(infoRow)
     } else {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`
@@ -201,6 +1098,7 @@ router.post('/', async (req, res) => {
         })
     }
     
+    //esta info es realmente los headers de toda la weaita
     let info = [...infoHeaders, ...infoChoices]
     let allStudentsRows = []
 
@@ -286,15 +1184,19 @@ router.post('/', async (req, res) => {
     }
 
 
-    function getStudentInfo(rows) {
+    function getStudentInfoFono(rows) {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
-        rows.forEach(row => {
+        let totalPoints = 0;
+        let index = 0
+        rows.forEach((row, key) => {
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
+                totalPoints = 0;
+                index = 0;
                 const fechaTest = new Date(currentStudent['fecha']);
                 const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
@@ -307,21 +1209,35 @@ router.post('/', async (req, res) => {
 
                 if (currentStudent['value'].length == 0) {
                     studentRow.push('0') 
+                    studentRow.push('')
                 } else {
                     studentRow.push(currentStudent['value'])
+                    studentRow.push(currentStudent['text'])
                 } 
                 allStudentsRows.push(studentRow)
                 
             } else {
                 if (currentStudent['value'].length == 0) {
                     studentRow.push('0') 
+                    studentRow.push('')
                 } else {
                     studentRow.push(currentStudent['value'])
+                    studentRow.push(currentStudent['text'])
                 } 
             }
+
+            if (currentStudent['value'] > 0) {
+                totalPoints = parseInt(totalPoints) + parseInt(currentStudent['value']);
+            }
+
+            if (index === 23) {
+                studentRow.push(totalPoints)
+            }
+            index++
             studentCounter++
             previousStudent = currentStudentRut;
         })
+
 
         let csvData = [];
         csvData.push([...info])
@@ -614,6 +1530,175 @@ router.post('/', async (req, res) => {
         
     }
 
+    function getStudentInfo(rows) {
+        let studentRow = []
+        let studentCounter = 0
+        let previousStudent = undefined;
+        rows.forEach(row => {
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+                studentRow = []
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(fechaParseada)
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0') 
+                } else {
+                    studentRow.push(currentStudent['value'])
+                } 
+                allStudentsRows.push(studentRow)
+                
+            } else {
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0') 
+                } else {
+                    studentRow.push(currentStudent['value'])
+                } 
+            }
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+        let csvData = [];
+        csvData.push([...info])
+        
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        res.send(csvData)
+        
+    }
+
+    function getStudentInfoHNF(rows) {
+        let studentRow = []
+        let studentAnswers = [];
+        let studentCounter = 0
+        let previousStudent = undefined;
+        let exampleHeartTotal = 0;
+        let exampleFlowersTotal = 0;
+        let heartTotal = 0;
+        let flowerTotal = 0;
+        let HNFTotal = 0;
+        rows.forEach(row => {
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+
+                exampleHeartTotal = 0;
+                exampleFlowersTotal = 0;
+                heartTotal = 0;
+                flowerTotal = 0;
+                HNFTotal = 0;
+
+                if (studentAnswers.length > 0) {
+                    console.log("Hacemos logica para sacar los resultados")
+     
+                    let score_hearts = 0;
+                    let time_seconds_hearts = 0;
+                    let score_flowers = 0;
+                    let time_seconds_flowers = 0;
+                    let score_hearts_flowers = 0;
+                    let time_seconds_hearts_flowers = 0;
+   
+
+                    studentAnswers.forEach((answer) => {
+ 
+                        if (answer.item > 6 && answer.item < 19) {
+                            score_hearts = score_hearts + parseFloat(answer.value)
+                            time_seconds_hearts = time_seconds_hearts + parseFloat(answer.time)
+                            heartTotal++
+                        } else if (answer.item >= 25 && answer.item <= 36) {
+                            score_flowers = score_flowers + parseFloat(answer.value)
+                            time_seconds_flowers = time_seconds_hearts + parseFloat(answer.time)
+                            flowerTotal++
+                        } else if (answer.item >= 37) {
+                            score_hearts_flowers = score_hearts_flowers + parseInt(answer.value);
+                            time_seconds_hearts_flowers = time_seconds_hearts_flowers + parseFloat(answer.time)
+                            HNFTotal++
+                        }
+                    })
+
+                    //Calculamos cuandtos items le falto contestar y por cada item multiplicamos por 2, es decir que si le faltan 2 respuestas son 4 segundos, si le faltan 7 respuestas son 14 segundos.
+                    const notSelectedHeartTime = (12 - heartTotal) * 2;
+                    const notSelectedFlowerTime = (12 - flowerTotal) * 2;
+                    const notSelectedHNFTime = (33 - HNFTotal) * 2;
+
+                    time_seconds_hearts = time_seconds_hearts + notSelectedHeartTime;
+                    time_seconds_flowers = time_seconds_flowers + notSelectedFlowerTime;
+                    time_seconds_hearts_flowers = time_seconds_hearts_flowers + notSelectedHNFTime;
+
+                    let hnfTotal = score_hearts + score_flowers + score_hearts_flowers;
+                    let total_time = time_seconds_hearts + time_seconds_flowers + time_seconds_hearts_flowers;
+
+                    studentRow.push(hnfTotal)
+                    studentRow.push(score_hearts)
+                    studentRow.push(time_seconds_hearts)
+                    studentRow.push(score_flowers)
+                    studentRow.push(time_seconds_flowers)
+                    studentRow.push(score_hearts_flowers)
+                    studentRow.push(time_seconds_hearts_flowers)
+                    studentRow.push(total_time)
+
+                    allStudentsRows.push(studentRow)
+
+                }
+
+                studentRow = []
+                studentAnswers = []
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth()+1}/${fechaTest.getFullYear()}`
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(fechaParseada)
+
+
+                studentAnswers.push({
+                    item: row.num,
+                    value: row.value,
+                    time: row.time
+                })
+
+                
+            } else {
+
+                studentAnswers.push({
+                    item: row.num,
+                    value: row.value,
+                    time: row.time
+                })
+            }
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+        let csvData = [];
+        csvData.push([...info])
+        
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        res.send(csvData)
+        
+    }
+
     if (instrument == 4) {
         getStudentInfoAces(rows);
     } else if (instrument == 1) {
@@ -622,6 +1707,13 @@ router.post('/', async (req, res) => {
         getStudentInfoCalculo(rows);
     } else if (instrument == 6) {
         getStudentInfoCorsi(rows);
+    } else if (instrument == 7) {
+        //Solo este test necesita 1 valor mas para iterar... se me complica en la logica interna de la funcion asi que SE que es horrible solucion, pero le añadire una fila mas para q pueda sacarlas todas y esta fila sea la afectada q no salga.
+        rows.push({rut: '', alumno: '', curso: '', profesor: '', genero: '', "id": '', "num":'', "value":''}
+        )
+        getStudentInfoHNF(rows);
+    } else if (instrument == 8) {
+        getStudentInfoFono(rows);
     } else {
         getStudentInfo(rows);
     }
@@ -638,7 +1730,7 @@ router.post('/', async (req, res) => {
             console.log('....Done');
         });
 
-})
+}})
 
 
 module.exports = router;
