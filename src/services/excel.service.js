@@ -423,7 +423,6 @@ exports.getInfoHNFFinal = (rows) => {
 
         if (key == lastIndex-1) {
             if (studentAnswers.length > 0) {
-                console.log("Hacemos logica para sacar los resultados")
  
                 let score_hearts = 0;
                 let time_seconds_hearts = 0;
@@ -479,3 +478,64 @@ exports.getInfoHNFFinal = (rows) => {
     return studentRow;
 
 }
+
+
+exports.insertMissingObjects = (incompleteInstrument, limitNum) => {
+
+    // tengo que hacer una condicional en caso de que necesite agregar items al que necesite time 0 y no null (hnf)
+
+    let parentObj = incompleteInstrument;
+
+    if (Object.entries(parentObj)[0][0] != 1) {
+        let object = Object.entries(parentObj)
+        object.unshift(['1', { num: 1, value: '', text: null, alternative: null, time: null }])
+        let parsedObject = Object.fromEntries(object);
+        parentObj = parsedObject;
+    }
+
+    // todos los test en bdd parten de a 1 y aca en instrument_1 etc, tambien. seguimos esa logica. id = itemnum
+    const startingNum = 1;
+    // Obtenemos las claves del objeto padre
+    let objKeys = Object.keys(parentObj);
+  
+    // Creamos un objeto vacío donde almacenaremos los nuevos objetos
+    let newObjects = {};
+  
+    // Recorremos las claves del objeto padre
+    for (let i = 0; i < objKeys.length; i++) {
+      let obj = parentObj[objKeys[i]];
+      // Si el número del objeto es igual al número de inicio, empezamos a crear los nuevos objetos
+      if (obj.num === startingNum) {
+        // Recorremos los objetos desde el número de inicio hasta el número límite
+        for (let j = startingNum; j <= limitNum; j++) {
+          // Si el número del objeto actual no coincide con el número de alguno de los objetos dentro del objeto padre, creamos un objeto nuevo y lo agregamos al objeto vacío
+          if (!parentObj[objKeys.find(key => parentObj[key].num === j)]) {
+            newObjects[j] = { num: j, value: '', text: null, alternative: null, time: null };
+          }
+        }
+      }
+    }
+  
+    // Agregamos los nuevos objetos al objeto padre
+    for (let key in newObjects) {
+      parentObj[key] = newObjects[key];
+    }
+  
+    // Eliminamos los objetos que exceden el número límite
+    Object.keys(parentObj).forEach(key => {
+      if (parentObj[key].num > limitNum) {
+        delete parentObj[key];
+      }
+    });
+  
+    // Ordenamos los objetos dentro del objeto padre por número
+    let sortedParentObj = {};
+    Object.keys(parentObj).sort((a, b) => parentObj[a].num - parentObj[b].num)
+      .forEach(key => {
+        sortedParentObj[key] = parentObj[key];
+      });
+  
+    // Retornamos el objeto padre con los objetos faltantes agregados o eliminados según corresponda
+    return sortedParentObj;
+  }
+  

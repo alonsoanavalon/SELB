@@ -5,40 +5,6 @@ const studentsService = require('../students/students.service')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;
 const excelService = require('../services/excel.service')
 
-function getAllMissingStudentsData (allStudentsRows, allStudentsInfo, headers) {
-    //const allStudentsInfo = await studentsService.getAllStudentsInfo();
-    const records = allStudentsRows;
-
-    const completedStudents = allStudentsRows.map((studentRow) => studentRow[0])
-
-    const allStudents = allStudentsInfo.map((student) => student.rut)
-
-    const missingStudents = allStudents.filter((element) => !completedStudents.includes(element));
-
-    const missingStudentsData = missingStudents.map((missingStudent) => {
-        const missingData = allStudentsInfo.find((element) => element.rut == missingStudent);
-        const completedStudentData = [missingData.rut, missingData.alumno, missingData.gender, `${missingData.level} ${missingData.course}`, "", missingData.escuela, ""]
-        const testLengthData = allStudentsRows[0].length - completedStudentData.length;
-        for (var i = 0; i < testLengthData; i++) {
-            completedStudentData.push('')
-        }
-        return completedStudentData
-    })
-
-    const allRecords = [...allStudentsRows, ...missingStudentsData];
-    let sortedRecords = allRecords.sort((a, b) => {
-        const firstA = a[0];
-        const firstB = b[0];
-        if (typeof firstA === 'string' && typeof firstB === 'string') {
-          return firstA.localeCompare(firstB);
-        }
-        return firstA - firstB;
-      });
-
-    const orderedRecords = sortedRecords.reverse();
-    orderedRecords.unshift(headers)
-    return orderedRecords;
-}
 
 const instrument_1 = {
     1: { num: 1, value: "", text: null, alternative: null, time: null},
@@ -360,6 +326,7 @@ const instrument_7 = {
 }
 
 const instrument_8 = {
+    0: {num: 0, value: '0', text: '', alternative: null, time: null},
     1: {num: 1, value: '0', text: '', alternative: null, time: null},
     2: {num: 2, value: '0', text: '', alternative: null, time: null},
     3: {num: 3, value: '0', text: '', alternative: null, time: null},
@@ -383,7 +350,6 @@ const instrument_8 = {
     21: {num: 21, value: '0', text: '', alternative: null, time: null},
     22: {num: 22, value: '0', text: '', alternative: null, time: null},
     23: {num: 23, value: '0', text: '', alternative: null, time: null},
-    24: {num: 24, value: '0', text: '', alternative: null, time: null},
 
 }
 
@@ -407,6 +373,10 @@ router.post('/', async (req, res) => {
     let instrument = req.body['instrument']
     let moment = req.body['moment']
     let schools = req.body['schools']
+     // esto ahora no lo traigo, debo traerlo para todo el tema de la compatibilidad con los demas estudios y el profe jorge
+    // por ahora lo estamos dejando en 2 porque es el momento que esta ocupando el equipo
+
+    const study_id = req.body['study_id'] ? req.body['study_id'] : 2 
 
     let sql;
 
@@ -436,17 +406,20 @@ router.post('/', async (req, res) => {
         evaluation.id as eva,
         moment_id as moment
     FROM choice  
-        INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
-        INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
-        INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
-        INNER JOIN user ON user.id = evaluation.user_id 
-        INNER JOIN student ON evaluation.student_id = student.id 
-        INNER JOIN moment ON moment.id = evaluation.moment_id 
-        INNER JOIN study_list ON instrument.id = study_list.instrument_id 
-        INNER JOIN course ON student.course_id = course.id 
-        INNER JOIN school ON course.school_id = school.id 
-        INNER JOIN item ON choice.item_id = item.id 
-        
+    INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
+    INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
+    INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
+    INNER JOIN user ON user.id = evaluation.user_id 
+    INNER JOIN student ON evaluation.student_id = student.id 
+    INNER JOIN moment ON moment.id = evaluation.moment_id 
+    INNER JOIN study_list ON instrument.id = study_list.instrument_id 
+    INNER JOIN course ON student.course_id = course.id 
+    INNER JOIN school ON course.school_id = school.id 
+    INNER JOIN item ON choice.item_id = item.id 
+
+
+
+    
     GROUP BY student.rut, user.name, user.surname, instrument_list.date, choice.value, item.num, choice.id, evaluation.id, choice.time, choice.text, choice.alternative
     LIMIT 1000000;`
 
@@ -525,7 +498,9 @@ router.post('/', async (req, res) => {
 
     if (instrument == 0) {
         let allStudents = await studentsService.getAllStudentsInfo();
-        let allMoments = await momentService.getMomentsIds();
+        //el servicio de momentos no debe traer todos los momentos sino que los asociados a este estudio
+        // let allMoments = await momentService.getMomentsIdsByStudy(study_id);
+        let allMoments = await momentService.getMomentsIds()
 
 
         function getAllRows(allRows) {
@@ -541,30 +516,28 @@ router.post('/', async (req, res) => {
             let previousInstrument = null;
             let currentInstrument = null;
 
+            const allRowsLength = allRows.length;
+
             allRows.forEach((row, key) => {
 
-                if (row.moment == 8) {
-                    console.log("papota")
-                }
+    
 
-                if (row.alumno == "Marcela Contreras" && row.moment == 8 && row.instrument == 1 && row.num == 72) {
-                    console.log("papita")
-                }
+                let rowsLength = allRowsLength;
 
-        
+                if (row == rowsLength ) {
+                    console.log("aca esta la papita")
+                }
                 currentInstrument = row.instrument;
                 currentMoment = row.moment;
                 currentStudent = row.rut;
 
-                if (row.rut == '20788918-1' && row.instrument == "5"){
+                if (row.rut == '20728918-3' && row.instrument == "8" && row.profesor == 'Alonso Anavalon'){
                     console.log("lo ultim")
                     // esta funcion esta recibienedo los 12 datos pero los sobre erscribe y quedan 12.. ha yq hacer algo condiciona la ael instrument 5
                 }
 
 
-               
 
-      
                 if (row.instrument == "5") {
                         instrumentObject[Object.entries(instrumentObject).length+1] = {
                             "num": row.num,
@@ -584,6 +557,35 @@ router.post('/', async (req, res) => {
                     };
                 }
 
+
+                if (allInstruments[currentInstrument] !== undefined) {
+                    if (Object.entries(allInstruments[currentInstrument]).length === row.num) {
+                        studentData[`instrument-${currentInstrument}`] = instrumentObject;
+                        instrumentObject = {};
+                    }
+                } else {
+                    console.log("quionda")
+                }
+
+
+                // if (previousInstrument !== null && previousInstrument !== currentInstrument) {
+
+                //     studentData[`instrument-${previousInstrument}`] = instrumentObject;
+                //     instrumentObject = {};
+                // }
+
+                if (currentMoment !== previousMoment) {
+                    parsedStudentsChoices[`${previousMoment}`] = studentRows;
+                    studentRows = [];
+                    instrumentObject = {}
+                } else if (key == rowsLength-1) {
+                        parsedStudentsChoices[`${currentMoment}`] = studentRows;
+                        studentRows = [];
+                        instrumentObject = {}
+                }
+
+
+
                 if (previousStudent === null) {
                     studentData.evaluador = row.profesor;
                     studentData.genero = row.genero;
@@ -599,20 +601,6 @@ router.post('/', async (req, res) => {
                     if (previousStudent !== currentStudent) {
                         studentRows.push(studentData);
                         studentData = {}
-                        if (parsedStudentsChoices[8] !== undefined) {
-                            console.log("debug")
-                        } else if (row.moment == 8) {
-                            //Aca queda la ultima ultima vez 16/03, estoy validando las cantidades de datos perfect 5 + 301, y que los test vayan con los items que les faltan, instruments y evalauciones
-                            //Lo que ahora esta fallando es que cuando estamos asignando por estudiante y ordenando por momentos aca de toda la data
-                            // no estamos retornando los objetos totales, ahora en el momento 8 hay 4 o 5 no recuerdo test
-                            // y solo figuran 2 en el output. Puede que sea un problema mas general pero CREO que solucionando esto al menos el de TODOS funcioanra impeque (sin limitaciones de study o moment)
-                            console.log("que megda pasa")
-                        }
-                        
-                        parsedStudentsChoices[`${previousMoment}`] = studentRows;
-                        if (currentMoment !== previousMoment){
-                            studentRows = [];
-                        }
                         studentData.evaluador = row.profesor;
                         studentData.genero = row.genero;
                         studentData.colegio = row.colegio;
@@ -631,38 +619,11 @@ router.post('/', async (req, res) => {
                             "time":row.time
                         };
 
-
+                        if (currentMoment !== previousMoment){
+                            console.log("ok")
+                        }
 
                     }
-                }
-
-
-      
-
-
-
-               
-
-
-            
-
-                if (allInstruments[currentInstrument] !== undefined) {
-
-                    //esto entra en el ultimo elemento del array hecho a partir del objeto y saca el num
-                    const lastInstrumentItemNum = Object.entries(allInstruments[currentInstrument])[Object.entries(allInstruments[currentInstrument]).length -1][1].num
-
-
-                    if (Object.entries(allInstruments[currentInstrument]).length === row.num) {
-                        studentData[`instrument-${currentInstrument}`] = instrumentObject;
-                        instrumentObject = {};
-                    } 
-                    // else if (currentInstrument == 8 && lastInstrumentItemNum == row.num) {
-                    //     // este condicional es unico para el 8 porque ahi parti de 0 a 23 y no de 1 a 24 entonces queda desfasado el row.num (23) con el row.length = 24, por eso sacamos el num del item y lo comparamos con eso mejor.
-                    //     studentData[`instrument-${currentInstrument}`] = instrumentObject;
-                    //     instrumentObject = {};
-                    // }
-                } else {
-                    console.log("quionda")
                 }
 
 
@@ -670,11 +631,11 @@ router.post('/', async (req, res) => {
                 previousMoment = currentMoment;
                 previousInstrument = currentInstrument;
             })
-            parsedStudentsChoices[`${previousMoment}`] = studentData;
+
             return parsedStudentsChoices
         }
 
-        const testsByMoment = getAllRows(rows);
+        let testsByMoment = getAllRows(rows);
         delete testsByMoment.null;
 
 
@@ -732,43 +693,11 @@ router.post('/', async (req, res) => {
                     if (momentRow[0]['instrument-8'] == undefined) {
                         momentRow[0]['instrument-8'] = instrument_8
                     }
-                } else if (momentRow == false) {
-                    momentRow = {}
-                    momentRow['instrument-1'] = instrument_1
-                    momentRow['instrument-2'] = instrument_2
-                    momentRow['instrument-4'] = instrument_4
-                    momentRow['instrument-5'] = instrument_5
-                    momentRow['instrument-6'] = instrument_6
-                    momentRow['instrument-7'] = instrument_7
-                    momentRow['instrument-8'] = instrument_8
-
-                }else {
-
-                    console.log("Todo OK?")
-                    if (momentRow['instrument-1'] == undefined) {
-                        momentRow['instrument-1'] = instrument_1
-                    }
-                    if (momentRow['instrument-2'] == undefined) {
-                        momentRow['instrument-2'] = instrument_2
-                    }
-                    if (momentRow['instrument-4'] == undefined) {
-                        momentRow['instrument-4'] = instrument_4
-                    }
-                    if (momentRow['instrument-5'] == undefined) {
-                        momentRow['instrument-5'] = instrument_5
-                    }
-                    if (momentRow['instrument-6'] == undefined) {
-                        momentRow['instrument-6'] = instrument_6
-                    }
-                    if (momentRow['instrument-7'] == undefined) {
-                        momentRow['instrument-7'] = instrument_7
-                    }
-                    if (momentRow['instrument-8'] == undefined) {
-                        momentRow['instrument-8'] = instrument_8
-                    }
+                } else {
+                    console.log("Debo ver q pasa aca")
                 }
 
-                return momentRow[0] ? momentRow[0] : momentRow;
+                return momentRow[0];
 
    
                 
@@ -832,7 +761,7 @@ router.post('/', async (req, res) => {
                 } 
             })
 
-            // no se estan contando las emptyKeys nose pq con los qu no tienen
+            // no se estan contando las emptyKeys nose pq con los qu no tienen.. CUANDO key es 0 que mierda
 
             if (emptyKeys.length > 0) {
                 emptyKeys.forEach((key) => {
@@ -879,7 +808,6 @@ router.post('/', async (req, res) => {
             return response;
         }
 
-
         function finalParsedRows (allStudentRows) {
 
 
@@ -889,23 +817,11 @@ router.post('/', async (req, res) => {
             const allFinalParsedRows = [];
 
             allStudentRows.forEach((studentRows, key) => {
-
-                if (studentRows[1].rut == "20728918-3"){
-                    console.log("ql con problemas")
-                } else if (studentRows[1].rut == "25.772.208-2") {
-                    console.log("ql con2 problemas")
-                }
-
-                studentRows.forEach((row, key) => {
-                    if (row == false) {
-                        console.log("asdasd")
-                    }
-                })
                 const finalParsedRow = [];
                 studentRows.forEach((row, key) => {
                     if (key == 0) {
 
-                        
+
 
         // let infoHeaders = ['rut', 'alumno','genero','fecha_de_nacimiento', 'colegio', 'diagnostico_oficial', 'observacion_evaluador'];
         // let thisMomentInfo = ['evaluador_responsable', 'nivel', 'curso', 'fecha_evaluacion', 'edad_etapa']
@@ -917,134 +833,71 @@ router.post('/', async (req, res) => {
 
                         finalParsedRow.push(row.profesor ? row.profesor : row.evaluador, row.level ? row.level : row.nivel, row.course ? row.course : row.curso, row.date ? row.date : '', '0')
 
-                        let instrument_1 = undefined;
-                        let instrument_2 = undefined;
-                        let instrument_4 = undefined;
-                        let instrument_5 = undefined;
-                        let instrument_6 = undefined;
-                        let instrument_7 = undefined;
-                        let instrument_8 = undefined;
-
-                        if (Object.entries(row['instrument-1']).length !== Object.entries(allInstruments[1]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_1 = excelService.insertMissingObjects(row['instrument-1'], Object.entries(allInstruments[1]).length)
-                        }
-
-                        if (Object.entries(row['instrument-2']).length !== Object.entries(allInstruments[2]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_2 = excelService.insertMissingObjects(row['instrument-2'], Object.entries(allInstruments[2]).length)
-                        }
-
-                        if (Object.entries(row['instrument-4']).length !== Object.entries(allInstruments[4]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_4 = excelService.insertMissingObjects(row['instrument-4'], Object.entries(allInstruments[4]).length)
-                        }
-
-                        if (Object.entries(row['instrument-5']).length !== Object.entries(allInstruments[5]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_5 = excelService.insertMissingObjects(row['instrument-5'], Object.entries(allInstruments[5]).length)
+                        const tejasRows = excelService.getInfoTejasFinal(row['instrument-1']);
+                        const precalculoRows = excelService.getInfoCalculoFinal(row['instrument-2']);
+                        const acesRows = excelService.getInfoAcesFinal(row['instrument-4']);
+                        const wallyRows = excelService.getInfoFinal(row['instrument-5']);
+                        const corsiRows = excelService.getInfoFinalCorsi(row['instrument-6']);
+                        const HNFRows = excelService.getInfoHNFFinal(row['instrument-7']);
+                        const fonoRows = excelService.getInfoFonoFinal(row['instrument-8']);
+                        if (row.rut == "20728918-3"){
+                            console.log("ql con problemas")
+                            if (row.moment > 4) {
+                                console.log("ql con problemas")
+                            }
 
                         }
 
-                        if (Object.entries(row['instrument-6']).length !== Object.entries(allInstruments[6]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_6 = excelService.insertMissingObjects(row['instrument-6'], Object.entries(allInstruments[6]).length)
-
+                        if (tejasRows.length !== 73){
+                            console.log("algo pasa")
                         }
-
-                        if (Object.entries(row['instrument-7']).length !== Object.entries(allInstruments[7]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_7 = excelService.insertMissingObjects(row['instrument-7'], Object.entries(allInstruments[7]).length)
-
+                        if (precalculoRows.length !== 59){
+                            console.log("algo pasa")
                         }
-
-                        if (Object.entries(row['instrument-8']).length !== Object.entries(allInstruments[8]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_8 = excelService.insertMissingObjects(row['instrument-8'], Object.entries(allInstruments[8]).length)
-
+                        if (acesRows.length !== 53){
+                            console.log("algo pasa")
                         }
-
-                        const tejasRows = excelService.getInfoTejasFinal(instrument_1 ? instrument_1 : row['instrument-1']);
-                        const precalculoRows = excelService.getInfoCalculoFinal(instrument_2 ? instrument_2 : row['instrument-2']);
-                        const acesRows = excelService.getInfoAcesFinal(instrument_4 ? instrument_4 : row['instrument-4']);
-                        const wallyRows = excelService.getInfoFinal(instrument_5 ? instrument_5 : row['instrument-5']);
-                        const corsiRows = excelService.getInfoFinalCorsi(instrument_6 ? instrument_6 : row['instrument-6']);
-                        const HNFRows = excelService.getInfoHNFFinal(instrument_7 ? instrument_7 : row['instrument-7']);
-                        const fonoRows = excelService.getInfoFonoFinal(instrument_8 ? instrument_8 : row['instrument-8']);
-
+                        if (wallyRows.length !== 12){
+                            console.log("algo pasa")
+                        }
+                        if (corsiRows.length !== 47){
+                            console.log("algo pasa")
+                        }
+                        if (HNFRows.length !== 8){
+                            console.log("algo pasa")
+                            console.log("aca")
+                        }
+                        if (fonoRows.length !== 49){
+                            console.log("algo pasa")
+                        }
+                
 
 
 
                         finalParsedRow.push(...tejasRows, ...precalculoRows, ...acesRows, ...wallyRows, ...corsiRows, ...HNFRows, ...fonoRows)
-
-                        if (finalParsedRow.length != 313 && finalParsedRow.length != 619 && finalParsedRow.length != 925 && finalParsedRow.length != 1231 && finalParsedRow.length != 1537 ) {
-                            console.log("Estos son los multiplos, si es que sale este mensaje es porque no agreguee el multiplo (del total q deberia ser de headers)  o es pq hay algo mal")
-                        } 
                     } else {
 
-                        let instrument_1 = undefined;
-                        let instrument_2 = undefined;
-                        let instrument_4 = undefined;
-                        let instrument_5 = undefined;
-                        let instrument_6 = undefined;
-                        let instrument_7 = undefined;
-                        let instrument_8 = undefined;
+                        //Esto me sirve cuando quiera verificar los datos que me trae de X estudiante
+                        if (row.rut == "20728918-3"){
+                            console.log("ql con problemas")
+                            if (row.moment > 4) {
+                                console.log("ql con problemas")
+                            }
 
-                        if (finalParsedRow.length != 12) {
-                            finalParsedRow.push(row.profesor ? row.profesor : row.evaluador, row.level ? row.level : row.nivel, row.course ? row.course : row.curso, row.date ? row.date : '', '0')
                         }
 
-                        if (row['instrument-1'] == undefined ||  row['instrument-1'] == null){
-                            console.log("que ta pachando")
-                        }
                         
 
-                        if (Object.entries(row['instrument-1']).length !== Object.entries(allInstruments[1]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_1 = excelService.insertMissingObjects(row['instrument-1'], Object.entries(allInstruments[1]).length)
-                        }
 
-                        if (Object.entries(row['instrument-2']).length !== Object.entries(allInstruments[2]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_2 = excelService.insertMissingObjects(row['instrument-2'], Object.entries(allInstruments[2]).length)
-                        }
-
-                        if (Object.entries(row['instrument-4']).length !== Object.entries(allInstruments[4]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_4 = excelService.insertMissingObjects(row['instrument-4'], Object.entries(allInstruments[4]).length)
-                        }
-
-                        if (Object.entries(row['instrument-5']).length !== Object.entries(allInstruments[5]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_5 = excelService.insertMissingObjects(row['instrument-5'], Object.entries(allInstruments[5]).length)
-
-                        }
-
-                        if (Object.entries(row['instrument-6']).length !== Object.entries(allInstruments[6]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_6 = excelService.insertMissingObjects(row['instrument-6'], Object.entries(allInstruments[6]).length)
-
-                        }
-
-                        if (Object.entries(row['instrument-7']).length !== Object.entries(allInstruments[7]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_7 = excelService.insertMissingObjects(row['instrument-7'], Object.entries(allInstruments[7]).length)
-
-                        }
-
-                        if (Object.entries(row['instrument-8']).length !== Object.entries(allInstruments[8]).length) {
-                            //Explicacion del porque de esto en el notion "InsertMissing"
-                            instrument_8 = excelService.insertMissingObjects(row['instrument-8'], Object.entries(allInstruments[8]).length)
-
-                        }
-
-                        const tejasRows = excelService.getInfoTejasFinal(instrument_1 ? instrument_1 : row['instrument-1']);
-                        const precalculoRows = excelService.getInfoCalculoFinal(instrument_2 ? instrument_2 : row['instrument-2']);
-                        const acesRows = excelService.getInfoAcesFinal(instrument_4 ? instrument_4 : row['instrument-4']);
-                        const wallyRows = excelService.getInfoFinal(instrument_5 ? instrument_5 : row['instrument-5']);
-                        const corsiRows = excelService.getInfoFinalCorsi(instrument_6 ? instrument_6 : row['instrument-6']);
-                        const HNFRows = excelService.getInfoHNFFinal(instrument_7 ? instrument_7 : row['instrument-7']);
-                        const fonoRows = excelService.getInfoFonoFinal(instrument_8 ? instrument_8 : row['instrument-8']);
+                        finalParsedRow.push(row.profesor ? row.profesor : row.evaluador, row.level ? row.level : row.nivel, row.course ? row.course : row.curso, row.date ? row.date : '', '0')
+                        const tejasRows = excelService.getInfoTejasFinal(row['instrument-1']);
+                        const precalculoRows = excelService.getInfoCalculoFinal(row['instrument-2']);
+                        const acesRows = excelService.getInfoAcesFinal(row['instrument-4']);
+                        const wallyRows = excelService.getInfoFinal(row['instrument-5']);
+                        const corsiRows = excelService.getInfoFinalCorsi(row['instrument-6']);
+                        const HNFRows = excelService.getInfoHNFFinal(row['instrument-7']);
+                        const fonoRows = excelService.getInfoFonoFinal(row['instrument-8']);
+                        
 
                         if (tejasRows.length !== 73){
                             console.log("algo pasa")
@@ -1069,15 +922,11 @@ router.post('/', async (req, res) => {
                         }
 
                         finalParsedRow.push(...tejasRows, ...precalculoRows, ...acesRows, ...wallyRows, ...corsiRows, ...HNFRows, ...fonoRows)
-
-                        if (finalParsedRow.length != 313 && finalParsedRow.length != 619 && finalParsedRow.length != 925 && finalParsedRow.length != 1231 && finalParsedRow.length != 1537) {
-                            console.log("problemilla esta distinto el length del final 313")
-                        } 
                     }
                 })
 
-                if (finalParsedRow.length != 1537) {
-                    console.log("problemilla esta distinto el length del final")
+                if (finalParsedRow.length !== 1223) {
+                    console.log("problemilla")
                 } else {
                     console.log("WHAT?")
                 }
@@ -1101,7 +950,6 @@ router.post('/', async (req, res) => {
 
         const allStudentCompletedRows = allStudents.map((student) =>  {
 
-
             // esta funcion basicamente se encarga de dejar todo el orden qeu ya habiamos dado a un next level
             // se preocupa de integrar los momentos e instrumentos que no existan y dejar todo con el mismo formato.
 
@@ -1111,18 +959,11 @@ router.post('/', async (req, res) => {
             const momentsIds = Object.keys(localTestsByMoment);
 
 
-            const studentRowsByMoment = momentsIds.map((momentId) => {
-                if (student.rut == "20428918-3" && momentId == 8 ) {
-                    console.log("papita")
-                }
-                let rowsByMoment;
-                if (localTestsByMoment[momentId].length != undefined) {
-                    rowsByMoment = localTestsByMoment[momentId].filter((row) => row.rut == student.rut)
-                } else {
-                    rowsByMoment = localTestsByMoment[momentId].rut == student.rut && localTestsByMoment[momentId] 
-                }
+            let studentRowsByMoment = momentsIds.map((momentId) => {
+                const rowsByMoment = localTestsByMoment[momentId].filter((row) => row.rut == student.rut)
                 return rowsByMoment;
             })
+
 
             // Esto es para contar la cantidad de evaluaciones que tiene el alumno actual
             //Mas abajo si es que es 0 agregamos todos los momentos vacios..
@@ -1130,6 +971,11 @@ router.post('/', async (req, res) => {
             const evaluationCounter = numberOfEvaluations(studentRowsByMoment) 
 
             let newRows;
+
+            if (student.rut == "20728918-3"){
+                console.log("ql con problemas")
+
+            }
 
             if (evaluationCounter == 0) {
                 newRows = addEmptyMoments(studentRowsByMoment, allMoments, student);
@@ -1329,7 +1175,7 @@ router.post('/', async (req, res) => {
     let info = [...infoHeaders, ...infoChoices]
     let allStudentsRows = []
 
-    async function getStudentInfoTejas(rows) {
+    function getStudentInfoTejas(rows) {
 
         try {
             let studentRow = []
@@ -1397,16 +1243,12 @@ router.post('/', async (req, res) => {
             let csvData = [];
             csvData.push([...info])
             
-
-
             allStudentsRows.forEach(
                 row => {
                     csvData.push(row);
                 }
             )
-            const allStudentsInfo = await studentsService.getAllStudentsInfo();
-            const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-            res.send(parsedData)
+            res.send(csvData)
             
         } catch (error) {
             throw error.message;
@@ -1414,7 +1256,8 @@ router.post('/', async (req, res) => {
         
     }
 
-    async function getStudentInfoFono(rows) {
+
+    function getStudentInfoFono(rows) {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
@@ -1478,13 +1321,11 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-        res.send(parsedData)
+        res.send(csvData)
         
     }
 
-    async function getStudentInfoCalculo(rows) {
+    function getStudentInfoCalculo(rows) {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
@@ -1578,15 +1419,12 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-        res.send(parsedData)
-        
+        res.send(csvData)
         
     }
 
 
-    async function getStudentInfoAces(rows) {
+    function getStudentInfoAces(rows) {
 
         try {
             let studentRow = []
@@ -1661,12 +1499,7 @@ router.post('/', async (req, res) => {
                     csvData.push(row);
                 }
             )
-    
-            const allStudentsInfo = await studentsService.getAllStudentsInfo();
-            const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-            res.send(parsedData)
-            
-            
+            res.send(csvData)
             
         } catch (error) {
             throw error.message;
@@ -1675,7 +1508,7 @@ router.post('/', async (req, res) => {
     }
 
 
-    async function getStudentInfoCorsi(rows) {
+    function getStudentInfoCorsi(rows) {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
@@ -1766,14 +1599,11 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-        res.send(parsedData)
-        
+        res.send(csvData)
         
     }
 
-    async function getStudentInfo(rows) {
+    function getStudentInfo(rows) {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
@@ -1819,14 +1649,11 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-        res.send(parsedData)
-        
+        res.send(csvData)
         
     }
 
-    async function getStudentInfoHNF(rows) {
+    function getStudentInfoHNF(rows) {
         let studentRow = []
         let studentAnswers = [];
         let studentCounter = 0
@@ -1940,10 +1767,7 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-        res.send(parsedData)
-        
+        res.send(csvData)
         
     }
 
@@ -1970,43 +1794,10 @@ router.post('/', async (req, res) => {
         header: info,
         path: 'file.csv'
     });
-
-
-    const allStudentsInfo = await studentsService.getAllStudentsInfo();
-
-    const records = allStudentsRows;
-
-    const completedStudents = records.map((studentRow) => studentRow[0])
-
-    const allStudents = allStudentsInfo.map((student) => student.rut)
-
-    const missingStudents = allStudents.filter((element) => !completedStudents.includes(element));
-
-    const missingStudentsData = missingStudents.map((missingStudent) => {
-        const missingData = allStudentsInfo.find((element) => element.rut == missingStudent);
-        const completedStudentData = [missingData.rut, missingData.alumno, missingData.gender, `${missingData.level} ${missingData.course}`, "", missingData.escuela, ""]
-        const testLengthData = allStudentsRows[0].length - completedStudentData.length;
-        for (var i = 0; i < testLengthData; i++) {
-            completedStudentData.push('')
-        }
-        return completedStudentData
-    })
-
-    const allRecords = [...records, ...missingStudentsData];
-    let sortedRecords = allRecords.sort((a, b) => {
-        const firstA = a[0];
-        const firstB = b[0];
-        if (typeof firstA === 'string' && typeof firstB === 'string') {
-          return firstA.localeCompare(firstB);
-        }
-        return firstA - firstB;
-      });
-
-    const orderedRecords = sortedRecords.reverse();
-
-
      
-    csvWriter.writeRecords(orderedRecords)      
+    const records = allStudentsRows;
+     
+    csvWriter.writeRecords(records)      
         .then(() => {
             console.log('....Done');
         });
