@@ -23,6 +23,10 @@ const momentRoutes = require('./moments/moments.controller')
 const coursesRoutes = require('./courses/courses.controller')
 const studentsRoutes = require('./students/students.controller')
 const rootMomentsRoutes = require('./routes/moments')
+const apiActivityRoutes = require('./api/activity/activity.controller')
+const apiExerciseRoutes = require('./api/exercise/exercise.controller')
+const apiSessionRoutes = require('./api/session/session.controller')
+const apiStudentRoutes = require('./api/student/student.controller')
 
 
 const fs = require('fs')
@@ -144,8 +148,10 @@ app.use('/admin/schools', schoolsRoutes)
 app.use('/admin/moments', momentRoutes) 
 app.use('/admin/courses', coursesRoutes)
 app.use('/admin/students', studentsRoutes)
-
-
+app.use('/api/student', apiStudentRoutes)
+app.use('/api/activity', apiActivityRoutes)
+app.use('/api/session', apiSessionRoutes)
+app.use('/api/exercise', apiExerciseRoutes)
 
 
 //Listen
