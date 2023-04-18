@@ -27,6 +27,9 @@ const apiActivityRoutes = require('./api/activity/activity.controller')
 const apiExerciseRoutes = require('./api/exercise/exercise.controller')
 const apiSessionRoutes = require('./api/session/session.controller')
 const apiStudentRoutes = require('./api/student/student.controller')
+const apiCommuneRoutes = require('./api/commune/commune.controller')
+const apiSchoolRoutes = require('./api/school/school.controller')
+const apiCourseRoutes = require('./api/course/course.controller')
 
 
 const fs = require('fs')
@@ -152,6 +155,9 @@ app.use('/api/student', apiStudentRoutes)
 app.use('/api/activity', apiActivityRoutes)
 app.use('/api/session', apiSessionRoutes)
 app.use('/api/exercise', apiExerciseRoutes)
+app.use('/api/school', apiSchoolRoutes)
+app.use('/api/commune', apiCommuneRoutes)
+app.use('/api/course', apiCourseRoutes)
 
 
 //Listen
