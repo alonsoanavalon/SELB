@@ -33,7 +33,7 @@ exports.updateStudentById = (id, student) => {
 exports.getStudentById = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const sql = `SELECT * from student where rut = ${id}`;
+            const sql = `SELECT * from student where rut = '${id}'`;
             await mysqlConnection.query(sql, (err, result) => {
                 resolve(result)
             })
@@ -43,4 +43,6 @@ exports.getStudentById = (id) => {
         }
     })
 }
+
+
 

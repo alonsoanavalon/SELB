@@ -31,7 +31,7 @@ exports.getActivityById = (id) => {
 exports.createActivity = (body) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const sql = `INSERT INTO activity (session_id, date) VALUES (1, current_timestamp());`;
+            const sql = `INSERT INTO activity (session_id, date) VALUES (${body.sessionId}, current_timestamp());`;
             await mysqlConnection.query(sql, (err, result) => {
                 resolve(result)
             })

@@ -12,7 +12,7 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
-    const sessions = await sessionService.createSession(req.body);
+    const sessions = await sessionService.createSession();
     res.send(sessions)
 })
 module.exports = router;

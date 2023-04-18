@@ -28,3 +28,17 @@ exports.getSessionById = (id) => {
     })
 }
 
+exports.createSession = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const sql = `INSERT INTO session (date) VALUES (current_timestamp());`;
+            await mysqlConnection.query(sql, (err, result) => {
+                resolve(result)
+            })
+        } catch (err) {
+            reject(err);
+            console.log(err);
+        }
+    })
+}
+
