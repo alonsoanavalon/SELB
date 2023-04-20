@@ -12,7 +12,15 @@ router.get('/:id', async (req, res) => {
 })
 
 router.post('/', async (req, res) => {
+  try {
     const exercises = await exerciseService.createExercise(req.body);
-    res.send(exercises)
+    res.status(201).send(exercises)
+  } catch (err) {
+    res.status(500).send({
+      message:"Hubo un error al ingresar el ejercicio",
+      error: err
+    });
+  }
+ 
 })
 module.exports = router;

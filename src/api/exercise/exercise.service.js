@@ -34,6 +34,9 @@ exports.createExercise = (body) => {
         try {
             const sql = `INSERT INTO exercise (student_id, activity_id, item, result, date, response_time) VALUES (${body.studentId}, ${body.activityId}, ${body.item}, ${body.result}, current_timestamp(), ${body.responseTime});`;
             await mysqlConnection.query(sql, (err, result) => {
+                if (err) {
+                    reject(err)
+                }
                 resolve(result)
             })
         } catch (err) {

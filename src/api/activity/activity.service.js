@@ -33,6 +33,9 @@ exports.createActivity = (body) => {
         try {
             const sql = `INSERT INTO activity (session_id, date) VALUES (${body.sessionId}, current_timestamp());`;
             await mysqlConnection.query(sql, (err, result) => {
+                if (err) {
+                    reject(err);
+                }
                 resolve(result)
             })
         } catch (err) {

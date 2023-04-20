@@ -33,6 +33,9 @@ exports.createSession = () => {
         try {
             const sql = `INSERT INTO session (date) VALUES (current_timestamp());`;
             await mysqlConnection.query(sql, (err, result) => {
+                if (err) {
+                    reject(err);
+                }
                 resolve(result)
             })
         } catch (err) {
