@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
     res.status(201).send(sessions)
   } catch (err) {
     res.status(500).send({
-      message:"Hubo un error al ingresar el ejercicio",
+      message:"Hubo un error al ingresar la sesión",
       error: err
     });
   }
