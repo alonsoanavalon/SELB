@@ -13,5 +13,11 @@ router.get('/:id', async (req, res) => {
    
 })
 
+router.get('/course/:id', async (req, res) => {
+    const updatedStudent = await studentsService.getStudentsByCourseId(req.params.id);
+    res.send(updatedStudent)
+})
+
+
 
 module.exports = router;
