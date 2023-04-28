@@ -47,7 +47,7 @@ exports.getStudentById = (id) => {
 
 exports.getStudentsByCourseId = (id) => {
     return new Promise( async (resolve, reject) => {
-        const sql = `SELECT student.name, student.surname, student.rut FROM student INNER JOIN course on course.id = student.course_id INNER JOIN school on school.id = course.school_id WHERE course.id = ${id}`;
+        const sql = `SELECT student.name, student.surname, student.rut, school.name as school FROM student INNER JOIN course on course.id = student.course_id INNER JOIN school on school.id = course.school_id WHERE course.id = ${id}`;
         try {
             await mysqlConnection.query(sql, (err, results) => {
                 if (err) {
