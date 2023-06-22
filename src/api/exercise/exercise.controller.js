@@ -11,6 +11,11 @@ router.get('/:id', async (req, res) => {
   res.send(exercise);
 })
 
+router.get('/course/:id', async (req, res) => {
+  const exercises = await exerciseService.getExercisesByCourse(req.params.id);
+  res.send(exercises);
+})
+
 router.post('/', async (req, res) => {
   try {
     const exercises = await exerciseService.createExercise(req.body);
