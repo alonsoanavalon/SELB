@@ -11,6 +11,12 @@ router.get('/:id', async (req, res) => {
   res.send(session);
 })
 
+//con este consigo toda la estructura completa por sesion
+router.get('/course/:id', async (req, res) => {
+  const exercisesByStudent = await sessionService.getExercisesByStudent(req.params.id);
+  res.send(exercisesByStudent) ;
+})
+
 router.post('/', async (req, res) => {
   try {
     const sessions = await sessionService.createSession();
