@@ -47,8 +47,30 @@ exports.createSession = () => {
 }
 
 function getAllStudents (exercises) {
-    const allStudents = exercises.map(exercise => exercise.student_id);
-    return Array.from(new Set(allStudents));
+
+    const allStudents = exercises.map(exercise => {
+        return { 
+            studentId: exercise.student_id,
+            studentName: exercise.student_name
+        }
+    });
+
+
+    const studentIds = exercises.map(exercise => exercise.student_id);
+    const filteredStudentIds = Array.from(new Set(studentIds));
+
+    const final = filteredStudentIds.map((studentId) => {
+        let data = {}
+        allStudents.forEach((studentData) => {
+            if (studentData.studentId == studentId){
+                data.studentId = studentId,
+                data.studentName = studentData.studentName
+            }
+        })
+        return data;
+    })
+
+    return final
 }
 
 function getActivitiesByStudent (exercisesBySession){
@@ -132,11 +154,12 @@ function getActivitiesBySession(exercisesBySession){
 function formatExercisesByStudent(activitiesByStudent, exercisesBySessionAndActivity) {
 
     return activitiesByStudent.map((session) => {
-        const exercisesByStudent = session.students.map((studentId) => {
+        const exercisesByStudent = session.students.map((student) => {
             const filteredExercises = exercisesBySessionAndActivity.filter((sess) => sess.sessionId == session.sessionId)
             return {
-                studentId,
-                exercises: filteredExercises[0]?.activities?.filter(exercise => exercise.student_id == studentId)
+                studentId: student.studentId,
+                studentName: student.studentName,
+                exercises: filteredExercises[0]?.activities?.filter(exercise => exercise.student_id == student.studentId)
 
             }
         })
@@ -165,6 +188,7 @@ function formatExercisesByActivity(activitiesBySession, spreadFormattedExercises
                     })
                     return {
                         studentId: exercisesByStudent.studentId,
+                        studentName: exercisesByStudent.studentName,
                         activities: formattedActivitiesByStudent
                     }
                 })
@@ -180,7 +204,7 @@ function formatExercisesByActivity(activitiesBySession, spreadFormattedExercises
     return formattedExercises;
 }
 
-exports.getExercisesByStudent = async (id) => {
+exports.getExercisesByCourse = async (id) => {
     try {
         const exercisesByCourse = await exerciseService.getExercisesByCourse(id);
         const activeSessions = exerciseService.findActiveSessionIds(exercisesByCourse);
@@ -205,4 +229,83 @@ exports.getExercisesByStudent = async (id) => {
     }
 
 
+}
+
+function filterActivitiesBySession(exercisesBySession) {
+    const allActivities = [];
+    exercisesBySession.forEach((session) => {
+        session.students.forEach((student) => {
+            student.activities.forEach((activity) => {
+                allActivities.push(activity.activityId);
+            });
+        })
+    })
+
+    if(allActivities?.length > 0) {
+        const filteredActivities = Array.from(new Set(allActivities));
+        return filteredActivities;
+    } else {
+        return [];
+    }
+}
+
+
+exports.getExercisesBySessionAndCourse = async (sessionId, courseId) => {
+    const exercisesByCourse = await this.getExercisesByCourse(courseId);
+    const exercisesBySession = exercisesByCourse.filter((exercises) => exercises.sessionId == sessionId);
+    const activities = filterActivitiesBySession(exercisesBySession);
+    const exercisesByActivities = activities.map((activityId) => {
+        const exercisesByStudent = [];
+        exercisesBySession[0].students.forEach((student) => {
+            const exercisesByActivity = [];
+            student.activities.forEach((activity) => {
+                if (activity.activityId == activityId) {
+                    exercisesByActivity.push(activity.exercises);
+                }
+            })
+            exercisesByStudent.push({
+                studentId: student.studentId,
+                studentName: student.studentName,
+                exercises: exercisesByActivity
+            })
+        })
+
+        return {
+            activityId,
+            students: exercisesByStudent
+        }
+    })
+    return exercisesByActivities;
+}
+
+exports.getExercisesBySessionActivityAndStudent = async (sessionId, courseId, activityId, studentId) => {
+    const exercisesBySessionAndCourse = await this.getExercisesBySessionAndCourse(sessionId, courseId);
+    const exercisesByActivity = exercisesBySessionAndCourse.filter((exercises) => exercises.activityId == activityId)[0];
+    const exercisesByStudent = exercisesByActivity.students.filter((student) => student.studentId == studentId)[0];
+    return exercisesByStudent;
+}
+
+exports.getActivitiesBySessionAndStudent = async (sessionId, courseId, studentId) =>  {
+    const exercisesBySessionAndCourse = await this.getExercisesBySessionAndCourse(sessionId, courseId);
+    const exercisesByStudent = [];
+    
+    exercisesBySessionAndCourse.forEach((exercises) => {
+        const exercisesByActivity = [];
+        exercises.students.forEach((student) => {
+            if (student.studentId == studentId && student.exercises?.length > 0) {
+                student.exercises.forEach(exercise => {
+                    exercisesByActivity.push(exercise);
+                })
+            };
+        } );
+        
+        if (exercisesByActivity?.length > 0) {
+            exercisesByStudent.push({
+                activityId: exercises.activityId,
+                exercises: exercisesByActivity
+            });
+        }
+    })
+
+    return exercisesByStudent;
 }

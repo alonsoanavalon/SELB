@@ -26,6 +26,25 @@ router.post('/', async (req, res) => {
       error: err
     });
   }
+
+
+
+
  
+})
+
+router.get('/course/:courseId/session', async (req, res) => {
+  const getExercisesBySessionsAndCourse = await exerciseService.getExercisesBySessionsAndCourse(req.params.courseId);
+  res.send(getExercisesBySessionsAndCourse);
+})
+
+router.get('/course/:courseId/session/:sessionId', async (req, res) => {
+  const getExercisesBySessionAndCourse = await exerciseService.getExercisesBySessionAndCourse(req.params.courseId, req.params.sessionId);
+  res.send(getExercisesBySessionAndCourse);
+})
+
+router.get('/course/:courseId/student/:studentId/session', async (req, res) => {
+  const getExercisesBySessionAndStudent = await exerciseService.evaluateExercisesBySessionAndStudent(req.params.courseId, req.params.studentId);
+  res.send(getExercisesBySessionAndStudent);
 })
 module.exports = router;
