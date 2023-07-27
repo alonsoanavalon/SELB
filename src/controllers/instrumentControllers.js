@@ -91,10 +91,15 @@ exports.createInstrumentList = (evaluationId, instrumentId, userId) => {
 
     return new Promise((resolve, reject) => {
         sql = `INSERT INTO instrument_list (evaluation_id, instrument_id, evaluator_id) VALUES (${evaluationId}, ${instrumentId}, ${userId})`
-        mysqlConnection.query(sql, (err, res) => {
+        mysqlConnection.query(sql, async (err, response) => {
             if (err) throw err;
-            res = JSON.parse(JSON.stringify(res))
-            resolve(res['insertId'])
+            const res = JSON.parse(JSON.stringify(await response))
+            if (res) {
+                resolve(res['insertId'])
+            } else {
+                console.log("aca")
+            }
+
         })
     })
 }
@@ -144,7 +149,6 @@ exports.insertMode = async (evaluationId, instrumentId) => {
 }
 
 exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) => {
-
 
     let instrumentId = infoObject['instrument'];
     let studentId = infoObject['student_id']
@@ -197,13 +201,14 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) 
         ) .then(async (response) => {
             const [newInstrumentId, updateInstrument] = response
     
-
+            let sql = ''
     
             let objectLength = Object.keys(choicesObject).length
     
             /* Hay algun */
 
-            if (instrumentId !== 7 && instrumentId !== 8) {
+            if (instrumentId !== 7 && instrumentId !== 8  && instrumentId !== 9 && instrumentId !== 10) {
+
             
                 if (updateInstrument) {
                 
@@ -218,6 +223,7 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) 
         
           
                 } else {
+
         
                     let counter = 0;
                     isCreated = true;
@@ -303,17 +309,83 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex) 
         
                 }
 
+            } else if (instrumentId === 9){
+                if (updateInstrument) {
+                
+                    let counter = 0;
+                    isCreated = false;
+        
+                    for (choice in choicesObject) {
+                        counter += 1
+                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].value}', time='${choicesObject[choice].options.time}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                    }
+        
+          
+                } else {
+        
+                    let counter = 0;
+                    isCreated = true;
+                    sql += `INSERT INTO choice (item_id, value, time, instrument_list_id) VALUES `
+                    for (choice in choicesObject) {
+                        counter += 1
+                        if (counter == objectLength) {
+                            sql+= `(${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', ${newInstrumentId});`
+                        } else {
+                            sql+=` (${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', ${newInstrumentId}),`
+        
+                        }
+        
+        
+                    }
+        
+        
+                }
+
+            } else if (instrumentId === 10){
+                if (updateInstrument) {
+                
+                    let counter = 0;
+                    isCreated = false;
+        
+                    for (choice in choicesObject) {
+                        counter += 1
+                        sql+= mysql.format(`UPDATE choice SET value=${choicesObject[choice].value}, alternative='${choicesObject[choice].alternative}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                    }
+        
+          
+                } else {
+        
+                    let counter = 0;
+                    isCreated = true;
+                    sql += `INSERT INTO choice (item_id, value, alternative, instrument_list_id) VALUES `
+                    for (choice in choicesObject) {
+                        counter += 1
+                        if (counter == objectLength) {
+                            sql+= `(${choice}, ${choicesObject[choice].value}, ${choicesObject[choice].alternative}, ${newInstrumentId});`
+                        } else {
+                            sql+=` (${choice}, ${choicesObject[choice].value}, ${choicesObject[choice].alternative}, ${newInstrumentId}),`
+        
+                        }
+        
+        
+                    }
+        
+        
+                }
+
             }
+    
     
 
     
-            await mysqlConnection.query(sql, (err, res) => {
+            await mysqlConnection.query(sql, async (err, res) => {
                 if(err){
                     console.log("Error en índice: ", instrumentIndex)
                     throw err;
                 } else {
                     console.log(`Test N°${instrumentIndex} ingresado con exito`)                
                 }
+
                 resolve(isCreated)
                 
             })
