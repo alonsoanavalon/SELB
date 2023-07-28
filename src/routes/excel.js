@@ -1738,6 +1738,7 @@ router.post('/', async (req, res) => {
                     if (corsiAnswers[row.num] === row.value) {
                         studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        puntaje_total++
                     } else {
                         studentRow.push(currentStudent['value'])
                         studentRow.push('0')
