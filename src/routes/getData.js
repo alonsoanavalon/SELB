@@ -65,6 +65,14 @@ router.get('/studies', (req, res) => {
     })
 })
 
+router.get('/studies/active', (req, res) => {
+    let sql = `SELECT * FROM study where study.active = '1';`
+    mysqlConnection.query(sql, (err, results) => {
+        if (err) throw err;
+        res.send(results)
+    })
+})
+
 router.get('/instrumentlist/', async (req, res) => {
 
     let instrumentListId = req.query.instrument 

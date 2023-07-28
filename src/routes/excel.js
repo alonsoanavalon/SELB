@@ -403,16 +403,17 @@ const allInstruments = {
 //3. ROWS: luego dependiendo del instrumento, hay una forma para calcular puntajes y setear la row
 
 router.post('/', async (req, res) => {
-
     let instrument = req.body['instrument']
     let moment = req.body['moment']
     let schools = req.body['schools']
+    let studyId = req.body['studyId']
 
     let sql;
 
     // Este if es porque los primeros 2 momentos sacamos el userId de Evaluation, y desde los otros desde instrument_list
     // Como el userId lo agregamos recientemente a instrument_list, tenemos que realizar queries distintas
     
+    //este instrument 0 actualmente no es nada, no se para que isrve pero aca queda
     if (instrument == 0) {
 
         // no necesitamos una consulta para cada momento, ya que el userId en este caso al ser el instrumento 0 siempre será al user del evaluation
@@ -484,7 +485,10 @@ router.post('/', async (req, res) => {
             concat(user.name, " ", user.surname) as profesor, 
             student.gender as genero,
             school.name as colegio, instrument_list.date as fecha, 
-            choice.value,  item.num, item.title, choice.id, choice.alternative as alternative, choice.text as text, choice.time as time
+            choice.value,  item.num, item.title, choice.id, 
+            choice.alternative as alternative, 
+            choice.text as text, choice.time as time,
+            study.id as study   
             FROM choice  
             INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
             INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
@@ -492,12 +496,14 @@ router.post('/', async (req, res) => {
             INNER JOIN user ON instrument_list.evaluator_id = user.id
             INNER JOIN student ON evaluation.student_id = student.id 
             INNER JOIN moment ON moment.id = evaluation.moment_id 
+            INNER JOIN study on study.id = moment.study_id
             INNER JOIN study_list ON instrument.id = study_list.instrument_id 
             INNER JOIN course ON student.course_id = course.id 
             INNER JOIN school ON course.school_id = school.id 
             INNER JOIN item ON choice.item_id = item.id 
             WHERE instrument.id = ${instrument} 
             AND evaluation.moment_id = ${moment} 
+            AND study.id = ${studyId}
             AND school.id 
             IN (${schools});`
         }
@@ -524,7 +530,7 @@ router.post('/', async (req, res) => {
 
 
     if (instrument == 0) {
-        let allStudents = await studentsService.getAllStudentsInfo();
+        let allStudents = await studentsService.getAllStudentsInfo(schools);
         let allMoments = await momentService.getMomentsIds();
 
 
@@ -1404,7 +1410,7 @@ router.post('/', async (req, res) => {
                     csvData.push(row);
                 }
             )
-            const allStudentsInfo = await studentsService.getAllStudentsInfo();
+            const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
             const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
             res.send(parsedData)
             
@@ -1478,7 +1484,7 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
         res.send(parsedData)
         
@@ -1578,7 +1584,7 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
         res.send(parsedData)
         
@@ -1662,7 +1668,7 @@ router.post('/', async (req, res) => {
                 }
             )
     
-            const allStudentsInfo = await studentsService.getAllStudentsInfo();
+            const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
             const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
             res.send(parsedData)
             
@@ -1766,7 +1772,7 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
         res.send(parsedData)
         
@@ -1819,7 +1825,7 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
         res.send(parsedData)
         
@@ -1940,7 +1946,7 @@ router.post('/', async (req, res) => {
             }
         )
 
-        const allStudentsInfo = await studentsService.getAllStudentsInfo();
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
         res.send(parsedData)
         
@@ -1972,7 +1978,7 @@ router.post('/', async (req, res) => {
     });
 
 
-    const allStudentsInfo = await studentsService.getAllStudentsInfo();
+    const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
 
     const records = allStudentsRows;
 

@@ -73,7 +73,7 @@ exports.createStudent = (student) => {
     })
 }
 
-exports.getAllStudentsInfo = () => {
+exports.getAllStudentsInfo = (schools) => {
     return new Promise( async (resolve, reject) => {
         try {
             const sql = `SELECT
@@ -87,6 +87,8 @@ exports.getAllStudentsInfo = () => {
             FROM student 
             INNER JOIN course on course.id = student.course_id
             INNER JOIN school on school.id = course.school_id
+            WHERE school.id 
+            IN (${schools})
             order by id;`
             await mysqlConnection.query(sql, async (err, results) => { 
                 resolve(results)

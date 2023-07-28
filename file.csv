@@ -1,6 +1,30 @@
-rut,alumno,curso,evaluador,colegio,fecha,puntaje_1,pregunta_1,puntaje_2,pregunta_2,puntaje_3,pregunta_3,puntaje_4,pregunta_4,puntaje_5,pregunta_5,puntaje_6,pregunta_6,puntaje_7,pregunta_7,puntaje_8,pregunta_8,puntaje_9,pregunta_9,puntaje_10,pregunta_10,puntaje_11,pregunta_11,puntaje_12,pregunta_12,puntaje_13,pregunta_13,puntaje_14,pregunta_14,puntaje_15,pregunta_15,puntaje_16,pregunta_16,puntaje_17,pregunta_17,puntaje_18,pregunta_18,puntaje_19,pregunta_19,puntaje_20,pregunta_20,puntaje_21,pregunta_21,puntaje_22,pregunta_22,puntaje_23,pregunta_23,puntaje_24,pregunta_24,puntaje_25,pregunta_25,puntaje_26,pregunta_26,puntaje_total
-20728918-3,Gabriela Contreras,PRE - KINDER A,Alonso Anavalon,Colegio de Prueba - 1,2022-08-31T17:17:58.000Z,1,1,1,2,0,1,1,3,1,4,0,4,0,1,1,2,1,3,1,4,1,1,0,2,0,1,1,3,0,2,0,4,1,2,0,2,1,1,1,4,0,1,1,1,1,1,1,4,1,2,0,4,16
-20688918-1,Marcelo Rojas,PRE - KINDER A,Alonso Anavalon,Colegio de Prueba - 1,2022-09-13T01:21:54.000Z,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,1,1,1,0,1,0,1,1,3,0,2,0,4,0,3,0,1,1,1,1,4,0,3,1,1,0,3,1,4,1,2,0,3,7
-21728958-2,Pedro Pérez,PRE - KINDER A,Alonso Anavalon,Colegio de Prueba - 1,2022-09-13T02:27:15.000Z,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-20122918-5,Petunia Tapia,PRE - KINDER B,Alonso Anavalon,Colegio de Prueba - 2,2022-09-13T02:28:45.000Z,0,2,0,0,0,2,1,3,0,2,0,1,0,3,1,2,1,3,1,4,1,1,0,0,0,1,0,1,0,2,0,1,1,2,0,1,0,3,1,4,0,4,1,1,0,0,0,0,0,0,0,0,8
-21021918-9,Nicole Gonzalez,PRE - KINDER B,Alonso Anavalon,Colegio de Prueba - 2,2022-09-13T02:33:21.000Z,1,1,1,2,0,3,1,3,0,0,0,0,0,3,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,4,0,0,1,1,0,0,0,0,0,0,0,0,6
+rut,alumno,genero,curso,evaluador,colegio,fecha,pregunta_1,pregunta_2,pregunta_3,pregunta_4,pregunta_5,pregunta_6,pregunta_7,pregunta_8,pregunta_9,pregunta_10,pregunta_11,pregunta_12
+24228192-2,Mateo Espinoza,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+23928192-3,Alex Maturana,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+21928958-2,Javier Pérez,M,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+21728958-2,Pedro Pérez,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+21258918-8,Camilo Cerda,M,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+21258918-3,Nicolas Cerda,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+2122918-3,Constanza Contreras,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+21052918-1,Angelmo Fuentes,M,PRE - KINDER B,Alonso Anavalon,Colegio de Prueba - 2,27/7/2023,1,0,0,0,0,0,0,0,0,0,0,0
+21028918-9,Camila Gonzalez,F,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+21021918-9,Nicole Gonzalez,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+21002918-1,Jorge Fuentes,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20798918-3,Marta Muñoz,F,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20791518-3,Denisse Muñoz,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20788918-6,Ana Alba,F,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20788918-1,Gabriel Rojas,M,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20784318-6,Francisca Alba,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20776918-3,Yolanda Yañez,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20728918-3,Gabriela Contreras,F,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20727918-3,Carla Yañez,F,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20725918-3,Sergio Rojas,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20725761-3,Hugo Rojas,M,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20721918-3,Cristobal Quinteros,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20688918-1,Marcelo Rojas,M,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+2052918-3,Constanza Contreras,F,PRE - KINDER A,,Colegio de Prueba - 1,,,,,,,,,,,,,
+20431918-3,Mario Quinteros,M,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20428918-3,Marcela Contreras,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+2032918-3,Maria Contreras,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,
+20128918-5,Javiera Tapia,F,PRE - KINDER A,Alonso Anavalon,Colegio de Prueba - 1,27/7/2023,1,1,0,0,0,0,0,0,0,0,0,0
+20122918-5,Petunia Tapia,F,PRE - KINDER B,,Colegio de Prueba - 2,,,,,,,,,,,,,

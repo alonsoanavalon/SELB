@@ -2,7 +2,8 @@ const router = require('express').Router()
 const instrumentControllers = require('../controllers/instrumentControllers')
 
 router.post('/newevaluation', async (req, res) => {
-    let allInstruments = req.body
+    let allInstruments = req.body.instruments
+    let studyId = req.body.studyId
     let updatedCounter = 0;
     let createdCounter = 0;
     
@@ -16,7 +17,7 @@ router.post('/newevaluation', async (req, res) => {
     for (const instrument of allInstruments) {
 
         let [infoObject, choicesObject] = instrument
-        let response = await instrumentControllers.saveInstrumentData(infoObject, choicesObject, instrumentIndex)
+        let response = await instrumentControllers.saveInstrumentData(infoObject, choicesObject, instrumentIndex, studyId)
         if (response === false) {
             updatedCounter++
         } else {
