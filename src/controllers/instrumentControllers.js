@@ -544,8 +544,9 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
                     isCreated = false;
         
                     for (choice in choicesObject) {
+                        const sticks = JSON.stringify(choicesObject[choice].options.sticks);
                         counter += 1
-                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].value}', time='${choicesObject[choice].options.time}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].value}', time='${choicesObject[choice].options.time}', tries='${choicesObject[choice].options.resets}', sticks='${sticks}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
                     }
         
           
@@ -553,13 +554,14 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
         
                     let counter = 0;
                     isCreated = true;
-                    sql += `INSERT INTO choice (item_id, value, time, instrument_list_id) VALUES `
+                    sql += `INSERT INTO choice (item_id, value, time, tries, text, instrument_list_id) VALUES `
                     for (choice in choicesObject) {
+                        const sticks = JSON.stringify(choicesObject[choice].options.sticks);
                         counter += 1
                         if (counter == objectLength) {
-                            sql+= `(${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', ${newInstrumentId});`
+                            sql+= `(${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', '${choicesObject[choice].options.resets}', '${sticks}',  ${newInstrumentId});`
                         } else {
-                            sql+=` (${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', ${newInstrumentId}),`
+                            sql+=` (${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', '${choicesObject[choice].options.resets}', '${sticks}',  ${newInstrumentId}),`
         
                         }
         
