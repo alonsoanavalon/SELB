@@ -546,7 +546,7 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
                     for (choice in choicesObject) {
                         const sticks = JSON.stringify(choicesObject[choice].options.sticks);
                         counter += 1
-                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].value}', time='${choicesObject[choice].options.time}', tries='${choicesObject[choice].options.resets}', sticks='${sticks}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
+                        sql+= mysql.format(`UPDATE choice SET value='${choicesObject[choice].value}', time='${choicesObject[choice].options.time}', tries='${choicesObject[choice].options.resets}', text='${sticks}' WHERE choice.item_id = ${choice} AND choice.instrument_list_id = ${newInstrumentId};`)
                     }
         
           
