@@ -41,6 +41,8 @@ router.post('/', async (req, res) => {
     let moment = req.body['moment']
     let schools = req.body['schools']
     let studyId = req.body['studyId']
+    let countExamples = req.body['countExamples'];
+
     let sql;
     // Este if es porque los primeros 2 momentos sacamos el userId de Evaluation, y desde los otros desde instrument_list
     // Como el userId lo agregamos recientemente a instrument_list, tenemos que realizar queries distintas
@@ -623,7 +625,7 @@ router.post('/', async (req, res) => {
     }
 
 
-    async function getStudentInfoCorsi(rows) {
+    async function getStudentInfoCorsi(rows, inputCountExamples = true) {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
@@ -680,7 +682,9 @@ router.post('/', async (req, res) => {
                         if (corsiAnswers[row.num] === row.value) {
                             studentRow.push(currentStudent['value'])
                             studentRow.push('1')
-                            puntaje_total++
+                            if (inputCountExamples) {
+                                puntaje_total++
+                            }
                         } else {
                             studentRow.push(currentStudent['value'])
                             studentRow.push('0')
@@ -902,7 +906,7 @@ router.post('/', async (req, res) => {
     } else if (instrument == 2) {
         getStudentInfoCalculo(rows);
     } else if (instrument == 6) {
-        getStudentInfoCorsi(rows);
+            getStudentInfoCorsi(rows, countExamples);
     } else if (instrument == 7) {
         //Solo este test necesita 1 valor mas para iterar... se me complica en la logica interna de la funcion asi que SE que es horrible solucion, pero le añadire una fila mas para q pueda sacarlas todas y esta fila sea la afectada q no salga.
         rows.push({ rut: '', alumno: '', curso: '', profesor: '', genero: '', "id": '', "num": '', "value": '' }
@@ -910,7 +914,7 @@ router.post('/', async (req, res) => {
         getStudentInfoHNF(rows);
     } else if (instrument == 8) {
         getStudentInfoFono(rows);
-    } else {
+    }  else {
         getStudentInfo(rows);
     }
 
@@ -925,7 +929,7 @@ router.post('/', async (req, res) => {
     const completedStudents = records.map((studentRow) => studentRow[0])
     const allStudents = allStudentsInfo.map((student) => student.rut)
     const missingStudents = allStudents.filter((element) => !completedStudents.includes(element));
-    
+
     const missingStudentsData = missingStudents.map((missingStudent) => {
         const missingData = allStudentsInfo.find((element) => element.rut == missingStudent);
         const completedStudentData = [missingData.rut, missingData.alumno, missingData.gender, `${missingData.level} ${missingData.course}`, "", missingData.escuela, ""]
