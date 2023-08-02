@@ -11,7 +11,11 @@ function getAllMissingStudentsData(allStudentsRows, allStudentsInfo, headers) {
     const missingStudentsData = missingStudents.map((missingStudent) => {
         const missingData = allStudentsInfo.find((element) => element.rut == missingStudent);
         const completedStudentData = [missingData.rut, missingData.alumno, missingData.gender, `${missingData.level} ${missingData.course}`, "", missingData.escuela, ""]
-        const testLengthData = allStudentsRows[0].length - completedStudentData.length;
+        let testLengthData ;
+        if (allStudentsRows[0]) {
+            testLengthData = allStudentsRows[0].length - completedStudentData.length;
+        } else {}
+        testLengthData = completedStudentData.length;
         for (var i = 0; i < testLengthData; i++) {
             completedStudentData.push('')
         }
@@ -933,7 +937,11 @@ router.post('/', async (req, res) => {
     const missingStudentsData = missingStudents.map((missingStudent) => {
         const missingData = allStudentsInfo.find((element) => element.rut == missingStudent);
         const completedStudentData = [missingData.rut, missingData.alumno, missingData.gender, `${missingData.level} ${missingData.course}`, "", missingData.escuela, ""]
-        const testLengthData = allStudentsRows[0].length - completedStudentData.length;
+        let testLengthData ;
+        if (allStudentsRows[0]) {
+            testLengthData = allStudentsRows[0].length - completedStudentData.length;
+        } else {}
+        testLengthData = completedStudentData.length;
         for (var i = 0; i < testLengthData; i++) {
             completedStudentData.push('')
         }
