@@ -33,7 +33,7 @@ exports.getExerciseById = (id) => {
 exports.createExercise = (body) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const sql = `INSERT INTO exercise (student_id, activity_id, item, result, date, response_time) VALUES (${body.studentId}, ${body.activityId}, ${body.item}, ${body.result}, current_timestamp(), ${body.responseTime});`;
+            const sql = `INSERT INTO exercise (student_id, activity_id, item, result, date, response_time) VALUES (${body.studentId}, '${body.activityId}', '${body.item}', ${body.result}, current_timestamp(), ${body.responseTime});`;
             await mysqlConnection.query(sql, (err, result) => {
                 if (err) {
                     reject(err)
