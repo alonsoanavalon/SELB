@@ -67,6 +67,7 @@ router.post('/', async (req, res) => {
 		choice.alternative,
         choice.time,
         choice.text,
+        choice.options,
         item.num, 
         choice.id,
         instrument.id as instrument,
@@ -84,7 +85,7 @@ router.post('/', async (req, res) => {
         INNER JOIN school ON course.school_id = school.id 
         INNER JOIN item ON choice.item_id = item.id 
         
-    GROUP BY student.rut, user.name, user.surname, instrument_list.date, choice.value, item.num, choice.id, evaluation.id, choice.time, choice.text, choice.alternative
+    GROUP BY student.rut, user.name, user.surname, instrument_list.date, choice.value, item.num, choice.id, evaluation.id, choice.time, choice.text, choice.options, choice.alternative
     LIMIT 1000000;`
 
     } else {
@@ -124,6 +125,7 @@ router.post('/', async (req, res) => {
             choice.value,  item.num, item.title, choice.id, 
             choice.alternative as alternative, 
             choice.text as text, choice.time as time,
+            choice.options as options,
             study.id as study   
             FROM choice  
             INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
@@ -732,10 +734,15 @@ router.post('/', async (req, res) => {
     }
 
     async function getStudentInfo(rows) {
+        debugger;
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
         rows.forEach(row => {
+            if (row.options) {
+                //de aca sacare todo lo ultimo que me pidieron y debo mostrarlo, resets, penalizacion, etc. pero solo para el id 9 que es torre
+                console.log(JSON.parse(row.options))
+            }
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {
