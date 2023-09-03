@@ -739,10 +739,13 @@ router.post('/', async (req, res) => {
         let studentCounter = 0
         let previousStudent = undefined;
         rows.forEach(row => {
-            if (row.options) {
-                //de aca sacare todo lo ultimo que me pidieron y debo mostrarlo, resets, penalizacion, etc. pero solo para el id 9 que es torre
-                console.log(JSON.parse(row.options))
+            if (row.rut =='20728918-3') {
+                if (row.options) {
+                    //de aca sacare todo lo ultimo que me pidieron y debo mostrarlo, resets, penalizacion, etc. pero solo para el id 9 que es torre de londres
+                    console.log(JSON.parse(row.options))
+                }
             }
+     
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {

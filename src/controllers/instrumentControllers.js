@@ -558,11 +558,13 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
                     sql += `INSERT INTO choice (item_id, value, time, tries, text, instrument_list_id, options) VALUES `
                     for (choice in choicesObject) {
                         const sticks = JSON.stringify(choicesObject[choice].options.sticks);
+                        const options = JSON.stringify(choicesObject[choice].options);
+
                         counter += 1
                         if (counter == objectLength) {
-                            sql+= `(${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', '${choicesObject[choice].options.resets}', '${sticks}',  ${newInstrumentId}, '${options});`
+                            sql+= `(${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', '${choicesObject[choice].options.resets}', '${sticks}',  ${newInstrumentId}, '${options}');`
                         } else {
-                            sql+=` (${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', '${choicesObject[choice].options.resets}', '${sticks}',  ${newInstrumentId}, '${options}),`
+                            sql+=` (${choice}, '${choicesObject[choice].value}', '${choicesObject[choice].options.time}', '${choicesObject[choice].options.resets}', '${sticks}',  ${newInstrumentId}, '${options}'),`
         
                         }
         
