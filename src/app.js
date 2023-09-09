@@ -23,6 +23,14 @@ const momentRoutes = require('./moments/moments.controller')
 const coursesRoutes = require('./courses/courses.controller')
 const studentsRoutes = require('./students/students.controller')
 const rootMomentsRoutes = require('./routes/moments')
+const apiActivityRoutes = require('./api/activity/activity.controller')
+const apiExerciseRoutes = require('./api/exercise/exercise.controller')
+const apiSessionRoutes = require('./api/session/session.controller')
+const apiStudentRoutes = require('./api/student/student.controller')
+const apiCommuneRoutes = require('./api/commune/commune.controller')
+const apiSchoolRoutes = require('./api/school/school.controller')
+const apiCourseRoutes = require('./api/course/course.controller')
+const apiChartRoutes = require('./api/chart/chart.controller')
 
 
 const fs = require('fs')
@@ -47,7 +55,7 @@ const sslServer = https.createServer(
 )
 
 
-app.set('port', process.env.PORT || 3500)
+app.set('port', 8000)
 const hbs = exphbs.create({
     handlebars: allowInsecurePrototypeAccess(Handlebars), 
     layoutsDir: path.join(__dirname, 'public', 'views', 'layouts'),
@@ -144,7 +152,14 @@ app.use('/admin/schools', schoolsRoutes)
 app.use('/admin/moments', momentRoutes) 
 app.use('/admin/courses', coursesRoutes)
 app.use('/admin/students', studentsRoutes)
-
+app.use('/api/student', apiStudentRoutes)
+app.use('/api/activity', apiActivityRoutes)
+app.use('/api/session', apiSessionRoutes)
+app.use('/api/exercise', apiExerciseRoutes)
+app.use('/api/school', apiSchoolRoutes)
+app.use('/api/commune', apiCommuneRoutes)
+app.use('/api/course', apiCourseRoutes)
+app.use('/api/chart', apiChartRoutes)
 
 
 
