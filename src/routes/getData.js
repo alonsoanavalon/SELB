@@ -57,7 +57,40 @@ router.get('/sdq', (req, res) => {
 
 })
 
+    const getStudentId = (studentRut) => {
+        return new Promise((resolve, reject) => {
+            let sql = `SELECT id FROM student WHERE rut = '${studentRut}'`
+            try {
+                mysqlConnection.query(sql, (err, results) => {
+                    if (err) throw err;
+                    results = JSON.parse(JSON.stringify(results))
+                    resolve({
+                        id: results[0].id,
+                        rut: studentRut
+                    })
+                })
+            } catch (err) {
+                if (err) throw err;
+            }
+        })
+    }
+
+    const getStudentIds = async (studentRuts) => {
+        if (studentRuts.length > 0) {
+            const promisesArray = [];
+            studentRuts.forEach((studentRut) => {
+                promisesArray.push(getStudentId(studentRut))
+            })
+            const results = await Promise.all(promisesArray)
+            return results;
+        } else {
+            return [];
+        }
+    }
+
 router.get('/listparents/:email', (req, res) => {
+
+
 
     const email = req.params.email;
 
@@ -67,10 +100,14 @@ router.get('/listparents/:email', (req, res) => {
     WHERE user.email = '${email}'`
 
     try {       
-        mysqlConnection.query(sql, (err, results) => {
+        mysqlConnection.query(sql, async (err, results) => {
             if (err) throw err;
-            results = JSON.parse(JSON.stringify(results))
-            res.send(results)
+            let studentRuts = JSON.parse(JSON.stringify(results))
+            studentRuts = studentRuts.map((studentRut) => {
+                return studentRut.student_rut
+            })
+            const studentIdsAndRuts = await getStudentIds(studentRuts);
+            res.send(studentIdsAndRuts)
         })
     } catch (err) {
         if (err) throw err;
