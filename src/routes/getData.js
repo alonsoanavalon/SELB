@@ -57,6 +57,27 @@ router.get('/sdq', (req, res) => {
 
 })
 
+router.get('/listparents/:email', (req, res) => {
+
+    const email = req.params.email;
+
+    let sql = `SELECT student_rut
+    FROM list_parents
+    INNER JOIN user ON user.id = list_parents.user_id
+    WHERE user.email = '${email}'`
+
+    try {       
+        mysqlConnection.query(sql, (err, results) => {
+            if (err) throw err;
+            results = JSON.parse(JSON.stringify(results))
+            res.send(results)
+        })
+    } catch (err) {
+        if (err) throw err;
+    }
+
+})
+
 router.get('/studies', (req, res) => {
     let sql = `SELECT * FROM study`
     mysqlConnection.query(sql, (err, results) => {
