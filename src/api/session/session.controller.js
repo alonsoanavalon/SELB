@@ -6,6 +6,8 @@ router.get('/', async (req, res) => {
     res.send(results);
 })
 
+
+
 router.get('/:id', async (req, res) => {
   const session = await sessionService.getSessionById(req.params.id);
   res.send(session);
@@ -16,6 +18,8 @@ router.get('/course/:id', async (req, res) => {
   const exercisesByStudent = await sessionService.getExercisesByCourse(req.params.id);
   res.send(exercisesByStudent) ;
 })
+
+
 
 
 // /sessions/course/:id
@@ -43,6 +47,24 @@ router.get('/course/:courseId/session/:sessionId/student/:studentId', async (req
   const exercisesBySessionAndCourse = await sessionService.getActivitiesBySessionAndStudent(req.params.sessionId, req.params.courseId, req.params.studentId);
   res.send(exercisesBySessionAndCourse);
 })
+
+router.get('/student/:studentRut/activity', async (req, res) => {
+  const exercisesBySessionAndCourse = await sessionService.getGroupExercisesBySessionAndActivity(req.params.studentRut);
+  res.send(exercisesBySessionAndCourse);
+})
+
+router.get('/student/:studentRut/exercise', async (req, res) => {
+  const exercisesBySessionAndCourse = await sessionService.getGroupExercisesBySession(req.params.studentRut);
+  res.send(exercisesBySessionAndCourse);
+})
+
+router.get('/student/:studentRut/activity/skills', async (req, res) => {
+  const exercisesBySessionAndCourse = await sessionService.getGroupExercisesBySkill(req.params.studentRut);
+  res.send(exercisesBySessionAndCourse);
+})
+
+
+
 
 
 router.post('/', async (req, res) => {

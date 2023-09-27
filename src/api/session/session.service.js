@@ -46,6 +46,24 @@ exports.createSession = () => {
     })
 }
 
+function getStudentIdByRut (rut) {
+    return new Promise((resolve, reject) => {
+        try {
+            const sql = `SELECT id FROM student WHERE rut = '${rut}'`;
+            mysqlConnection.query(sql, (err, result) => {
+                if (result) {
+                    resolve(result[0]?.id)
+                } else {
+                    resolve ('')
+                }
+            })
+        } catch (err) {
+            reject(err);
+            throw err;
+        }
+    })
+}
+
 function getAllStudents (exercises) {
 
     const allStudents = exercises.map(exercise => {
@@ -249,6 +267,24 @@ function filterActivitiesBySession(exercisesBySession) {
     }
 }
 
+async function getSkillFromActivity (activityId) {
+    return new Promise((resolve, reject) => {
+        try {
+            const sql = `SELECT skill.name, skill.description FROM skill INNER JOIN activity ON skill.id = activity.skill_id WHERE activity.id = '${activityId}'`;
+            mysqlConnection.query(sql, (err, result) => {
+                if (result) {
+                    resolve(result[0])
+                } else {
+                    resolve ('')
+                }
+            })
+        } catch (err) {
+            reject(err);
+            throw err;
+        }
+    })
+}
+
 
 exports.getExercisesBySessionAndCourse = async (sessionId, courseId) => {
     const exercisesByCourse = await this.getExercisesByCourse(courseId);
@@ -309,3 +345,294 @@ exports.getActivitiesBySessionAndStudent = async (sessionId, courseId, studentId
 
     return exercisesByStudent;
 }
+
+
+function formatExercisesData(exercisesData) {
+    const formattedSessions = {};
+
+    for (const sessionId in exercisesData) {
+        if (exercisesData.hasOwnProperty(sessionId)) {
+            const session = exercisesData[sessionId];
+            const totalCount = session.length;
+
+            const successCounter = session.filter(exercise => exercise.result === 1).length;
+            const failCounter = session.filter(exercise => exercise.result === 0).length;
+
+            // Usamos un objeto para almacenar estudiantes únicos
+            const uniqueStudents = {};
+
+            session.forEach(exercise => {
+                // Usamos el studentId como clave para asegurarnos de que cada estudiante sea único en la sesión
+                uniqueStudents[exercise.student_id] = {
+                    studentId: exercise.student_id,
+                    studentName: exercise.student_name
+                };
+            });
+
+            const students = Object.values(uniqueStudents); // Convertimos el objeto de estudiantes a un arreglo
+
+            const sessionData = {
+                sessionId: sessionId,
+                totalCount: totalCount,
+                students: students,
+                successCounter: successCounter,
+                failCounter: failCounter
+            };
+
+            formattedSessions[sessionId] = sessionData;
+        }
+    }
+
+    return Object.values(formattedSessions); // Convertimos el objeto de sesiones a un arreglo
+}
+
+async function groupExercisesByActivityWithSkill(exercisesData) {
+    const groupedData = {};
+
+    for (const session in exercisesData) {
+      for (const exercise of exercisesData[session]) {
+        const activityId = exercise.activity_id;
+        const skill = await getSkillFromActivity(activityId);
+
+        const skillName = skill.name;
+  
+        if (!(skillName in groupedData)) {
+          groupedData[skillName] = {
+            skillName,
+            skillDescription: skill.description.replace(/\n/g, ' '),
+            activities: {},
+            students: [],
+            totalCount: 0,
+            successCounter: 0,
+            failCounter: 0,
+          };
+        }
+  
+        if (!(activityId in groupedData[skillName].activities)) {
+          groupedData[skillName].activities[activityId] = {
+            activityId: activityId,
+            students: [],
+            totalCount: 0,
+            successCounter: 0,
+            failCounter: 0,
+          };
+        }
+  
+        const studentInfo = {
+          studentId: exercise.student_id,
+          studentName: exercise.student_name,
+        };
+  
+        if (
+          !groupedData[skillName].students.some(
+            (student) =>
+              student.studentId === studentInfo.studentId &&
+              student.studentName === studentInfo.studentName
+          )
+        ) {
+          groupedData[skillName].students.push(studentInfo);
+        }
+  
+        if (
+          !groupedData[skillName].activities[activityId].students.some(
+            (student) =>
+              student.studentId === studentInfo.studentId &&
+              student.studentName === studentInfo.studentName
+          )
+        ) {
+          groupedData[skillName].activities[activityId].students.push(studentInfo);
+        }
+  
+        groupedData[skillName].totalCount++;
+        groupedData[skillName].successCounter += exercise.result === 1 ? 1 : 0;
+        groupedData[skillName].failCounter += exercise.result === 0 ? 1 : 0;
+  
+        groupedData[skillName].activities[activityId].totalCount++;
+        groupedData[skillName].activities[activityId].successCounter += exercise.result === 1 ? 1 : 0;
+        groupedData[skillName].activities[activityId].failCounter += exercise.result === 0 ? 1 : 0;
+      }
+    }
+  
+    return Object.values(groupedData);
+  }
+
+
+  function groupExercisesByActivity(exercisesData) {
+    const groupedData = {};
+  
+    for (const session in exercisesData) {
+      for (const exercise of exercisesData[session]) {
+        const activityId = exercise.activity_id;
+  
+        if (!(activityId in groupedData)) {
+          groupedData[activityId] = {
+            activityId: activityId,
+            students: [],
+            totalCount: 0,
+            successCounter: 0,
+            failCounter: 0,
+          };
+        }
+  
+        const studentInfo = {
+          studentId: exercise.student_id,
+          studentName: exercise.student_name,
+        };
+  
+        if (
+          !groupedData[activityId].students.some(
+            (student) =>
+              student.studentId === studentInfo.studentId &&
+              student.studentName === studentInfo.studentName
+          )
+        ) {
+          groupedData[activityId].students.push(studentInfo);
+        }
+  
+        groupedData[activityId].totalCount++;
+        if (exercise.result === 1) {
+          groupedData[activityId].successCounter++;
+        } else {
+          groupedData[activityId].failCounter++;
+        }
+      }
+    }
+  
+    return Object.values(groupedData);
+  }
+
+
+  function groupExercisesBySessionAndActivity(exercisesData) {
+    const groupedData = {};
+  
+    for (const session in exercisesData) {
+      for (const exercise of exercisesData[session]) {
+        const sessionId = exercise.session_id;
+        const activityId = exercise.activity_id;
+  
+        if (!(sessionId in groupedData)) {
+          groupedData[sessionId] = {
+            sessionId: sessionId,
+            activities: {},
+          };
+        }
+  
+        if (!(activityId in groupedData[sessionId].activities)) {
+          groupedData[sessionId].activities[activityId] = {
+            activityId: activityId,
+            students: [],
+            totalCount: 0,
+            successCounter: 0,
+            failCounter: 0,
+          };
+        }
+  
+        const studentInfo = {
+          studentId: exercise.student_id,
+          studentName: exercise.student_name,
+        };
+  
+        if (
+          !groupedData[sessionId].activities[activityId].students.some(
+            (student) =>
+              student.studentId === studentInfo.studentId &&
+              student.studentName === studentInfo.studentName
+          )
+        ) {
+          groupedData[sessionId].activities[activityId].students.push(studentInfo);
+        }
+  
+        groupedData[sessionId].activities[activityId].totalCount++;
+        if (exercise.result === 1) {
+          groupedData[sessionId].activities[activityId].successCounter++;
+        } else {
+          groupedData[sessionId].activities[activityId].failCounter++;
+        }
+      }
+    }
+  
+    return Object.values(groupedData).map((session) => {
+      return {
+        sessionId: session.sessionId,
+        activities: Object.values(session.activities),
+      };
+    });
+  }
+  
+
+// Obtener todos los ejercicios del alumno agrupados por sesión y actividad
+async function getExercisesByStudentAndSession(studentId, courseId) {
+    const exercisesByCourse = await exerciseService.getExercisesByCourse(courseId);
+
+    // Filtrar los ejercicios por el alumno
+    const exercisesByStudent = exercisesByCourse.filter(exercise => exercise.student_id === studentId);
+
+    // Agrupar los ejercicios por sesión
+    const exercisesGroupedBySession = {};
+
+    exercisesByStudent.forEach(exercise => {
+        if (!exercisesGroupedBySession[exercise.session_id]) {
+            exercisesGroupedBySession[exercise.session_id] = [];
+        }
+        exercisesGroupedBySession[exercise.session_id].push(exercise);
+    });
+
+    return exercisesGroupedBySession;
+}
+
+async function getStudentCourses(studentId) {
+
+
+
+    return new Promise((resolve, reject) => {
+        try {
+
+            const sql = `SELECT course_id FROM student WHERE id = ${studentId}`;
+            mysqlConnection.query(sql, (err, result) => {
+                if (result){
+                    resolve(result[0]?.course_id)
+                }
+
+            })
+        } catch (err) {
+            reject(err);
+            throw err;
+        }
+    })
+}
+
+
+
+
+
+exports.getGroupExercisesBySessionAndActivity = async (studentRut) => {
+    const studentId = await getStudentIdByRut(studentRut);
+    const courseId = await getStudentCourses(studentId)
+    const exercises = await getExercisesByStudentAndSession(+studentId, courseId);
+    //const response = formatExercisesData(exercises);  //ejercicios por sesion con contador de ejercicios
+    //const response = groupExercisesByActivity(exercises); //segun actividad, separadas sin agruparse, contadores de ejercicios
+    const response = groupExercisesBySessionAndActivity(exercises) // segun sesión pero mostrando actividades con sus contadores de ejercicios
+    //const response = groupExercisesByActivityWithSkill(exercises) //separado segun habilidad mostrando actividades con sus contadores de ejercicios
+    return response;
+}
+
+
+exports.getGroupExercisesBySession = async (studentRut) => {
+    const studentId = await getStudentIdByRut(studentRut);
+    const courseId = await getStudentCourses(studentId)
+    const exercises = await getExercisesByStudentAndSession(+studentId, courseId);
+    const response = formatExercisesData(exercises);  //ejercicios por sesion con contador de ejercicios
+    return response;
+}
+
+exports.getGroupExercisesBySkill= async (studentRut) => {
+    const studentId = await getStudentIdByRut(studentRut);
+    const courseId = await getStudentCourses(studentId)
+    const exercises = await getExercisesByStudentAndSession(+studentId, courseId);
+    const response = groupExercisesByActivityWithSkill(exercises) //separado segun habilidad mostrando actividades con sus contadores de ejercicios
+
+    return response;
+}
+
+
+
