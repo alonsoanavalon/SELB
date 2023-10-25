@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
         const timestamp = new Date().toISOString();
         const logEntry = `${timestamp}: ${errorMessage}: ${JSON.stringify(errorLog)}\n`;
         fs.appendFileSync('error.log', logEntry);
-    
+        console.log(logEntry)
         res.status(200).send('Error registrado con éxito.');
       } catch (err) {
         console.error('Error al registrar el error:', err);
