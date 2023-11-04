@@ -32,6 +32,7 @@ const apiSchoolRoutes = require('./api/school/school.controller')
 const apiCourseRoutes = require('./api/course/course.controller')
 const apiChartRoutes = require('./api/chart/chart.controller')
 const errorLogRoutes = require('./routes/error-log')
+const uploadStudentsService = require('./services/uploadStudents.service')
 
 const fs = require('fs')
 const https = require('https')
@@ -162,7 +163,7 @@ app.use('/api/course', apiCourseRoutes)
 app.use('/api/chart', apiChartRoutes)
 app.use('/api/error-log', errorLogRoutes)
 
-
+uploadStudentsService.processCSVFile('./src/public/uploads/data.csv')
 
 //Listen
 app.listen(app.get('port'), () => {
