@@ -95,9 +95,9 @@ router.get('/listparents/:email', (req, res) => {
     const email = req.params.email;
 
     let sql = `SELECT student_rut
-    FROM list_parents
-    INNER JOIN user ON user.id = list_parents.user_id
-    WHERE user.email = '${email}'`
+    FROM user_assignation
+    INNER JOIN user ON user.id = user_assignation.user_id
+    WHERE user.email = '${email}' AND user_assignation.assignation_type_id = 1`
 
     try {       
         mysqlConnection.query(sql, async (err, results) => {

@@ -29,6 +29,7 @@ const apiSessionRoutes = require('./api/session/session.controller')
 const apiStudentRoutes = require('./api/student/student.controller')
 const apiCommuneRoutes = require('./api/commune/commune.controller')
 const apiSchoolRoutes = require('./api/school/school.controller')
+const apiSchoolAssignationRoutes = require('./api/school_assignation/school-asignation.controller')
 const apiCourseRoutes = require('./api/course/course.controller')
 const apiChartRoutes = require('./api/chart/chart.controller')
 const errorLogRoutes = require('./routes/error-log')
@@ -161,9 +162,9 @@ app.use('/api/school', apiSchoolRoutes)
 app.use('/api/commune', apiCommuneRoutes)
 app.use('/api/course', apiCourseRoutes)
 app.use('/api/chart', apiChartRoutes)
+app.use('/api/school-assignation', apiSchoolAssignationRoutes)
 app.use('/api/error-log', errorLogRoutes)
 
-uploadStudentsService.processCSVFile('./src/public/uploads/data.csv')
 
 //Listen
 app.listen(app.get('port'), () => {

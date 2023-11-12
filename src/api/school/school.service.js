@@ -29,3 +29,19 @@ exports.getById = (id) => {
 }
 
 
+exports.getByIds = (ids) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const sql = `SELECT * from school where id IN(${[...ids]}) `;
+            await mysqlConnection.query(sql, (err, result) => {
+                resolve(result)
+            })
+        } catch (err) {
+            reject(err);
+            throw err;
+        }
+    })
+}
+
+
+
