@@ -241,6 +241,7 @@ router.post('/', async (req, res) => {
             index++
 
         })
+        infoChoices.push('puntaje_total')
     } else if (instrument == 1) {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`;
@@ -733,6 +734,7 @@ router.post('/', async (req, res) => {
 
     }
 
+
     async function getStudentInfo(rows) {
         debugger;
         let studentRow = []
@@ -789,6 +791,86 @@ router.post('/', async (req, res) => {
 
         const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
+        res.send(parsedData)
+
+
+    }
+
+    async function getStudentInfoWally(rows) {
+        debugger;
+        let studentRow = []
+        let studentCounter = 0
+        let previousStudent = undefined;
+        rows.forEach(row => {
+            if (row.rut =='20728918-3') {
+                if (row.options) {
+                    //de aca sacare todo lo ultimo que me pidieron y debo mostrarlo, resets, penalizacion, etc. pero solo para el id 9 que es torre de londres
+                    console.log(JSON.parse(row.options))
+                }
+            }
+     
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+                studentRow = []
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(fechaParseada)
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                } else {
+                    studentRow.push(currentStudent['value'])
+                }
+                allStudentsRows.push(studentRow)
+
+            } else {
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                } else {
+                    studentRow.push(currentStudent['value'])
+                }
+            }
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+        let csvData = [];
+        csvData.push([...info])
+
+        const allStudentsClone = JSON.parse(JSON.stringify(allStudentsRows));
+
+        const allStudentsRowsWithTotalPoints = allStudentsClone.map((row) => {
+            const points = row.slice(7);
+            let totalPoints = 0;
+            points.forEach((point, key) => {
+                position = key + 1;
+                if (position % 2 == 0) {   
+                    if (point == 1){
+                        totalPoints = totalPoints + parseInt(point);
+
+                    } 
+                }
+            })
+
+            row.push(totalPoints);
+            return row;
+        })
+
+        allStudentsRowsWithTotalPoints.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
+        const parsedData = getAllMissingStudentsData(allStudentsRowsWithTotalPoints, allStudentsInfo, [...info])
         res.send(parsedData)
 
 
@@ -928,7 +1010,10 @@ router.post('/', async (req, res) => {
         getStudentInfoHNF(rows);
     } else if (instrument == 8) {
         getStudentInfoFono(rows);
-    }  else {
+    }  else if (instrument == 5) {
+        getStudentInfoWally(rows);
+    
+    }else {
         getStudentInfo(rows);
     }
 
