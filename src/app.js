@@ -34,6 +34,7 @@ const apiCourseRoutes = require('./api/course/course.controller')
 const apiChartRoutes = require('./api/chart/chart.controller')
 const errorLogRoutes = require('./routes/error-log')
 const uploadStudentsService = require('./services/uploadStudents.service')
+const uploadUsersService = require('./services/uploadUsers.service')
 
 const fs = require('fs')
 const https = require('https')

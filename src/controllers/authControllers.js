@@ -20,7 +20,7 @@ exports.register = async (req, res) => {
     
         mysqlConnection.query("INSERT INTO user SET ?", {email:user, password:passHash, name, surname}, (err, results, rows) => {
             if (err) throw err;
-            if (results) console.log(results)
+            if (results) return(results)
         })
 
         res.redirect('/')
@@ -138,3 +138,33 @@ exports.logout = (req, res) => {
 
 
 
+
+
+exports.signup = (userData) => {
+
+
+
+            return new Promise( async (resolve, reject) => {
+                try {
+                    const user = userData.user
+                    const pass = userData.password
+                    const name = userData.name
+                    const role = userData.role
+                    const surname = userData.surname
+                    const rut = userData.rut
+                    const sql = `INSERT INTO user (email, password, name, surname, role, rut) VALUES('${user}', '${pass}', '${name}', '${surname}', '${role}', '${rut}');`;
+                
+                    await mysqlConnection.query(sql, async (err, results) => { 
+                        resolve(results)
+                    })
+                } catch (err) {
+                    reject(err)
+                    throw err;
+                }
+            })
+        
+
+
+
+   
+}
