@@ -101,8 +101,9 @@ router.get('/listparents/:email', (req, res) => {
 
     try {       
         mysqlConnection.query(sql, async (err, results) => {
-            if (err) throw err;
+            if (err) console.log(err)
             let studentRuts = JSON.parse(JSON.stringify(results))
+            if (studentRuts.length === 0) return res.send([]) 
             studentRuts = studentRuts.map((studentRut) => {
                 return studentRut.student_rut
             })
