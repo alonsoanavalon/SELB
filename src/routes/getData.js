@@ -64,11 +64,15 @@ router.get('/sdq', (req, res) => {
                 mysqlConnection.query(sql, (err, results) => {
                     if (err) throw err;
                     results = JSON.parse(JSON.stringify(results))
-                    if (results.length === 0) return resolve([])
-                    resolve({
-                        id: results[0].id,
-                        rut: studentRut
-                    })
+                    if (results.length === 0) {
+                        resolve(undefined);
+                    } else {
+                        resolve({
+                            id: results[0].id,
+                            rut: studentRut
+                        })
+                    }
+    
                 })
             } catch (err) {
                 if (err) throw err;
@@ -83,7 +87,8 @@ router.get('/sdq', (req, res) => {
                 promisesArray.push(getStudentId(studentRut))
             })
             const results = await Promise.all(promisesArray)
-            return results;
+            const filteredResults = results.filter((result) => result !== undefined)
+            return filteredResults;
         } else {
             return [];
         }
