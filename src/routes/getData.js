@@ -64,6 +64,7 @@ router.get('/sdq', (req, res) => {
                 mysqlConnection.query(sql, (err, results) => {
                     if (err) throw err;
                     results = JSON.parse(JSON.stringify(results))
+                    if (results.length === 0) return resolve([])
                     resolve({
                         id: results[0].id,
                         rut: studentRut
