@@ -201,7 +201,7 @@ router.get('/instrumentlist/', async (req, res) => {
 
 router.get('/courses', (req, res) => {
 
-    let sql = `SELECT school.id as school, school.name as schoolName, course.id as course, CONCAT(course.level, " ", course.letter, course.year) as courseName FROM course INNER JOIN school ON course.school_id = school.id;`
+    let sql = `SELECT school.id as school, school.name as schoolName, course.id as course, CONCAT(course.level, " ", course.letter, " ", course.year) as courseName FROM course INNER JOIN school ON course.school_id = school.id;`
 
     try {
         mysqlConnection.query(sql, (err, results) => {
