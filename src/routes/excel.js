@@ -301,7 +301,25 @@ router.post('/', async (req, res) => {
 
         infoRow = `total_points`
         infoChoices.push(infoRow)
-    } else {
+    } else if (instrument == 9) {
+        for (let i = 1; i < 13; i++) {
+            infoRow = `first_touch_timer_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `play_time_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `total_time_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `movements_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `resets_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `time_penalization_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `correct_order_item_${i}`;
+            infoChoices.push(infoRow)
+        }
+
+    }else {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`
             infoChoices.push(infoRow)
@@ -630,6 +648,70 @@ router.post('/', async (req, res) => {
             throw error.message;
         }
     }
+
+    async function getStudentInfoTorre(rows) {
+        try {
+            let studentRow = [];
+            let studentCounter = 0;
+            let previousStudent = undefined;
+            let index = 0;
+            
+            rows.forEach((row) => {
+                const results = row.options ? JSON.parse(row.options) : {};
+                const currentStudentRut = row['rut'];
+                
+                if (previousStudent !== currentStudentRut) {
+                    if (studentRow.length > 0) {
+                        // Adding the previous student's row if it exists
+                        allStudentsRows.push(studentRow);
+                    }
+                    studentRow = [];
+                    const fechaTest = new Date(row['fecha']);
+                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`;
+                    studentRow.push(row['rut']);
+                    studentRow.push(row['alumno']);
+                    studentRow.push(row['genero']);
+                    studentRow.push(row['curso']);
+                    studentRow.push(row['profesor']);
+                    studentRow.push(row['colegio']);
+                    studentRow.push(fechaParseada);
+                }
+                
+                studentRow.push(results['firstTouchTimer'] || 0);
+                studentRow.push(results['playTime'] || 0);
+                studentRow.push(results['time'] || 0);
+                studentRow.push(results['tries'] || 0);
+                studentRow.push(results['resets'] || 0);
+                studentRow.push(results['timePenalization'] || 0);
+                studentRow.push(results['correctOrder'] ? 1 : 0);
+                
+                previousStudent = currentStudentRut;
+                studentCounter++;
+            });
+    
+            // Add the last student's row
+            if (studentRow.length > 0) {
+                allStudentsRows.push(studentRow);
+            }
+    
+            let csvData = [];
+            csvData.push([...info]);
+    
+            allStudentsRows.forEach(row => {
+                csvData.push(row);
+            });
+    
+            const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
+            const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info]);
+            res.send(parsedData);
+        } catch (error) {
+            throw error.message;
+        }
+    }
+    
+    
+    
+    
 
 
     async function getStudentInfoCorsi(rows, inputCountExamples = true) {
@@ -1012,7 +1094,8 @@ router.post('/', async (req, res) => {
         getStudentInfoFono(rows);
     }  else if (instrument == 5) {
         getStudentInfoWally(rows);
-    
+    } else if (instrument == 9) {
+        getStudentInfoTorre(rows)
     }else {
         getStudentInfo(rows);
     }
