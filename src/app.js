@@ -58,7 +58,7 @@ const sslServer = https.createServer(
 )
 
 
-app.set('port', process.env.PORT || 3500)
+app.set('port', process.env.APP_PORT || 3500)
 const hbs = exphbs.create({
     handlebars: allowInsecurePrototypeAccess(Handlebars), 
     layoutsDir: path.join(__dirname, 'public', 'views', 'layouts'),
