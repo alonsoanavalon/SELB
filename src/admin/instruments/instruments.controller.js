@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const authController = require('../controllers/authControllers')
+const authController = require('../../auth/auth.controller')
 const instrumentService = require('./instruments.service')
 
 router.get('/', authController.isAuthenticated, async (req, res) => {
@@ -8,7 +8,5 @@ router.get('/', authController.isAuthenticated, async (req, res) => {
         results: allInstruments
     })
 })
-
-
 
 module.exports = router;

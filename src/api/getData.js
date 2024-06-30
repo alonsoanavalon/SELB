@@ -142,18 +142,6 @@ router.get('/instrumentlist/', async (req, res) => {
 
     let instrumentListId = req.query.instrument 
     let userId = req.query.user
-
-    
-    
-    /* Por lo que creo el tema del conteo se puede solucionar si tiro 2 querys. 
-    la primera query es la que esta aca, pero buscaremos solo en momentos 1 y 2 
-    la segunda query será una query que traera el conteo pero haciendo el match con Instrument_list y no evaluation con el USER.
-
-    Luego sumamos ambos count y los devolvemos.
-
-
-
-    */  
     let sql;
     const getEvaluatorFromEvaluation = () => {
         return new Promise ((resolve, reject) => {
@@ -194,8 +182,6 @@ router.get('/instrumentlist/', async (req, res) => {
     res.send(
         [{"COUNT(*)":totalCount}]
     )
-
-
 
 })
 

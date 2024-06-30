@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const authController = require('../controllers/authControllers')
+const authController = require('../../auth/auth.controller')
 const coursesService = require('./courses.service')
 
 router.get('/', authController.isAuthenticated, async (req, res) => {

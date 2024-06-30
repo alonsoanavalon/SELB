@@ -1,9 +1,9 @@
-const mysqlConnection = require('../database/database')
+const mysqlConnection = require('../../database/database')
 
-exports.getAllUsers = () => {
+exports.getAllSchools = () => {
     return new Promise( async (resolve, reject) => {
         try {
-            const sql = `SELECT * FROM user`
+            const sql = `SELECT * FROM school order by id`
             await mysqlConnection.query(sql, async (err, results) => { 
                 resolve(results)
             })

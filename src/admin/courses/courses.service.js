@@ -1,4 +1,4 @@
-const mysqlConnection = require('../database/database')
+const mysqlConnection = require('../../database/database.js')
 
 exports.getAllCourses = () => {
     return new Promise( async (resolve, reject) => {

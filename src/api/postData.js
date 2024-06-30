@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const instrumentControllers = require('../controllers/instrumentControllers')
+const instrumentControllers = require('../services/instruments.service')
 
 router.post('/newevaluation', async (req, res) => {
     let allInstruments = req.body.instruments

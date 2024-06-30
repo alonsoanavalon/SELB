@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const authControllers = require('../controllers/authControllers')
+const authControllers = require('../auth/auth.controller')
 router.get('/', (req, res) => {
     res.render("index", {alert:false})
 })

@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const momentsService = require('../services/moment.service');
+const momentsService = require('../../admin/moments/moments.service');
 
 router.get('/', async (_req, res) => {
     const moments = await momentsService.getMoments();

@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const mysqlConnection = require('../database/database')
-const studentsService = require('../students/students.service')
+const studentsService = require('../admin/students/students.service')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;
 
 function getAllMissingStudentsData(allStudentsRows, allStudentsInfo, headers) {

@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const authController = require('../controllers/authControllers')
+const authController = require('../../auth/auth.controller')
 const studentsService = require('./students.service')
 const coursesService = require('../courses/courses.service')
 
