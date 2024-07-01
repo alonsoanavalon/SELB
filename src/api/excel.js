@@ -50,45 +50,6 @@ router.post('/', async (req, res) => {
     let sql;
     // Este if es porque los primeros 2 momentos sacamos el userId de Evaluation, y desde los otros desde instrument_list
     // Como el userId lo agregamos recientemente a instrument_list, tenemos que realizar queries distintas
-    //este instrument 0 actualmente no es nada, no se para que isrve pero aca queda
-    if (instrument == 0) {
-        // no necesitamos una consulta para cada momento, ya que el userId en este caso al ser el instrumento 0 siempre será al user del evaluation
-
-        sql = `SELECT 
-        student.rut as rut, 
-        concat(student.name , " ", student.surname) as alumno, 
-        course.level as nivel,
-        course.letter as curso,
-        concat(user.name, " ", user.surname) as profesor, 
-        student.gender as genero,
-        school.name as colegio, 
-        instrument_list.date as fecha, 
-        choice.value,  
-		choice.alternative,
-        choice.time,
-        choice.text,
-        choice.options,
-        item.num, 
-        choice.id,
-        instrument.id as instrument,
-        evaluation.id as eva,
-        moment_id as moment
-    FROM choice  
-        INNER JOIN instrument_list ON choice.instrument_list_id = instrument_list.id 
-        INNER JOIN instrument ON instrument.id = instrument_list.instrument_id 
-        INNER JOIN evaluation ON instrument_list.evaluation_id = evaluation.id
-        INNER JOIN user ON user.id = evaluation.user_id 
-        INNER JOIN student ON evaluation.student_id = student.id 
-        INNER JOIN moment ON moment.id = evaluation.moment_id 
-        INNER JOIN study_list ON instrument.id = study_list.instrument_id 
-        INNER JOIN course ON student.course_id = course.id 
-        INNER JOIN school ON course.school_id = school.id 
-        INNER JOIN item ON choice.item_id = item.id 
-        
-    GROUP BY student.rut, user.name, user.surname, instrument_list.date, choice.value, item.num, choice.id, evaluation.id, choice.time, choice.text, choice.options, choice.alternative
-    LIMIT 1000000;`
-
-    } else {
 
         if (moment == 1 || moment == 2) {
             sql = `SELECT 
@@ -106,7 +67,6 @@ router.post('/', async (req, res) => {
             INNER JOIN user ON user.id = evaluation.user_id 
             INNER JOIN student ON evaluation.student_id = student.id 
             INNER JOIN moment ON moment.id = evaluation.moment_id 
-            INNER JOIN study_list ON instrument.id = study_list.instrument_id 
             INNER JOIN course ON student.course_id = course.id 
             INNER JOIN school ON course.school_id = school.id 
             INNER JOIN item ON choice.item_id = item.id 
@@ -135,7 +95,6 @@ router.post('/', async (req, res) => {
             INNER JOIN student ON evaluation.student_id = student.id 
             INNER JOIN moment ON moment.id = evaluation.moment_id 
             INNER JOIN study on study.id = moment.study_id
-            INNER JOIN study_list ON instrument.id = study_list.instrument_id 
             INNER JOIN course ON student.course_id = course.id 
             INNER JOIN school ON course.school_id = school.id 
             INNER JOIN item ON choice.item_id = item.id 
@@ -146,7 +105,6 @@ router.post('/', async (req, res) => {
             IN (${schools});`
         }
 
-    }
 
     function getDataRows() {
         return new Promise((resolve, reject) => {
