@@ -1,5 +1,6 @@
 //Modulos y variables
 const path = require('path')
+const cors = require("cors")
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') })
 const express = require('express')
 const app = express()
@@ -104,6 +105,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())
+app.use(cors())
 
 const storage = multer.diskStorage({
     destination:path.join(__dirname, 'public/uploads'),
