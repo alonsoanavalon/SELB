@@ -32,6 +32,7 @@ const apiSchoolAssignationRoutes = require('./api/school_assignation/school-asig
 const apiCourseRoutes = require('./api/course/course.controller')
 const apiChartRoutes = require('./api/chart/chart.controller')
 const errorLogRoutes = require('./api/error-log')
+const sessionLoggedRoutes = require('./api/session-logged/session-logged.controller')
 
 const fs = require('fs')
 const https = require('https')
@@ -162,6 +163,7 @@ app.use('/api/course', apiCourseRoutes)
 app.use('/api/chart', apiChartRoutes)
 app.use('/api/school-assignation', apiSchoolAssignationRoutes)
 app.use('/api/error-log', errorLogRoutes)
+app.use('/api/session-logged', sessionLoggedRoutes)
 
 
 //Listen
