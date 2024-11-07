@@ -361,7 +361,7 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
     let isCreated = undefined;
     let evaluationId;
     let newInstrumentId;
-    let updateInstrument = true;
+    let updateInstrument = false;
 
     let sql = ''
 
@@ -399,11 +399,13 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
         this.getMoment(date, studyId)
         .then(async (res) => {
     
-            evaluationId = await this.getEvaluation(res, studentId)
+            // evaluationId = await this.getEvaluation(res, studentId)
             
-            if (evaluationId === false) {
-                evaluationId = await this.createEvaluation(userId, studentId, res)
-            } 
+            // if (evaluationId === false) {
+            //     evaluationId = await this.createEvaluation(userId, studentId, res)
+            // } 
+
+            evaluationId = await this.createEvaluation(userId, studentId, res)
             return [evaluationId, instrumentId]
     
         })
@@ -411,18 +413,21 @@ exports.saveInstrumentData = async (infoObject, choicesObject, instrumentIndex, 
     
             
             let [evaluationId, instrumentId] = evaluationInfo
-            newInstrumentId = await this.insertMode(evaluationId, instrumentId)
+            // newInstrumentId = await this.insertMode(evaluationId, instrumentId)
 
 
         
     
-                if (newInstrumentId === undefined) {
-                    newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId, userId)
-                    updateInstrument = false;
-                }  else {
-                    newInstrumentId = newInstrumentId['id']
-                }
-    
+                // if (newInstrumentId === undefined) {
+                //     newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId, userId)
+                //     // updateInstrument = false;
+                // }  else {
+                //     newInstrumentId = newInstrumentId['id']
+                // }
+
+                newInstrumentId = await this.createInstrumentList(evaluationId, instrumentId, userId)
+                updateInstrument = false
+
                 return [newInstrumentId, updateInstrument]
     
             }

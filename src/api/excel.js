@@ -2,6 +2,7 @@ const router = require('express').Router();
 const mysqlConnection = require('../database/database')
 const studentsService = require('../admin/students/students.service')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter;
+const {format} = require("@formkit/tempo")
 
 function getAllMissingStudentsData(allStudentsRows, allStudentsInfo, headers) {
     const records = allStudentsRows;
@@ -777,60 +778,65 @@ router.post('/', async (req, res) => {
 
     async function getStudentInfo(rows) {
         debugger;
-        let studentRow = []
-        let studentCounter = 0
-        let previousStudent = undefined;
+        let studentCounter = 0;
+
+        const groupedData = {};
+
+        // Primer bucle para procesar `rows`
         rows.forEach(row => {
-            if (row.rut =='20728918-3') {
-                if (row.options) {
-                    //de aca sacare todo lo ultimo que me pidieron y debo mostrarlo, resets, penalizacion, etc. pero solo para el id 9 que es torre de londres
-                    console.log(JSON.parse(row.options))
-                }
+            if (row.rut == '20728918-3' && row.options) {
+                console.log(JSON.parse(row.options));
             }
-     
-            currentStudentRut = rows[studentCounter]['rut']
-            currentStudent = rows[studentCounter]
-            if (previousStudent !== currentStudentRut) {
-                studentRow = []
-                const fechaTest = new Date(currentStudent['fecha']);
-                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`
-                studentRow.push(currentStudent['rut'])
-                studentRow.push(currentStudent['alumno'])
-                studentRow.push(currentStudent['genero'])
-                studentRow.push(currentStudent['curso'])
-                studentRow.push(currentStudent['profesor'])
-                studentRow.push(currentStudent['colegio'])
-                studentRow.push(fechaParseada)
 
-                if (currentStudent['value'].length == 0) {
-                    studentRow.push('0')
-                } else {
-                    studentRow.push(currentStudent['value'])
-                }
-                allStudentsRows.push(studentRow)
+            currentStudentRut = rows[studentCounter]['rut'];
+            currentStudent = rows[studentCounter];
 
-            } else {
-                if (currentStudent['value'].length == 0) {
-                    studentRow.push('0')
-                } else {
-                    studentRow.push(currentStudent['value'])
-                }
+            const fechaTest = new Date(currentStudent['fecha']);
+            
+            // Crear una clave para agrupar por estudiante y fecha
+            const groupKey = `${currentStudentRut}_${fechaTest}`;
+
+            // Si no existe en el objeto agrupado, crear la estructura de datos inicial
+            if (!groupedData[groupKey]) {
+                groupedData[groupKey] = [
+                    currentStudent['rut'],
+                    currentStudent['alumno'],
+                    currentStudent['genero'],
+                    currentStudent['curso'],
+                    currentStudent['profesor'],
+                    currentStudent['colegio'],
+                    format(fechaTest, {
+                        date: "medium",
+                        time: "medium",
+                    }, "es"),
+                    [] // Almacena los valores como un array temporal
+                ];
             }
-            studentCounter++
-            previousStudent = currentStudentRut;
-        })
+
+            // Añadir el valor a la lista de valores para esa fecha
+            groupedData[groupKey][7].push(currentStudent['value'].length === 0 ? '0' : currentStudent['value']);
+            
+            studentCounter++;
+        });
+
+        // Convertir el objeto agrupado en un array y expandir los valores
+        const allStudentsRowsGroupedByDate = Object.values(groupedData).map(studentRow => {
+            // Expandir el array de valores (posición 7) para que cada valor esté separado
+            return [...studentRow.slice(0, 7), ...studentRow[7]];
+        });
 
         let csvData = [];
-        csvData.push([...info])
+        const uniqueHeaders = [...new Set(info)];
+        csvData.push([...uniqueHeaders])
 
-        allStudentsRows.forEach(
+        allStudentsRowsGroupedByDate.forEach(
             row => {
                 csvData.push(row);
             }
         )
 
         const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
+        const parsedData = getAllMissingStudentsData(allStudentsRowsGroupedByDate, allStudentsInfo, [...uniqueHeaders])
         res.send(parsedData)
 
 
@@ -1058,11 +1064,12 @@ router.post('/', async (req, res) => {
         getStudentInfo(rows);
     }
 
+    const uniqueHeaders = [...new Set(info)];
+
     const csvWriter = createCsvWriter({
-        header: info,
+        header: uniqueHeaders,
         path: 'file.csv'
     });
-
 
     const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
     const records = allStudentsRows;
@@ -1095,8 +1102,6 @@ router.post('/', async (req, res) => {
     });
 
     const orderedRecords = sortedRecords.reverse();
-
-
 
     csvWriter.writeRecords(orderedRecords)
         .then(() => {
