@@ -31,7 +31,7 @@ const createSessionLogged = (req, res) => {
 }
 
 const getAllSessionLogged = (req, res) => {
-    const query = "SELECT session_logged.id, session_logged.sessionDate, session_type.name AS sessionTypeName, user.email AS userEmail, user.name AS userName, user.surname AS userSurName FROM session_logged INNER JOIN session_type ON session_logged.sessionTypeId = session_type.id INNER JOIN user ON session_logged.userId = user.id"
+    const query = "SELECT session_logged.id, session_logged.sessionDate, session_type.name AS sessionTypeName, user.email AS userEmail, user.name AS userName, user.surname AS userSurName, user.role as userRole FROM session_logged INNER JOIN session_type ON session_logged.sessionTypeId = session_type.id INNER JOIN user ON session_logged.userId = user.id;"
 
     mysqlConnection.query(query, function (error, result, fields) {
         if (error != null || result == null) {
