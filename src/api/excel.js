@@ -233,6 +233,11 @@ router.post('/', async (req, res) => {
         })
 
     } else if (instrument == 7) {
+        filteredRows.map(row => {
+            infoRow = `pregunta_${row.num}`
+            infoChoices.push(infoRow)
+        })
+
         infoRow = `hnf_total`;
         infoChoices.push(infoRow)
         infoRow = `score_hearts`;
@@ -248,6 +253,7 @@ router.post('/', async (req, res) => {
         infoRow = `time_seconds_heart_flowers`;
         infoChoices.push(infoRow)
         infoRow = `total_time`;
+
         infoChoices.push(infoRow)
     } else if (instrument == 8) {
         filteredRows.map(row => {
@@ -984,7 +990,6 @@ router.post('/', async (req, res) => {
                     studentRow.push(total_time)
 
                     allStudentsRows.push(studentRow)
-
                 }
 
                 studentRow = []
@@ -1006,7 +1011,11 @@ router.post('/', async (req, res) => {
                     time: row.time
                 })
 
-
+                if (currentStudent["value"].length == 0) {
+                    studentRow.push("0")
+                } else {
+                    studentRow.push(currentStudent["value"])
+                }
             } else {
 
                 studentAnswers.push({
@@ -1014,6 +1023,12 @@ router.post('/', async (req, res) => {
                     value: row.value,
                     time: row.time
                 })
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                } else {
+                    studentRow.push(currentStudent['value'])
+                }
             }
             studentCounter++
             previousStudent = currentStudentRut;
