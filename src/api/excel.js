@@ -233,11 +233,6 @@ router.post('/', async (req, res) => {
         })
 
     } else if (instrument == 7) {
-        filteredRows.map(row => {
-            infoRow = `pregunta_${row.num}`
-            infoChoices.push(infoRow)
-        })
-
         infoRow = `hnf_total`;
         infoChoices.push(infoRow)
         infoRow = `score_hearts`;
@@ -253,8 +248,15 @@ router.post('/', async (req, res) => {
         infoRow = `time_seconds_heart_flowers`;
         infoChoices.push(infoRow)
         infoRow = `total_time`;
-
         infoChoices.push(infoRow)
+
+        filteredRows.map(row => {
+            infoRow = `pregunta_${row.num}`
+            infoRow_time = `pregunta_${row.num}_time`
+
+            infoChoices.push(infoRow)
+            infoChoices.push(infoRow_time)
+        })
     } else if (instrument == 8) {
         filteredRows.map(row => {
             infoRow = `${row.title}_score`
@@ -933,6 +935,7 @@ router.post('/', async (req, res) => {
         rows.forEach(row => {
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
+
             if (previousStudent !== currentStudentRut) {
 
                 exampleHeartTotal = 0;
@@ -982,11 +985,11 @@ router.post('/', async (req, res) => {
 
                     studentRow.push(hnfTotal)
                     studentRow.push(score_hearts)
-                    studentRow.push(time_seconds_hearts)
+                    studentRow.push(time_seconds_hearts * 1000) // milisegundos
                     studentRow.push(score_flowers)
-                    studentRow.push(time_seconds_flowers)
+                    studentRow.push(time_seconds_flowers * 1000) // milisegundos
                     studentRow.push(score_hearts_flowers)
-                    studentRow.push(time_seconds_hearts_flowers)
+                    studentRow.push(time_seconds_hearts_flowers * 1000) // milisegundos
                     studentRow.push(total_time)
 
                     allStudentsRows.push(studentRow)
@@ -1016,6 +1019,12 @@ router.post('/', async (req, res) => {
                 } else {
                     studentRow.push(currentStudent["value"])
                 }
+
+                if (currentStudent["time"] == null || currentStudent["time"].length == 0 || currentStudent["time"] === "null") {
+                    studentRow.push(parseFloat("0"))
+                } else {
+                    studentRow.push(parseFloat(currentStudent["time"]) * 1000) // milisegundos
+                }
             } else {
 
                 studentAnswers.push({
@@ -1029,9 +1038,26 @@ router.post('/', async (req, res) => {
                 } else {
                     studentRow.push(currentStudent['value'])
                 }
+
+                if (currentStudent["time"] == null || currentStudent["time"].length == 0 || currentStudent["time"] === "null") {
+                    studentRow.push(parseFloat("0"))
+                } else {
+                    studentRow.push(parseFloat(currentStudent["time"]) * 1000) // milisegundos
+                }
             }
             studentCounter++
             previousStudent = currentStudentRut;
+        })
+
+        allStudentsRows = allStudentsRows.map((row) => {
+            console.log("row")
+            console.log(row.length)
+
+            const firstPart = row.slice(0, 7)
+            const lastPart = row.slice(-8)
+            const middlePart = row.slice(7, row.length - 8)
+            
+            return [...firstPart, ...lastPart, ...middlePart]
         })
 
         let csvData = [];
