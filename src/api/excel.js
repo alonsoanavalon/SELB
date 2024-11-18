@@ -250,13 +250,21 @@ router.post('/', async (req, res) => {
         infoRow = `total_time`;
         infoChoices.push(infoRow)
 
-        filteredRows.map(row => {
-            infoRow = `pregunta_${row.num}`
-            infoRow_time = `pregunta_${row.num}_time`
+        for (let i=0; i<69; i++) {
+            infoRow = `pregunta_${i+1}`
+            infoRow_time = `pregunta_${i+1}_time`
 
             infoChoices.push(infoRow)
             infoChoices.push(infoRow_time)
-        })
+        }
+
+        // filteredRows.map(row => {
+        //     infoRow = `pregunta_${row.num}`
+        //     infoRow_time = `pregunta_${row.num}_time`
+
+        //     infoChoices.push(infoRow)
+        //     infoChoices.push(infoRow_time)
+        // })
     } else if (instrument == 8) {
         filteredRows.map(row => {
             infoRow = `${row.title}_score`
@@ -1050,9 +1058,6 @@ router.post('/', async (req, res) => {
         })
 
         allStudentsRows = allStudentsRows.map((row) => {
-            console.log("row")
-            console.log(row.length)
-
             const firstPart = row.slice(0, 7)
             const lastPart = row.slice(-8)
             const middlePart = row.slice(7, row.length - 8)
