@@ -293,7 +293,14 @@ router.post('/', async (req, res) => {
             infoChoices.push(infoRow)
         }
 
-    }else {
+    } else if (instrument == 27) {
+        for (let i=1; i<=36; i++) {
+            infoAnswer = `respuesta_pregunta_${i}`
+            infoRow = `tiempo_pregunta_${i}`
+            infoChoices.push(infoAnswer)
+            infoChoices.push(infoRow)
+        }
+    } else {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`
             infoChoices.push(infoRow)
