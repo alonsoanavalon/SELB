@@ -46,6 +46,7 @@ router.post('/', async (req, res) => {
     let schools = req.body['schools']
     let studyId = req.body['studyId']
     let countExamples = req.body['countExamples'];
+    let years = req.body['years']
 
     let sql;
     // Este if es porque los primeros 2 momentos sacamos el userId de Evaluation, y desde los otros desde instrument_list
@@ -72,6 +73,7 @@ router.post('/', async (req, res) => {
             INNER JOIN item ON choice.item_id = item.id 
             WHERE instrument.id = ${instrument} 
             AND evaluation.moment_id = ${moment} 
+            AND course.year = ${year}
             AND school.id 
             IN (${schools}); `
         } else {
@@ -101,6 +103,7 @@ router.post('/', async (req, res) => {
             WHERE instrument.id = ${instrument} 
             AND evaluation.moment_id = ${moment} 
             AND study.id = ${studyId}
+            AND course.year IN (${years})
             AND school.id 
             IN (${schools});`
         }
@@ -118,6 +121,66 @@ router.post('/', async (req, res) => {
     }
 
     let rows = await getDataRows()
+
+
+    function fillMissingItems(data) {
+        const groups = data.reduce((acc, item) => {
+          const key = `${item.study}-${item.fecha}-${item.colegio}-${item.profesor}-${item.curso}-${item.alumno}-${item.rut}`;
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+          acc[key].push(item);
+          return acc;
+        }, {});
+      
+        let result = [];
+        const maxItems = 69;
+      
+        for (const key in groups) {
+          const groupItems = groups[key];
+          const existingNums = new Set(groupItems.map(item => item.num));
+      
+          for (let i = 1; i <= maxItems; i++) {
+            if (!existingNums.has(i)) {
+              const template = groupItems[0];
+              const newItem = {
+                rut: template.rut,
+                alumno: template.alumno,
+                curso: template.curso,
+                profesor: template.profesor,
+                genero: template.genero,
+                colegio: template.colegio,
+                fecha: template.fecha,
+                value: "0",
+                num: i,
+                title: i.toString(),
+                id: null,
+                alternative: null,
+                text: null,
+                time: "2",
+                options: null,
+                study: template.study,
+              };
+              groupItems.push(newItem);
+            }
+          }
+      
+          groupItems.sort((a, b) => a.num - b.num);
+          result = result.concat(groupItems);
+        }
+      
+        return result;
+    }
+      
+    
+
+
+    if (instrument == 7) {
+       rows = fillMissingItems(rows)          
+    }
+
+
+
 
     let infoHeaders = ['rut', 'alumno', 'genero', 'curso', 'evaluador', 'colegio', 'fecha'];
     let filteredRows = rows.filter(row => row.rut == rows[0]['rut'])
@@ -204,9 +267,28 @@ router.post('/', async (req, res) => {
         filteredRows.map(row => {
             infoRow = `pregunta_${row.num}`;
             infoChoices.push(infoRow);
+            infoChoices.push(`puntaje_${row.num}`);
+
+            if (row.num == 17 || row.num == 27 || row.num == 42 || row.num == 60 || row.num == 48 || row.num == 66) {
+                infoChoices.push(`puntaje_ambito`);
+            }
         })
+        infoChoices.push('puntaje_ambito'),
         infoChoices.push('puntaje_total')
-    } else if (instrument == 6) {
+    } else if (instrument == 2){
+        filteredRows.map((row, index) => {
+            infoRow = `pregunta_${row.num}`;
+            infoChoices.push(infoRow);
+            infoChoices.push(`puntaje_${row.num}`);
+
+            if (index == 16 || index == 37) {
+                infoChoices.push(`puntaje_ambito`);
+            }
+        })
+        infoChoices.push('puntaje_ambito'),
+        infoChoices.push('puntaje_total')
+
+    }else if (instrument == 6) {
         infoChoices.push('puntaje_total');
         infoChoices.push('intentos_ordenado');
         infoChoices.push('intentos_desordenado');
@@ -293,7 +375,13 @@ router.post('/', async (req, res) => {
             infoChoices.push(infoRow)
         }
 
-    } else if (instrument == 27) {
+    } else if (instrument == 10) {
+        filteredRows.map(row => {
+            infoRow = `pregunta_${row.num}`
+            infoChoices.push(infoRow)
+        })
+        infoChoices.push('puntaje_total')
+    }else if (instrument == 27) {
         for (let i=1; i<=36; i++) {
             infoAnswer = `respuesta_pregunta_${i}`
             infoRow = `tiempo_pregunta_${i}`
@@ -320,8 +408,9 @@ router.post('/', async (req, res) => {
             let totalPoints = 0
             let choicesLength = 71
             let index = 0
+            let scopePoints = 0
 
-            rows.forEach((row) => {
+            rows.forEach((row, i) => {
                 currentStudentRut = rows[studentCounter]['rut']
                 currentStudent = rows[studentCounter]
                 if (previousStudent !== currentStudentRut) {
@@ -343,9 +432,14 @@ router.post('/', async (req, res) => {
                     } else {
                         if (row['value'] == 1) {
                             studentRow.push(currentStudent['value'])
+                            studentRow.push('1')
+                            scopePoints++
                             totalPoints++
+
                         } else {
                             studentRow.push(currentStudent['value'])
+                            studentRow.push('0')
+
                         }
 
                     }
@@ -357,15 +451,22 @@ router.post('/', async (req, res) => {
                         if (row['value'] == 1) {
                             studentRow.push(currentStudent['value'])
                             totalPoints++
+                            studentRow.push('1')
+                            scopePoints++
+
                         } else {
                             studentRow.push(currentStudent['value'])
+                            studentRow.push('0')
+
                         }
                     }
                 }
 
-                if (index > 71) {
-                    console.log(index)
+                if (index == 16 || index == 26 || index == 41 || index == 59 || index == 47 || index == 65 || index == 71) {    
+                    studentRow.push(scopePoints)
+                    scopePoints = 0;
                 }
+
 
                 if (index == choicesLength) { // cada vez que terminamos de recorrerlos, sumamos los puntos totales al array de respuestas
                     studentRow.push(JSON.stringify(totalPoints))
@@ -461,11 +562,18 @@ router.post('/', async (req, res) => {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
-        rows.forEach(row => {
+        let scopePoints = 0;
+        let totalPoints = 0;
+        let index = 0
+        rows.forEach((row) => {
+            
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
             if (previousStudent !== currentStudentRut) {
                 studentRow = []
+                console.log(index, currentStudent['alumno'])
+                totalPoints = 0;
+                index = 0;
                 const fechaTest = new Date(currentStudent['fecha']);
                 const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`
                 studentRow.push(currentStudent['rut'])
@@ -477,64 +585,134 @@ router.post('/', async (req, res) => {
                 studentRow.push(fechaParseada)
 
                 if (currentStudent['value'].length == 0) {
+                    studentRow.push(currentStudent['value'])
                     studentRow.push('0')
                 } else {
-                    studentRow.push(currentStudent['value'])
+                    if (row['value'] == 1) {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('1')
+                        scopePoints++
+                        totalPoints++
+
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('0')
+
+                    }
                 }
-                allStudentsRows.push(studentRow)
+
+
 
             } else {
 
                 if (currentStudent['num'] == 18) {
                     if (currentStudent['value'] == 3) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        scopePoints++
+                        totalPoints++
                     } else {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('0')
                     }
                 } else if (currentStudent['num'] == 19) {
                     if (currentStudent['value'] == 4) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        totalPoints++
+                        scopePoints++
+
                     } else {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('0')
                     }
                 } else if (currentStudent['num'] == 20) {
                     if (currentStudent['value'] == 6) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        totalPoints++
+                        scopePoints++
+
                     } else {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('0')
                     }
                 } else if (currentStudent['num'] == 21) {
                     if (currentStudent['value'] == 8) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        totalPoints++
+                        scopePoints++
+
                     } else {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('0')
                     }
                 } else if (currentStudent['num'] == 22) {
                     if (currentStudent['value'] == 10) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        totalPoints++
+                        scopePoints++
+
                     } else {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('0')
                     }
                 } else if (currentStudent['num'] == 23) {
                     if (currentStudent['value'] == 11) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
+                        totalPoints++
+                        scopePoints++
+
                     } else {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('0')
                     }
                 } else if (currentStudent['num'] == 24) {
                     if (currentStudent['value'] == 16) {
+                        studentRow.push(currentStudent['value'])
                         studentRow.push('1')
-                    } else {
-                        studentRow.push('0')
-                    }
-                } else {
-                    if (currentStudent['value'].length == 0) {
-                        studentRow.push('0')
+                        totalPoints++
+                        scopePoints++
+
                     } else {
                         studentRow.push(currentStudent['value'])
+                        studentRow.push('0')
+                    }
+                }  else if (currentStudent['num'] == 25) {
+                    studentRow.push(currentStudent['value'])
+                    studentRow.push('')
+                    //se definio que el item de conteo no esta puntuado por ahora
+
+                }else {
+                    if (row['value'] == 1) {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('1')
+                        scopePoints++
+                        totalPoints++
+
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                        studentRow.push('0')
+
                     }
                 }
             }
+
+            if (index == 16 || index == 37) {
+                studentRow.push(scopePoints)
+                scopePoints = 0;
+            } else if (index == 72) {
+                studentRow.push(scopePoints)
+                scopePoints = 0;
+                studentRow.push(JSON.stringify(totalPoints))
+                allStudentsRows.push(studentRow)
+            }
+
+
+            index++
             studentCounter++
             previousStudent = currentStudentRut;
         })
@@ -803,13 +981,7 @@ router.post('/', async (req, res) => {
         let studentRow = []
         let studentCounter = 0
         let previousStudent = undefined;
-        rows.forEach(row => {
-            if (row.rut =='20728918-3') {
-                if (row.options) {
-                    //de aca sacare todo lo ultimo que me pidieron y debo mostrarlo, resets, penalizacion, etc. pero solo para el id 9 que es torre de londres
-                    console.log(JSON.parse(row.options))
-                }
-            }
+        rows.forEach((row, index) => {
      
             currentStudentRut = rows[studentCounter]['rut']
             currentStudent = rows[studentCounter]
@@ -839,6 +1011,83 @@ router.post('/', async (req, res) => {
                     studentRow.push(currentStudent['value'])
                 }
             }
+            studentCounter++
+            previousStudent = currentStudentRut;
+        })
+
+        let csvData = [];
+        csvData.push([...info])
+
+        allStudentsRows.forEach(
+            row => {
+                csvData.push(row);
+            }
+        )
+
+        const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
+        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
+        res.send(parsedData)
+
+
+    }
+
+
+    async function getStudentInfoESC(rows) {
+        debugger;
+        let studentRow = []
+        let studentCounter = 0
+        let previousStudent = undefined;
+        let totalPoints = 0;
+        let index = 0;
+        rows.forEach((row) => {
+     
+            currentStudentRut = rows[studentCounter]['rut']
+            currentStudent = rows[studentCounter]
+            if (previousStudent !== currentStudentRut) {
+                studentRow = []
+                totalPoints = 0;
+                index = 0;
+                const fechaTest = new Date(currentStudent['fecha']);
+                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`
+                studentRow.push(currentStudent['rut'])
+                studentRow.push(currentStudent['alumno'])
+                studentRow.push(currentStudent['genero'])
+                studentRow.push(currentStudent['curso'])
+                studentRow.push(currentStudent['profesor'])
+                studentRow.push(currentStudent['colegio'])
+                studentRow.push(fechaParseada)
+
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                } else {
+                    if (currentStudent['value'] == 1) {
+                        studentRow.push(currentStudent['value'])
+                        totalPoints++
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                    }
+                }
+                allStudentsRows.push(studentRow)
+
+            } else {
+                if (currentStudent['value'].length == 0) {
+                    studentRow.push('0')
+                } else {
+                    if (currentStudent['value'] == 1) {
+                        studentRow.push(currentStudent['value'])
+                        totalPoints++
+                    } else {
+                        studentRow.push(currentStudent['value'])
+                    }
+
+
+                }
+            }
+            
+            if (index == 11) {
+                studentRow.push(totalPoints)
+            }
+            index++
             studentCounter++
             previousStudent = currentStudentRut;
         })
@@ -939,154 +1188,271 @@ router.post('/', async (req, res) => {
 
     }
 
-    async function getStudentInfoHNF(rows) {
-        let studentRow = []
-        let studentAnswers = [];
-        let studentCounter = 0
-        let previousStudent = undefined;
-        let heartTotal = 0;
-        let flowerTotal = 0;
-        let HNFTotal = 0;
-        rows.forEach(row => {
-            currentStudentRut = rows[studentCounter]['rut']
-            currentStudent = rows[studentCounter]
+    // async function getStudentInfoHNF(rows) {
+    //     let studentRow = []
+    //     let studentAnswers = [];
+    //     let studentCounter = 0
+    //     let previousStudent = undefined;
+    //     let heartTotal = 0;
+    //     let flowerTotal = 0;
+    //     let HNFTotal = 0;
+    //     rows.forEach(row => {
 
-            if (previousStudent !== currentStudentRut) {
+    //         if (row.rut =='24327509-1') {
+    //             console.log(row)
+    //         }
+    //         currentStudentRut = rows[studentCounter]['rut']
+    //         currentStudent = rows[studentCounter]
 
-                exampleHeartTotal = 0;
-                exampleFlowersTotal = 0;
-                heartTotal = 0;
-                flowerTotal = 0;
-                HNFTotal = 0;
+    //         if (previousStudent !== currentStudentRut) {
 
-                if (studentAnswers.length > 0) {
+    //             exampleHeartTotal = 0;
+    //             exampleFlowersTotal = 0;
+    //             heartTotal = 0;
+    //             flowerTotal = 0;
+    //             HNFTotal = 0;
 
-                    let score_hearts = 0;
-                    let time_seconds_hearts = 0;
-                    let score_flowers = 0;
-                    let time_seconds_flowers = 0;
-                    let score_hearts_flowers = 0;
-                    let time_seconds_hearts_flowers = 0;
+    //             if (studentAnswers.length > 0) {
 
-
-                    studentAnswers.forEach((answer) => {
-
-                        if (answer.item > 6 && answer.item < 19) {
-                            score_hearts = score_hearts + parseFloat(answer.value)
-                            time_seconds_hearts = time_seconds_hearts + parseFloat(answer.time)
-                            heartTotal++
-                        } else if (answer.item >= 25 && answer.item <= 36) {
-                            score_flowers = score_flowers + parseFloat(answer.value)
-                            time_seconds_flowers = time_seconds_hearts + parseFloat(answer.time)
-                            flowerTotal++
-                        } else if (answer.item >= 37) {
-                            score_hearts_flowers = score_hearts_flowers + parseInt(answer.value);
-                            time_seconds_hearts_flowers = time_seconds_hearts_flowers + parseFloat(answer.time)
-                            HNFTotal++
-                        }
-                    })
-
-                    //Calculamos cuandtos items le falto contestar y por cada item multiplicamos por 2, es decir que si le faltan 2 respuestas son 4 segundos, si le faltan 7 respuestas son 14 segundos.
-                    const notSelectedHeartTime = (12 - heartTotal) * 2;
-                    const notSelectedFlowerTime = (12 - flowerTotal) * 2;
-                    const notSelectedHNFTime = (33 - HNFTotal) * 2;
-
-                    time_seconds_hearts = time_seconds_hearts + notSelectedHeartTime;
-                    time_seconds_flowers = time_seconds_flowers + notSelectedFlowerTime;
-                    time_seconds_hearts_flowers = time_seconds_hearts_flowers + notSelectedHNFTime;
-
-                    let hnfTotal = score_hearts + score_flowers + score_hearts_flowers;
-                    let total_time = time_seconds_hearts + time_seconds_flowers + time_seconds_hearts_flowers;
-
-                    studentRow.push(hnfTotal)
-                    studentRow.push(score_hearts)
-                    studentRow.push(time_seconds_hearts * 1000) // milisegundos
-                    studentRow.push(score_flowers)
-                    studentRow.push(time_seconds_flowers * 1000) // milisegundos
-                    studentRow.push(score_hearts_flowers)
-                    studentRow.push(time_seconds_hearts_flowers * 1000) // milisegundos
-                    studentRow.push(total_time)
-
-                    allStudentsRows.push(studentRow)
-                }
-
-                studentRow = []
-                studentAnswers = []
-                const fechaTest = new Date(currentStudent['fecha']);
-                const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`
-                studentRow.push(currentStudent['rut'])
-                studentRow.push(currentStudent['alumno'])
-                studentRow.push(currentStudent['genero'])
-                studentRow.push(currentStudent['curso'])
-                studentRow.push(currentStudent['profesor'])
-                studentRow.push(currentStudent['colegio'])
-                studentRow.push(fechaParseada)
+    //                 let score_hearts = 0;
+    //                 let time_seconds_hearts = 0;
+    //                 let score_flowers = 0;
+    //                 let time_seconds_flowers = 0;
+    //                 let score_hearts_flowers = 0;
+    //                 let time_seconds_hearts_flowers = 0;
 
 
-                studentAnswers.push({
-                    item: row.num,
-                    value: row.value,
-                    time: row.time
-                })
+    //                 studentAnswers.forEach((answer) => {
 
-                if (currentStudent["value"].length == 0) {
-                    studentRow.push("0")
-                } else {
-                    studentRow.push(currentStudent["value"])
-                }
+    //                     if (answer.item > 6 && answer.item < 19) {
+    //                         score_hearts = score_hearts + parseFloat(answer.value)
+    //                         time_seconds_hearts = time_seconds_hearts + parseFloat(answer.time)
+    //                         heartTotal++
+    //                     } else if (answer.item >= 25 && answer.item <= 36) {
+    //                         score_flowers = score_flowers + parseFloat(answer.value)
+    //                         time_seconds_flowers = time_seconds_hearts + parseFloat(answer.time)
+    //                         flowerTotal++
+    //                     } else if (answer.item >= 37) {
+    //                         score_hearts_flowers = score_hearts_flowers + parseInt(answer.value);
+    //                         time_seconds_hearts_flowers = time_seconds_hearts_flowers + parseFloat(answer.time)
+    //                         HNFTotal++
+    //                     }
+    //                 })
 
-                if (currentStudent["time"] == null || currentStudent["time"].length == 0 || currentStudent["time"] === "null") {
-                    studentRow.push(parseFloat("0"))
-                } else {
-                    studentRow.push(parseFloat(currentStudent["time"]) * 1000) // milisegundos
-                }
-            } else {
+    //                 //Calculamos cuandtos items le falto contestar y por cada item multiplicamos por 2, es decir que si le faltan 2 respuestas son 4 segundos, si le faltan 7 respuestas son 14 segundos.
+    //                 // const notSelectedHeartTime = (12 - heartTotal) * 2;
+    //                 // const notSelectedFlowerTime = (12 - flowerTotal) * 2;
+    //                 // const notSelectedHNFTime = (33 - HNFTotal) * 2;
 
-                studentAnswers.push({
-                    item: row.num,
-                    value: row.value,
-                    time: row.time
-                })
+    //                 // time_seconds_hearts = time_seconds_hearts + notSelectedHeartTime;
+    //                 // time_seconds_flowers = time_seconds_flowers + notSelectedFlowerTime;
+    //                 // time_seconds_hearts_flowers = time_seconds_hearts_flowers + notSelectedHNFTime;
 
-                if (currentStudent['value'].length == 0) {
-                    studentRow.push('0')
-                } else {
-                    studentRow.push(currentStudent['value'])
-                }
+    //                 let hnfTotal = score_hearts + score_flowers + score_hearts_flowers;
+    //                 let total_time = time_seconds_hearts + time_seconds_flowers + time_seconds_hearts_flowers;
 
-                if (currentStudent["time"] == null || currentStudent["time"].length == 0 || currentStudent["time"] === "null") {
-                    studentRow.push(parseFloat("0"))
-                } else {
-                    studentRow.push(parseFloat(currentStudent["time"]) * 1000) // milisegundos
-                }
-            }
-            studentCounter++
-            previousStudent = currentStudentRut;
-        })
+    //                 studentRow.push(hnfTotal)
+    //                 studentRow.push(score_hearts)
+    //                 studentRow.push(time_seconds_hearts)
+    //                 studentRow.push(score_flowers)
+    //                 studentRow.push(time_seconds_flowers)
+    //                 studentRow.push(score_hearts_flowers)
+    //                 studentRow.push(time_seconds_hearts_flowers)
+    //                 studentRow.push(total_time)
 
-        allStudentsRows = allStudentsRows.map((row) => {
-            const firstPart = row.slice(0, 7)
-            const lastPart = row.slice(-8)
-            const middlePart = row.slice(7, row.length - 8)
+    //                 allStudentsRows.push(studentRow)
+    //             }
+
+    //             studentRow = []
+    //             studentAnswers = []
+    //             const fechaTest = new Date(currentStudent['fecha']);
+    //             const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`
+    //             studentRow.push(currentStudent['rut'])
+    //             studentRow.push(currentStudent['alumno'])
+    //             studentRow.push(currentStudent['genero'])
+    //             studentRow.push(currentStudent['curso'])
+    //             studentRow.push(currentStudent['profesor'])
+    //             studentRow.push(currentStudent['colegio'])
+    //             studentRow.push(fechaParseada)
+
+
+    //             studentAnswers.push({
+    //                 item: row.num,
+    //                 value: row.value,
+    //                 time: row.time
+    //             })
+
+    //             if (currentStudent["value"].length == 0) {
+    //                 studentRow.push("0")
+    //             } else {
+    //                 studentRow.push(currentStudent["value"])
+    //             }
+
+    //             if (currentStudent["time"] == null || currentStudent["time"].length == 0 || currentStudent["time"] === "null") {
+    //                 studentRow.push(parseFloat("0"))
+    //             } else {
+    //                 studentRow.push((currentStudent["time"]))
+    //             }
+    //         } else {
+
+    //             studentAnswers.push({
+    //                 item: row.num,
+    //                 value: row.value,
+    //                 time: row.time
+    //             })
+
+    //             if (currentStudent['value'].length == 0) {
+    //                 studentRow.push('0')
+    //             } else {
+    //                 studentRow.push(currentStudent['value'])
+    //             }
+
+    //             if (currentStudent["time"] == null || currentStudent["time"].length == 0 || currentStudent["time"] === "null") {
+    //                 studentRow.push(parseFloat("0"))
+    //             } else {
+    //                 studentRow.push((currentStudent["time"]))
+    //             }
+    //         }
+    //         studentCounter++
+    //         previousStudent = currentStudentRut;
+    //     })
+
+    //     allStudentsRows = allStudentsRows.map((row) => {
+    //         const firstPart = row.slice(0, 7)
+    //         const lastPart = row.slice(-8)
+    //         const middlePart = row.slice(7, row.length - 8)
             
-            return [...firstPart, ...lastPart, ...middlePart]
-        })
+    //         return [...firstPart, ...lastPart, ...middlePart]
+    //     })
 
-        let csvData = [];
-        csvData.push([...info])
+    //     let csvData = [];
+    //     csvData.push([...info])
 
-        allStudentsRows.forEach(
-            row => {
-                csvData.push(row);
+    //     allStudentsRows.forEach(
+    //         row => {
+    //             csvData.push(row);
+    //         }
+    //     )
+
+    //     const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
+    //     const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
+    //     res.send(parsedData)
+
+
+    // }
+
+    async function getStudentInfoHNF(rows) {
+        // Agrupar las rows por el campo "rut" (identificador único del alumno)
+        const groupedByStudent = rows.reduce((acc, row) => {
+          if (!acc[row.rut]) {
+            acc[row.rut] = [];
+          }
+          acc[row.rut].push(row);
+          return acc;
+        }, {});
+      
+        const allStudentsRows = [];
+      
+        // Procesar cada grupo (alumno)
+        Object.keys(groupedByStudent).forEach(rut => {
+          // Ordenamos las rows del alumno por el campo num (de 1 a 69)
+          const studentRows = groupedByStudent[rut].sort((a, b) => a.num - b.num);
+      
+          // Extraemos la información común del alumno (usando la primer row)
+          const firstRow = studentRows[0];
+          const fechaTest = new Date(firstRow.fecha);
+          const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`;
+      
+          // Creamos el array inicial de la fila del alumno con los datos comunes
+          let studentRow = [
+            firstRow.rut,
+            firstRow.alumno,
+            firstRow.genero,
+            firstRow.curso,
+            firstRow.profesor,
+            firstRow.colegio,
+            fechaParseada
+          ];
+      
+          // Array para almacenar las respuestas (con item, value y time) y usarlas en el cálculo
+          let studentAnswers = [];
+      
+          // Por cada uno de los 69 items, se agregan dos columnas: el valor y el tiempo
+          studentRows.forEach(row => {
+            // Si no hay respuesta, usamos "0"; de lo contrario el valor entregado
+            const val = (row.value && row.value.length > 0) ? row.value : "0";
+            // Para el tiempo, si es null, vacío o "null", se asigna 0; se parsea a número
+            const timeVal =
+              (row.time == null || row.time === "null" || row.time.length === 0)
+                ? 0
+                : parseFloat(row.time);
+            studentRow.push(val);
+            studentRow.push(timeVal);
+      
+            // Se acumula la respuesta para usarla en el cálculo de totales
+            studentAnswers.push({
+              item: parseInt(row.num),
+              value: parseFloat(val) || 0,
+              time: timeVal
+            });
+          });
+      
+          // Variables para acumular totales por cada categoría:
+          // - Items 7 a 18: hearts (score y tiempo)
+          // - Items 25 a 36: flowers (score y tiempo)
+          // - Items 37 en adelante: hearts_flowers (score y tiempo)
+          let score_hearts = 0, time_seconds_hearts = 0;
+          let score_flowers = 0, time_seconds_flowers = 0;
+          let score_hearts_flowers = 0, time_seconds_hearts_flowers = 0;
+      
+          studentAnswers.forEach(answer => {
+            if (answer.item > 6 && answer.item < 19) {
+              score_hearts += answer.value;
+              time_seconds_hearts += answer.time;
+            } else if (answer.item >= 25 && answer.item <= 36) {
+              score_flowers += answer.value;
+              time_seconds_flowers += answer.time;
+            } else if (answer.item >= 37) {
+              score_hearts_flowers += answer.value;
+              time_seconds_hearts_flowers += answer.time;
             }
-        )
-
+          });
+      
+          const hnfTotal = score_hearts + score_flowers + score_hearts_flowers;
+          const total_time = time_seconds_hearts + time_seconds_flowers + time_seconds_hearts_flowers;
+      
+          // Se agregan al final de la fila los totales calculados, en el siguiente orden:
+          // [hnfTotal, score_hearts, time_seconds_hearts, score_flowers, time_seconds_flowers, score_hearts_flowers, time_seconds_hearts_flowers, total_time]
+          studentRow.push(hnfTotal);
+          studentRow.push(score_hearts);
+          studentRow.push(time_seconds_hearts);
+          studentRow.push(score_flowers);
+          studentRow.push(time_seconds_flowers);
+          studentRow.push(score_hearts_flowers);
+          studentRow.push(time_seconds_hearts_flowers);
+          studentRow.push(total_time);
+      
+          allStudentsRows.push(studentRow);
+        });
+      
+        const rearrangedRows = allStudentsRows.map(row => {
+          const firstPart = row.slice(0, 7);
+          const lastPart = row.slice(-8);
+          const middlePart = row.slice(7, row.length - 8);
+          return [...firstPart, ...lastPart, ...middlePart];
+        });
+      
+        let csvData = [];
+        csvData.push([...info]);
+        rearrangedRows.forEach(row => {
+          csvData.push(row);
+        });
+      
         const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
-        const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info])
-        res.send(parsedData)
-
-
-    }
+        const parsedData = getAllMissingStudentsData(rearrangedRows, allStudentsInfo, [...info]);
+        res.send(parsedData);
+      }
+      
 
     if (instrument == 4) {
         getStudentInfoAces(rows);
@@ -1107,6 +1473,8 @@ router.post('/', async (req, res) => {
         getStudentInfoWally(rows);
     } else if (instrument == 9) {
         getStudentInfoTorre(rows)
+    } else if (instrument == 10) {
+        getStudentInfoESC(rows)
     }else {
         getStudentInfo(rows);
     }
