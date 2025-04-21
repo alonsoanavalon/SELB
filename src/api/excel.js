@@ -157,7 +157,7 @@ router.post('/', async (req, res) => {
                 id: null,
                 alternative: null,
                 text: null,
-                time: "2",
+                time: "2", // esto era porque si no hay respuesta es porque no contesto, es decir demoro 2s totales en el item.
                 options: null,
                 study: template.study,
               };
@@ -365,7 +365,17 @@ router.post('/', async (req, res) => {
             infoChoices.push(infoRow)
             infoRow = `total_time_item_${i}`;
             infoChoices.push(infoRow)
-            infoRow = `movements_item_${i}`;
+            infoRow = `student_movements_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `item_movements_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `movements_difference_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `penalty_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `formula_total_item_${i}`;
+            infoChoices.push(infoRow)
+            infoRow = `score_item_${i}`;
             infoChoices.push(infoRow)
             infoRow = `resets_item_${i}`;
             infoChoices.push(infoRow)
@@ -808,65 +818,180 @@ router.post('/', async (req, res) => {
         }
     }
 
+    // async function getStudentInfoTorre(rows) {
+
+
+
+
+    //     try {
+    //         let studentRow = [];
+    //         let studentCounter = 0;
+    //         let previousStudent = undefined;
+    //         let index = 0;
+            
+    //         rows.forEach((row) => {
+    //             const results = row.options ? JSON.parse(row.options) : {};
+    //             const currentStudentRut = row['rut'];
+                
+    //             if (previousStudent !== currentStudentRut) {
+    //                 if (studentRow.length > 0) {
+    //                     Adding the previous student's row if it exists
+    //                     allStudentsRows.push(studentRow);
+    //                 }
+    //                 studentRow = [];
+    //                 const fechaTest = new Date(row['fecha']);
+    //                 const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`;
+    //                 studentRow.push(row['rut']);
+    //                 studentRow.push(row['alumno']);
+    //                 studentRow.push(row['genero']);
+    //                 studentRow.push(row['curso']);
+    //                 studentRow.push(row['profesor']);
+    //                 studentRow.push(row['colegio']);
+    //                 studentRow.push(fechaParseada);
+    //             }
+
+    //             aca deberiamos obtener en que item estamos, para desde la lista de items y movimientos esperados, obtenerla y hacer la formula
+                
+    //             studentRow.push(results['firstTouchTimer'] || 0);
+    //             studentRow.push(results['playTime'] || 0);
+    //             studentRow.push(results['time'] || 0);
+    //             studentRow.push(results['tries'] || 0);
+    //             expected movements
+    //             movements difference
+    //             penalty (20 o 0)
+    //             result formula total
+    //             score
+
+
+
+    //             studentRow.push(results['resets'] || 0);
+
+
+    //             studentRow.push(results['timePenalization'] || 0);
+    //             studentRow.push(results['correctOrder'] ? 1 : 0);
+                
+    //             previousStudent = currentStudentRut;
+    //             studentCounter++;
+    //         });
+    
+    //         Add the last student's row
+    //         if (studentRow.length > 0) {
+    //             allStudentsRows.push(studentRow);
+    //         }
+    
+    //         let csvData = [];
+    //         csvData.push([...info]);
+    
+    //         allStudentsRows.forEach(row => {
+    //             csvData.push(row);
+    //         });
+    
+    //         const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
+    //         const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info]);
+    //         res.send(parsedData);
+    //     } catch (error) {
+    //         throw error.message;
+    //     }
+    // }
+
+
     async function getStudentInfoTorre(rows) {
         try {
-            let studentRow = [];
-            let studentCounter = 0;
-            let previousStudent = undefined;
-            let index = 0;
-            
-            rows.forEach((row) => {
-                const results = row.options ? JSON.parse(row.options) : {};
-                const currentStudentRut = row['rut'];
-                
-                if (previousStudent !== currentStudentRut) {
-                    if (studentRow.length > 0) {
-                        // Adding the previous student's row if it exists
-                        allStudentsRows.push(studentRow);
-                    }
-                    studentRow = [];
-                    const fechaTest = new Date(row['fecha']);
-                    const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`;
-                    studentRow.push(row['rut']);
-                    studentRow.push(row['alumno']);
-                    studentRow.push(row['genero']);
-                    studentRow.push(row['curso']);
-                    studentRow.push(row['profesor']);
-                    studentRow.push(row['colegio']);
-                    studentRow.push(fechaParseada);
-                }
-                
-                studentRow.push(results['firstTouchTimer'] || 0);
-                studentRow.push(results['playTime'] || 0);
-                studentRow.push(results['time'] || 0);
-                studentRow.push(results['tries'] || 0);
-                studentRow.push(results['resets'] || 0);
-                studentRow.push(results['timePenalization'] || 0);
-                studentRow.push(results['correctOrder'] ? 1 : 0);
-                
-                previousStudent = currentStudentRut;
-                studentCounter++;
-            });
-    
-            // Add the last student's row
-            if (studentRow.length > 0) {
-                allStudentsRows.push(studentRow);
+          // 1. Agrupar las filas por alumno (rut)
+          const groupedByStudent = rows.reduce((acc, row) => {
+            const rut = row.rut;
+            if (!acc[rut]) acc[rut] = [];
+            acc[rut].push(row);
+            return acc;
+          }, {});
+      
+          const allStudentsRows = [];
+      
+          // 2. Para cada alumno, procesar sus filas
+          Object.keys(groupedByStudent).forEach(rut => {
+            const studentRows = groupedByStudent[rut]
+              // opcional: podrías ordenar por fecha si lo deseas
+              .sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+      
+            // Extraer datos comunes del alumno de la primera fila
+            const firstRow = studentRows[0];
+            const fechaTest = new Date(firstRow.fecha);
+            const fechaParseada = `${fechaTest.getDate()}/${fechaTest.getMonth() + 1}/${fechaTest.getFullYear()}`;
+      
+            // Inicializar la fila del alumno
+            const studentRow = [
+              firstRow.rut,
+              firstRow.alumno,
+              firstRow.genero,
+              firstRow.curso,
+              firstRow.profesor,
+              firstRow.colegio,
+              fechaParseada
+            ];
+
+
+            const movementNumber = {
+                1: 2,
+                2: 2,
+                3: 3,
+                4: 3,
+                5: 4,
+                6: 4,
+                7: 4,
+                8: 4,
+                9: 5,
+                10: 5,
+                11: 5,
+                12: 5
             }
-    
-            let csvData = [];
-            csvData.push([...info]);
-    
-            allStudentsRows.forEach(row => {
-                csvData.push(row);
+      
+            // 3. Agregar, por cada fila del alumno, los campos específicos
+            studentRows.forEach(row => {
+              const results = row.options ? JSON.parse(row.options) : {};
+              const expectedMovements = movementNumber[row.num];
+              const movementDifference = Math.abs(results.tries - expectedMovements);
+              const penalty = results.timePenalization == 2 ? 20 : 0;
+              const score = (results.correctOrder && results.timePenalization == 0) ? 1 : 0;
+              const total = (movementDifference + penalty) || 0;
+
+      
+              studentRow.push(results.firstTouchTimer     || 0);
+              studentRow.push(results.playTime            || 0);
+              studentRow.push(results.time                || 0);
+              studentRow.push(results.tries               || 0);
+              // expected movements → pendiente calculo específico
+              studentRow.push(expectedMovements || 0);
+              // movements difference  → pendiente calculo específico
+              studentRow.push(movementDifference || 0);
+              // penalty (20 o 0)      → pendiente calculo específico
+              studentRow.push(penalty || 0);
+              // result formula total  → pendiente calculo específico
+              studentRow.push(results.tries - expectedMovements.total + penalty || 0);
+              // score                 → pendiente calculo específico
+              studentRow.push(score || 0);
+              studentRow.push(results.resets              || 0);
+              studentRow.push(results.timePenalization    || 0);
+              studentRow.push(results.correctOrder ? 1   : 0);
             });
-    
-            const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
-            const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info]);
-            res.send(parsedData);
+      
+            allStudentsRows.push(studentRow);
+          });
+      
+          // 4. Preparar CSV y resultado final
+          const csvData = [
+            [...info],     // encabezados
+            ...allStudentsRows
+          ];
+      
+          const allStudentsInfo = await studentsService.getAllStudentsInfo(schools);
+          const parsedData = getAllMissingStudentsData(allStudentsRows, allStudentsInfo, [...info]);
+      
+          res.send(parsedData);
         } catch (error) {
-            throw error.message;
+          throw error;
         }
-    }
+      }
+      
     
     
     
