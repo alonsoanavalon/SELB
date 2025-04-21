@@ -966,7 +966,7 @@ router.post('/', async (req, res) => {
               // penalty (20 o 0)      → pendiente calculo específico
               studentRow.push(penalty || 0);
               // result formula total  → pendiente calculo específico
-              studentRow.push(results.tries - expectedMovements.total + penalty || 0);
+              studentRow.push(total);
               // score                 → pendiente calculo específico
               studentRow.push(score || 0);
               studentRow.push(results.resets              || 0);
